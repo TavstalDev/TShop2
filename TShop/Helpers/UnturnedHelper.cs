@@ -37,50 +37,8 @@ namespace Tavstal.TShop.Managers
 {
     public class UnturnedHelper
     {
-        private static Random random;
-        private static object syncObj = new object();
         private static TShop pluginMain => TShop.Instance;
         private static TShopConfiguration pluginConfig => TShop.Instance.Configuration.Instance;
-
-        public static int GenerateRandomNumber(int min, int max)
-        {
-            lock (syncObj)
-            {
-                if (random == null)
-                    random = new Random(); // Or exception...
-                return random.Next(min, max);
-            }
-        }
-
-        public static int GenerateRandomNumber(int max)
-        {
-            lock (syncObj)
-            {
-                if (random == null)
-                    random = new Random(); // Or exception...
-                return random.Next(0, max);
-            }
-        }
-
-        public static double GenerateRandomNumber(double min, double max)
-        {
-            lock (syncObj)
-            {
-                if (random == null)
-                    random = new Random(); // Or exception...
-                return (random.NextDouble() * Math.Abs(max - min)) + min;
-            }
-        }
-
-        public static double GenerateRandomNumber(double max)
-        {
-            lock (syncObj)
-            {
-                if (random == null)
-                    random = new Random(); // Or exception...
-                return (random.NextDouble() * Math.Abs(max));
-            }
-        }
 
         private static string Translate(bool addPrefix, string key, params object[] args) => TShop.Instance.Translate(addPrefix, key, args);
 
