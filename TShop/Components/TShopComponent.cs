@@ -7,7 +7,7 @@ namespace Tavstal.TShop
 {
     public class TShopComponent : UnturnedPlayerComponent
     {
-        public EPaymentMethod PaymentMethod { get; set; } = EPaymentMethod.wallet;
+        public EUconomyMethod PaymentMethod { get; set; } = EUconomyMethod.CASH;
         public int item_page { get; set; } = 0;
         public int vehicle_page { get; set; } = 0;
         public int cart_page { get; set; } = 0;

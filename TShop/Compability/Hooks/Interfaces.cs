@@ -43,23 +43,23 @@ namespace Tavstal.TShop.Compability
     {
         string GetCurrencyName();
 
-        decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank);
+        decimal Withdraw(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK);
 
-        decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank);
+        decimal Deposit(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK);
 
-        decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.bank);
+        decimal GetBalance(UnturnedPlayer player, EUconomyMethod method = EUconomyMethod.BANK);
 
-        bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank);
+        bool Has(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK);
 
         void AddTransaction(UnturnedPlayer player, Transaction transaction);
 
-        decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank);
+        decimal Withdraw(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK);
 
-        decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank);
+        decimal Deposit(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK);
 
-        decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.bank);
+        decimal GetBalance(CSteamID player, EUconomyMethod method = EUconomyMethod.BANK);
 
-        bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank);
+        bool Has(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK);
 
         void AddTransaction(CSteamID player, Transaction transaction);
     }

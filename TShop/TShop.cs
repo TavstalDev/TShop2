@@ -21,6 +21,7 @@ using Tavstal.TShop.Compability.Hooks;
 using PlayerGesture =  Rocket.Unturned.Events.UnturnedPlayerEvents.PlayerGesture;
 using SDG.Framework.Utilities;
 using System.Reflection;
+using Tavstal.TShop.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -147,7 +148,7 @@ namespace Tavstal.TShop
 
                 if (comp.products.isValidIndex(index))
                 {
-                    comp.products[index].Amount = Convert.ToInt32(text).Clamp(1, comp.products[index].isVehicle ? 1 : 100);
+                    comp.products[index].Amount = MathHelper.Clamp(Convert.ToInt32(text), 1, comp.products[index].isVehicle ? 1 : 100);
                     UIManager.UpdateTotalPay(uPlayer);
                 }
             }
@@ -160,15 +161,15 @@ namespace Tavstal.TShop
 
             if (button.EqualsIgnoreCase("bt_shop_cart_payment#wallet"))
             {
-                comp.PaymentMethod = EPaymentMethod.wallet;
+                comp.PaymentMethod = EUconomyMethod.CASH;
             }
             else if (button.EqualsIgnoreCase("bt_shop_cart_payment#bank"))
             {
-                comp.PaymentMethod = EPaymentMethod.bank;
+                comp.PaymentMethod = EUconomyMethod.BANK;
             }
             else if (button.EqualsIgnoreCase("bt_shop_cart_payment#crypto"))
             {
-                comp.PaymentMethod = EPaymentMethod.crypto;
+                comp.PaymentMethod = EUconomyMethod.CRYPTO;
             }
             else if (button.ContainsIgnoreCase("bt_shop_cont_cart_item#") && button.ContainsIgnoreCase("_remove"))
             {
@@ -397,13 +398,13 @@ namespace Tavstal.TShop
             for (int i = 0; i < Configuration.Instance.ItemCountToDiscount; i++)
             {
                 if (items.isValidIndex(i))
-                    Database.UpdateItem(items[i].Id, true, Math.Round((decimal)UnturnedHelper.GenerateRandomNumber(Configuration.Instance.minDiscountInPercent, Configuration.Instance.maxDiscountInPercent), 2));
+                    Database.UpdateItem(items[i].Id, true, Math.Round((decimal)MathHelper.Next(Configuration.Instance.minDiscountInPercent, Configuration.Instance.maxDiscountInPercent), 2));
             }
 
             for (int i = 0; i < Configuration.Instance.VehicleCountToDiscount; i++)
             {
                 if (vehs.isValidIndex(i))
-                    Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)UnturnedHelper.GenerateRandomNumber(Configuration.Instance.minDiscountInPercent, Configuration.Instance.maxDiscountInPercent), 2));
+                    Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)MathHelper.Next(Configuration.Instance.minDiscountInPercent, Configuration.Instance.maxDiscountInPercent), 2));
             }
 
             _nextUpdate = DateTime.Now.AddSeconds(Configuration.Instance.DiscountInterval);

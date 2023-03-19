@@ -112,28 +112,28 @@ namespace Tavstal.TShop.Compability.Hooks
             return local;
         }
 
-        public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal Withdraw(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
                 player.CSteamID.m_SteamID.ToString(), -amount
             });
         }
 
-        public decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal Deposit(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
                 player.CSteamID.m_SteamID.ToString(), amount
             });
         }
 
-        public decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal GetBalance(UnturnedPlayer player, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
                 player.CSteamID.m_SteamID.ToString()
             });
         }
 
-        public bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public bool Has(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (GetBalance(player) - amount) >= 0;
         }
@@ -143,28 +143,28 @@ namespace Tavstal.TShop.Compability.Hooks
 
         }
 
-        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal Withdraw(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
                 player.m_SteamID.ToString(), -amount
             });
         }
 
-        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal Deposit(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
                 player.m_SteamID.ToString(), amount
             });
         }
 
-        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal GetBalance(CSteamID player, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
                 player.m_SteamID.ToString()
             });
         }
 
-        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public bool Has(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (GetBalance(player) - amount) >= 0;
         }

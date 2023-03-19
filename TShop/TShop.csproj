@@ -134,8 +134,16 @@
     <Compile Include="Commands\CommandSellItem.cs" />
     <Compile Include="Commands\CommandItemShop.cs" />
     <Compile Include="Commands\CommandShopUI.cs" />
-    <Compile Include="Compability\Enumerators.cs" />
-    <Compile Include="Compability\Extensions.cs" />
+    <Compile Include="Compability\Classes\DatabaseData.cs" />
+    <Compile Include="Compability\Classes\ShopItem.cs" />
+    <Compile Include="Compability\Classes\Product.cs" />
+    <Compile Include="Compability\Classes\Transaction.cs" />
+    <Compile Include="Compability\Enums\PaymentEnum.cs" />
+    <Compile Include="Compability\Enums\TransactionEnum.cs" />
+    <Compile Include="Compability\Enums\CurrencyEnum.cs" />
+    <Compile Include="Compability\Extensions\EnumExtensions.cs" />
+    <Compile Include="Compability\Extensions\ArrayExtensions.cs" />
+    <Compile Include="Compability\Extensions\StringExtensions.cs" />
     <Compile Include="Compability\Format\TextFormat.cs" />
     <Compile Include="Compability\Format\ConsoleFormat.cs" />
     <Compile Include="Compability\Hooks\Hook.cs" />
@@ -143,6 +151,7 @@
     <Compile Include="Compability\Hooks\Hook_TEconomy.cs" />
     <Compile Include="Compability\Hooks\Hook_Uconomy.cs" />
     <Compile Include="Compability\Hooks\Interfaces.cs" />
+    <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="Helpers\FormatHelper.cs" />
     <Compile Include="Helpers\LoggerHelper.cs" />
     <Compile Include="Managers\Database.cs" />
@@ -152,7 +161,7 @@
     <Compile Include="TShop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\TShopComponent.cs" />
-    <Compile Include="Compability\Variables.cs" />
+    <Compile Include="Compability\Classes\GithubFolders.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

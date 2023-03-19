@@ -148,22 +148,22 @@ namespace Tavstal.TShop.Compability.Hooks
             return local;
         }
 
-        public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal Withdraw(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return Withdraw(player.CSteamID, amount, method);
         }
 
-        public decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal Deposit(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return Deposit(player.CSteamID, amount, method);
         }
 
-        public decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal GetBalance(UnturnedPlayer player, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return GetBalance(player.CSteamID, method);
         }
 
-        public bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public bool Has(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (GetBalance(player) - amount) >= 0;
         }
@@ -173,21 +173,21 @@ namespace Tavstal.TShop.Compability.Hooks
             AddTransaction(player.CSteamID, transaction);
         }
 
-        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal Withdraw(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             switch (method)
             {
-                case EPaymentMethod.bank:
+                case EUconomyMethod.BANK:
                     {
                         return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, -amount });
                     }
-                case EPaymentMethod.crypto:
+                case EUconomyMethod.CRYPTO:
                     {
                         return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, -amount });
                     }
-                case EPaymentMethod.wallet:
+                case EUconomyMethod.CASH:
                     {
                         return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, -amount });
@@ -200,21 +200,21 @@ namespace Tavstal.TShop.Compability.Hooks
             }
         }
 
-        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal Deposit(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             switch (method)
             {
-                case EPaymentMethod.bank:
+                case EUconomyMethod.BANK:
                     {
                         return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, amount });
                     }
-                case EPaymentMethod.crypto:
+                case EUconomyMethod.CRYPTO:
                     {
                         return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, amount });
                     }
-                case EPaymentMethod.wallet:
+                case EUconomyMethod.CASH:
                     {
                         return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, amount });
@@ -227,21 +227,21 @@ namespace Tavstal.TShop.Compability.Hooks
             }
         }
 
-        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.bank)
+        public decimal GetBalance(CSteamID player, EUconomyMethod method = EUconomyMethod.BANK)
         {
             switch (method)
             {
-                case EPaymentMethod.bank:
+                case EUconomyMethod.BANK:
                     {
                         return (decimal)_getBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player});
                     }
-                case EPaymentMethod.crypto:
+                case EUconomyMethod.CRYPTO:
                     {
                         return (decimal)_getCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player});
                     }
-                case EPaymentMethod.wallet:
+                case EUconomyMethod.CASH:
                     {
                         return (decimal)_getCashBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player});
@@ -254,7 +254,7 @@ namespace Tavstal.TShop.Compability.Hooks
             }
         }
 
-        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.bank)
+        public bool Has(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
         {
             return (GetBalance(player, method) - amount) >= 0;
         }
