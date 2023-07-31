@@ -50,6 +50,7 @@ namespace Tavstal.TShop
             Logger.Log("# Plugin Created By Tavstal");
             Logger.Log("# Discord: Tavstal#6189");
             Logger.Log("# Website: https://redstoneplugins.com");
+            Logger.Log("# Discord: https://discord.gg/redstoneplugins");
             Logger.Log("#########################################");
             Logger.Log(string.Format("# Build Version: {0}", _Version));
             Logger.Log(string.Format("# Build Date: {0}", _BuildDate));
@@ -65,7 +66,6 @@ namespace Tavstal.TShop
                     Level.onPostLevelLoaded += Event_OnPluginsLoaded;
                 else
                     Event_OnPluginsLoaded(0);
-                //UnturnedPlayerEvents.OnPlayerUpdateGesture += Event_OnUpdateGesture;
 
                 Logger.Log("# TShop has been loaded.");
                 Logger.Log("# Starting late initialization...");
@@ -75,7 +75,6 @@ namespace Tavstal.TShop
                 Logger.LogException("# Failed to load TShop...");
                 Logger.LogError(ex);
             }
-            //Logger.Log("# Starting late initialization...");
         }
 
         protected override void Unload()
@@ -84,8 +83,7 @@ namespace Tavstal.TShop
             EffectManager.onEffectButtonClicked -= Event_OnButtonClick;
             U.Events.OnPlayerConnected -= Event_OnPlayerJoin;
             Level.onPostLevelLoaded -= Event_OnPluginsLoaded;
-            //UnturnedPlayerEvents.OnPlayerUpdateGesture -= Event_OnUpdateGesture;
-            Logger.Log("TShop has been successfully unloaded.");
+            Logger.Log("# TShop has been successfully unloaded.");
         }
 
         private void Event_OnPluginsLoaded(int i)
@@ -113,29 +111,6 @@ namespace Tavstal.TShop
         {
             EffectManager.sendUIEffect(Configuration.Instance.EffectID, (short)Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, true);
         }
-
-        /*private void Event_OnUpdateGesture(UnturnedPlayer player, PlayerGesture gesture)
-        {
-            if (gesture != PlayerGesture.Point || !Configuration.Instance.EnableCommandSigns)
-                return;
-
-            PlayerLook look = player.Player.look;
-            TShopComponent comp = player.GetComponent<TShopComponent>();
-
-            if (PhysicsUtility.raycast(new Ray(look.aim.position, look.aim.forward), out RaycastHit hit, Mathf.Infinity, RayMasks.BARRICADE))
-            {
-                BarricadeDrop drop = BarricadeManager.FindBarricadeByRootTransform(hit.transform);
-                if (drop == null || Vector3.Distance(drop.model.transform.position, player.Position) > 3f)
-                    return;
-
-                if (!(drop.interactable is InteractableSign))
-                    return;
-
-                InteractableSign sign = (InteractableSign)drop.interactable;
-
-                
-            }
-        }*/
 
         private void Event_OnInputFieldEdit(Player player, string button, string text)
         {
@@ -413,7 +388,7 @@ namespace Tavstal.TShop
         [Obsolete]
         public new string Translate(string translationKey, params object[] placeholder)
         {
-            Logger.LogError($"OLD TRANSLATION METHOD WAS USED FOR '{translationKey}'");
+            Logger.LogWarning($"OLD TRANSLATION METHOD WAS USED FOR '{translationKey}'");
             return Translations.Instance.Translate(translationKey, placeholder);
         }
 
