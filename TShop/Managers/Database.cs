@@ -43,13 +43,13 @@ namespace Tavstal.TShop
                 {
                     MySQLCommand.CommandText = "CREATE TABLE " + pluginConfig.databaseData.DatabaseTable_Items +
                     "(id INT(8) NOT NULL AUTO_INCREMENT," +
-                    "itemID TEXT NULL," +
-                    "buyCost TEXT NULL," +
-                    "sellCost TEXT NULL," +
-                    "hasPermission TEXT NULL," +
+                    "itemID INT UNSIGNED NOT NULL," +
+                    "buyCost DECIMAL(10,2) NULL," +
+                    "sellCost DECIMAL(10,2) NULL," +
+                    "hasPermission BOOL NOT NULL," +
                     "permission TEXT NULL," +
-                    "isDiscounted TEXT NULL," +
-                    "discount TEXT NULL," +
+                    "isDiscounted BOOL NOT NULL," +
+                    "discount TINYINT NULL," +
                     "PRIMARY KEY(id));";
                     MySQLCommand.ExecuteNonQuery();
                 }
@@ -61,13 +61,13 @@ namespace Tavstal.TShop
                 {
                     MySQLCommand.CommandText = "CREATE TABLE " + pluginConfig.databaseData.DatabaseTable_Vehicles +
                     "(id INT(8) NOT NULL AUTO_INCREMENT," +
-                    "vehicleID TEXT NULL," +
-                    "buyCost TEXT NULL," +
-                    "sellCost TEXT NULL," +
-                    "hasPermission TEXT NULL," +
+                    "vehicleID INT UNSIGNED NOT NULL," +
+                    "buyCost DECIMAL(10,2) NULL," +
+                    "sellCost DECIMAL(10,2) NULL," +
+                    "hasPermission BOOL NOT NULL," +
                     "permission TEXT NULL," +
-                    "isDiscounted TEXT NULL," +
-                    "discount TEXT NULL," +
+                    "isDiscounted BOOL NOT NULL," +
+                    "discount TINYINT NULL," +
                     "PRIMARY KEY(id));";
                     MySQLCommand.ExecuteNonQuery();
                 }
@@ -533,7 +533,7 @@ namespace Tavstal.TShop
                 MySQLCommand.CommandText = "SELECT * FROM " + tablename;
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
                 while (Reader.Read())
-                    i.Add(new ShopItem(Reader.GetUInt16(Reader.GetOrdinal("id")), Reader.GetDecimal(Reader.GetOrdinal("cost")), Reader.GetDecimal(Reader.GetOrdinal("buyback"))));
+                    i.Add(new ShopItem(Reader.GetUInt16("id"), Reader.GetDecimal("cost"), Reader.GetDecimal("buyback")));
                 MySQLConnection.Close();
             }
             catch (Exception ex)
@@ -555,7 +555,7 @@ namespace Tavstal.TShop
                 MySQLCommand.CommandText = "SELECT * FROM " + tablename;
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
                 while (Reader.Read())
-                    i.Add(new ShopItem(Reader.GetUInt16(Reader.GetOrdinal("id")), Reader.GetDecimal(Reader.GetOrdinal("cost")), 0));
+                    i.Add(new ShopItem(Reader.GetUInt16("id"), Reader.GetDecimal("cost"), 0));
                 MySQLConnection.Close();
             }
             catch (Exception ex)
