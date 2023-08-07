@@ -27,7 +27,7 @@ namespace Tavstal.TShop
 
             if (args.Length == 0)
             {
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_command_itemshop_args"));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_itemshop_args"));
                 return;
             }
             else
@@ -40,7 +40,7 @@ namespace Tavstal.TShop
                 {
                     if (args.Length < 4 || args.Length > 5)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_command_itemshop_add_args"));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_itemshop_add_args"));
                         return;
                     }
 
@@ -57,7 +57,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_not_exists", args[0]));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_not_exists", args[0]));
                         return;
                     }
                     id = asset.id;
@@ -65,7 +65,7 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindItem(id);
                     if (item != null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_already_added", asset.itemName, asset.id));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_already_added", asset.itemName, asset.id));
                         return;
                     }
 
@@ -92,15 +92,15 @@ namespace Tavstal.TShop
                         permission = null;
 
                     if (TShop.Database.AddItem(asset.id, buycost, sellcost, permission != null, permission))
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "success_item_added", asset.itemName, asset.id));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_item_added", asset.itemName, asset.id));
                     else
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_added", asset.itemName));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_added", asset.itemName));
                 }
                 else if (args[0].EqualsIgnoreCase("remove"))
                 {
                     if (args.Length != 2)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_command_itemshop_remove_args", asset.itemName));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_itemshop_remove_args", asset.itemName));
                         return;
                     }
 
@@ -117,7 +117,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_not_exists", args[0]));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_not_exists", args[0]));
                         return;
                     }
                     id = asset.id;
@@ -125,20 +125,20 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindItem(id);
                     if (item == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_not_added", args[0]));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_not_added", args[0]));
                         return;
                     }
 
                     if (TShop.Database.RemoveItem(id))
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "success_item_removed", asset.itemName));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_item_removed", asset.itemName));
                     else
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_removed", asset.itemName));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_removed", asset.itemName));
                 }
                 else if (args[0].EqualsIgnoreCase("update"))
                 {
                     if (args.Length < 4 || args.Length > 5)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_command_itemshop_update_args", asset.itemName));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_itemshop_update_args", asset.itemName));
                         return;
                     }
 
@@ -155,7 +155,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_not_exists", args[0]));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_not_exists", args[0]));
                         return;
                     }
                     id = asset.id;
@@ -163,7 +163,7 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindItem(id);
                     if (item == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_not_added", asset.itemName));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_not_added", asset.itemName));
                         return;
                     }
 
@@ -190,12 +190,12 @@ namespace Tavstal.TShop
                         permission = null;
 
                     if (TShop.Database.UpdateItem(id, buycost, sellcost, permission != null, permission))
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "success_item_updated", asset.itemName, asset.id));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_item_updated", asset.itemName, asset.id));
                     else
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_item_updated", asset.itemName));
+                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_item_updated", asset.itemName));
                 }
                 else
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_command_itemshop_args"));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_itemshop_args"));
             }
         }
     }

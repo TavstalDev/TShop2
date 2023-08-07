@@ -183,7 +183,7 @@ namespace Tavstal.TShop
 
                         if (economyProvider.GetBalance(uPlayer, comp.PaymentMethod) < cost)
                         {
-                            UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(), Translate(true, "error_balance_not_enough", cost - economyProvider.GetBalance(uPlayer, comp.PaymentMethod)));
+                            UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(), Localize(true, "error_balance_not_enough", cost - economyProvider.GetBalance(uPlayer, comp.PaymentMethod)));
                             return;
                         }
 
@@ -203,8 +203,8 @@ namespace Tavstal.TShop
                             successBought += p.Amount;
                         }
                         comp.products = new List<Product>();
-                        economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Translate(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                        UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(),Translate(true, "success_pruchase", successBought));
+                        economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                        UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(), Localize(true, "success_pruchase", successBought));
                         UIManager.UpdatePaymentPage(uPlayer);
                         UIManager.UpdateTotalPay(uPlayer);
                     }
@@ -251,8 +251,8 @@ namespace Tavstal.TShop
                             if (comp.products.Any(x=> x.Id == p.Id && p.isVehicle == x.isVehicle))
                                 comp.products.Remove(p);
                         
-                        economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Translate(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                        UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(), Translate(true, "success_sell", successSold));
+                        economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                        UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(), Localize(true, "success_sell", successSold));
                         UIManager.UpdatePaymentPage(uPlayer);
                         UIManager.UpdateTotalPay(uPlayer);
                     }

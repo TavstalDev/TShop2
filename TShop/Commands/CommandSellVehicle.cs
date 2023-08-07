@@ -33,26 +33,26 @@ namespace Tavstal.TShop
                 InteractableVehicle vehicle = callerPlayer.CurrentVehicle;
                 if (vehicle == null)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_vehicle_sell_null"));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_vehicle_sell_null"));
                     return;
                 }
                 else if (vehicle.lockedOwner != callerPlayer.CSteamID || !vehicle.isLocked ||vehicle.isDead)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_vehicle_sell_owner"));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_vehicle_sell_owner"));
                     return;
                 }
 
                 ShopItem item = TShop.Database.FindVehicle(vehicle.id);
                 if (item == null)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_vehicle_not_added", args[0]));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_vehicle_not_added", args[0]));
                     return;
                 }
 
                 decimal cost = item.GetBuyCost(amount);
                 if (cost == 0)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_vehicle_sell_error"));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_vehicle_sell_error"));
                     return;
                 }
 
@@ -62,11 +62,11 @@ namespace Tavstal.TShop
                     VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
                 }
                 VehicleManager.askVehicleDestroy(vehicle);
-                TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Translate(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
+                TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
             }
             else
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Translate(true, "error_command_sellvehicle_args"));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_sellvehicle_args"));
         }
     }
 }

@@ -233,8 +233,8 @@ namespace Tavstal.TShop.Managers
                     sellCost += p.isVehicle ? 0 : items.Find(x => x.Id == p.Id).GetSellCost(p.Amount);
                 }
 
-                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cart_payment_total", TShop.Instance.Translate(true, "ui_total_buy", buyCost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
-                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cart_payment_total_sell", TShop.Instance.Translate(true, "ui_total_sell", sellCost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
+                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cart_payment_total", TShop.Instance.Localize(true, "ui_total_buy", buyCost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
+                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cart_payment_total_sell", TShop.Instance.Localize(true, "ui_total_sell", sellCost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
             }
             catch (Exception ex)
             {

@@ -42,7 +42,7 @@ namespace Tavstal.TShop.Managers
         private static TShop pluginMain => TShop.Instance;
         private static TShopConfiguration pluginConfig => TShop.Instance.Config;
 
-        private static string Translate(bool addPrefix, string key, params object[] args) => TShop.Instance(addPrefix, key, args);
+        private static string Translate(bool addPrefix, string key, params object[] args) => TShop.Instance.Localize(addPrefix, key, args);
 
         public static void ServerSendChatMessage(string text, string icon = null, SteamPlayer fromPlayer = null, SteamPlayer toPlayer = null, EChatMode mode = EChatMode.GLOBAL)
         => ChatManager.serverSendMessage(text, Color.white, fromPlayer, toPlayer, mode, icon, true);
@@ -53,7 +53,7 @@ namespace Tavstal.TShop.Managers
             if (toPlayer is SteamPlayer steamPlayer)
                 ServerSendChatMessage(FormatHelper.FormatTextV2(Translate(true, translation, args)), icon, null, steamPlayer, EChatMode.GLOBAL);
             else
-                LoggerHelper.LogRichCommand(Translate(false, translation, args));
+                Logger.LogRichCommand(Translate(false, translation, args));
         }
 
         public static void SendChatMessage(SteamPlayer toPlayer, string translation, params object[] args)
