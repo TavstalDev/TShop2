@@ -148,7 +148,7 @@
     <Compile Include="Compability\Hooks\Hook_TEconomy.cs" />
     <Compile Include="Compability\Hooks\Hook_Uconomy.cs" />
     <Compile Include="Helpers\LoggerHelper.cs" />
-    <Compile Include="Managers\Database.cs" />
+    <Compile Include="Managers\DatabaseManager.cs" />
     <Compile Include="Helpers\UnturnedHelper.cs" />
     <Compile Include="Managers\UIManager.cs" />
     <Compile Include="TShopConfiguration.cs" />

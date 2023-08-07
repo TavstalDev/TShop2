@@ -8,6 +8,10 @@ using Rocket.API;
 using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
+using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -49,7 +53,7 @@ namespace Tavstal.TShop
                 if (id > 0)
                     asset = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                 else
-                    asset = UnturnedHelper.FindItemAsset(args[0]);
+                    asset = UAssetHelper.FindItemAsset(args[0]);
 
                 if (asset == null)
                 {
@@ -86,7 +90,7 @@ namespace Tavstal.TShop
                         ItemManager.dropItem(new Item(asset.id, true), callerPlayer.Position, true, true, false);
                 }
                 TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_item_buy", asset.itemName, amount, cost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_item_buy", asset.itemName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
             }
             else
                 UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_buyitem_args"));

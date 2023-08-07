@@ -73,17 +73,17 @@ namespace Tavstal.TShop.Compability
         public string GetBuyCostFormatted(int amount = 1)
         {
             if (isDiscounted)
-                return TShop.Instance.Localize(true, "ui_discount", (BuyCost * amount).ToString("0.00"), ((BuyCost - BuyCost * (discountPercent / 100)) * amount).ToString("0.00"), TShop.economyProvider.GetConfigValue("MoneySymbol")).ToString();
+                return TShop.Instance.Localize(true, "ui_discount", (BuyCost * amount).ToString("0.00"), ((BuyCost - BuyCost * (discountPercent / 100)) * amount).ToString("0.00"), TShop.economyProvider.GetConfigValue<string>("MoneySymbol")).ToString();
             else
-                return TShop.economyProvider.GetConfigValue("MoneySymbol") + (BuyCost * amount).ToString("0.00");
+                return TShop.economyProvider.GetConfigValue<string>("MoneySymbol") + (BuyCost * amount).ToString("0.00");
         }
 
         public string GetSellCostFormatted(int amount = 1)
         {
             if (isDiscounted)
-                return TShop.Instance.Localize(true, "ui_discount", (SellCost * amount).ToString("0.00"), ((SellCost - SellCost * (discountPercent / 100)) * amount).ToString("0.00"), TShop.economyProvider.GetConfigValue("MoneySymbol")).ToString();
+                return TShop.Instance.Localize(true, "ui_discount", (SellCost * amount).ToString("0.00"), ((SellCost - SellCost * (discountPercent / 100)) * amount).ToString("0.00"), TShop.economyProvider.GetConfigValue<string>("MoneySymbol")).ToString();
             else
-                return TShop.economyProvider.GetConfigValue("MoneySymbol") + (SellCost * amount).ToString("0.00");
+                return TShop.economyProvider.GetConfigValue<string>("MoneySymbol") + (SellCost * amount).ToString("0.00");
         }
     }
    

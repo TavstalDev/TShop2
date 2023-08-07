@@ -13,21 +13,20 @@ using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
 using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using static SDG.Provider.SteamGetInventoryResponse;
+using Tavstal.TLibrary.Managers;
+using Tavstal.TLibrary.Compatibility;
 
 namespace Tavstal.TShop
 {
-    public class DatabaseManager
+    public class DatabaseManager : DatabaseManagerBase
     {
-        private static TShop pluginMain => TShop.Instance;
         private static TShopConfiguration pluginConfig => TShop.Instance.Config;
 
-        public DatabaseManager()
+        public DatabaseManager(IConfigurationBase configuration) : base(configuration)
         {
-            new I18N.West.CP1250();
-            CheckSchema();
         }
 
-        public void CheckSchema()
+        public override void CheckSchema()
         {
             try
             {

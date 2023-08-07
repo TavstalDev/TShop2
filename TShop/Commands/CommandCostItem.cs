@@ -8,6 +8,10 @@ using Rocket.API;
 using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
+using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -39,7 +43,7 @@ namespace Tavstal.TShop
                 if (id > 0)
                     asset = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                 else
-                    asset = UnturnedHelper.FindItemAsset(args[0]);
+                    asset = UAssetHelper.FindItemAsset(args[0]);
 
                 if (asset == null)
                 {
@@ -55,7 +59,7 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_item_cost", asset.itemName, item.GetBuyCost(), item.GetSellCost(), TShop.economyProvider.GetConfigValue("MoneySymbol")));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_item_cost", asset.itemName, item.GetBuyCost(), item.GetSellCost(), TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
             }
             else
                 UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_costitem_args"));

@@ -8,6 +8,10 @@ using Rocket.API;
 using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
+using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -63,7 +67,7 @@ namespace Tavstal.TShop
                 }
                 VehicleManager.askVehicleDestroy(vehicle);
                 TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
             }
             else
                 UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_sellvehicle_args"));

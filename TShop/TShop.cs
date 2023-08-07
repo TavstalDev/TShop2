@@ -63,7 +63,7 @@ namespace Tavstal.TShop
             Logger.Log("#########################################");
             try
             {
-                Database = new DatabaseManager();
+                Database = new DatabaseManager(Config);
 
                 EffectManager.onEffectTextCommitted += Event_OnInputFieldEdit;
                 EffectManager.onEffectButtonClicked += Event_OnButtonClick;

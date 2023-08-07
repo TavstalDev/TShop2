@@ -8,6 +8,10 @@ using Rocket.API;
 using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
+using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -40,7 +44,7 @@ namespace Tavstal.TShop
                 if (id > 0)
                     asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                 else
-                    asset = UnturnedHelper.FindVehicleAsset(args[0]);
+                    asset = UAssetHelper.FindVehicleAsset(args[0]);
 
                 if (asset == null)
                 {
@@ -73,7 +77,7 @@ namespace Tavstal.TShop
                 TShop.economyProvider.Withdraw(callerPlayer, cost);
                 VehicleManager.spawnLockedVehicleForPlayerV2(asset.id, callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation, callerPlayer.Player);
                 TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_vehicle_buy", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_vehicle_buy", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
             }
             else
                 UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_buyvehicle_args"));

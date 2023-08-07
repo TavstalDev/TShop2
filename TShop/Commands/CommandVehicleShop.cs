@@ -8,6 +8,10 @@ using Rocket.API;
 using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
+using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -53,7 +57,7 @@ namespace Tavstal.TShop
                     if (id > 0)
                         asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                     else
-                        asset = UnturnedHelper.FindVehicleAsset(args[1]);
+                        asset = UAssetHelper.FindVehicleAsset(args[1]);
 
 
                     if (asset == null)
@@ -114,7 +118,7 @@ namespace Tavstal.TShop
                     if (id > 0)
                         asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                     else
-                        asset = UnturnedHelper.FindVehicleAsset(args[1]);
+                        asset = UAssetHelper.FindVehicleAsset(args[1]);
 
 
                     if (asset == null)
@@ -153,7 +157,7 @@ namespace Tavstal.TShop
                     if (id > 0)
                         asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                     else
-                        asset = UnturnedHelper.FindVehicleAsset(args[1]);
+                        asset = UAssetHelper.FindVehicleAsset(args[1]);
 
 
                     if (asset == null)
