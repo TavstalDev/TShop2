@@ -19,7 +19,7 @@ namespace Tavstal.TShop
     public class DatabaseManager
     {
         private static TShop pluginMain => TShop.Instance;
-        private static TShopConfiguration pluginConfig => TShop.Instance.Configuration.Instance;
+        private static TShopConfiguration pluginConfig => TShop.Instance.Config;
 
         public DatabaseManager()
         {
@@ -35,13 +35,13 @@ namespace Tavstal.TShop
                 MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
 
                 //Item Shop
-                MySQLCommand.CommandText = "SHOW TABLES LIKE '" + pluginConfig.databaseData.DatabaseTable_Items + "'";
+                MySQLCommand.CommandText = "SHOW TABLES LIKE '" + pluginConfig.Database.DatabaseTable_Items + "'";
                 MySQLConnection.Open();
 
                 object result = MySQLCommand.ExecuteScalar();
                 if (result == null)
                 {
-                    MySQLCommand.CommandText = "CREATE TABLE " + pluginConfig.databaseData.DatabaseTable_Items +
+                    MySQLCommand.CommandText = "CREATE TABLE " + pluginConfig.Database.DatabaseTable_Items +
                     "(id INT(8) NOT NULL AUTO_INCREMENT," +
                     "itemID INT UNSIGNED NOT NULL," +
                     "buyCost DECIMAL(10,2) NULL," +
@@ -55,11 +55,11 @@ namespace Tavstal.TShop
                 }
 
                 //Vehicle Shop
-                MySQLCommand.CommandText = "SHOW TABLES LIKE '" + pluginConfig.databaseData.DatabaseTable_Vehicles + "'";
+                MySQLCommand.CommandText = "SHOW TABLES LIKE '" + pluginConfig.Database.DatabaseTable_Vehicles + "'";
                 result = MySQLCommand.ExecuteScalar();
                 if (result == null)
                 {
-                    MySQLCommand.CommandText = "CREATE TABLE " + pluginConfig.databaseData.DatabaseTable_Vehicles +
+                    MySQLCommand.CommandText = "CREATE TABLE " + pluginConfig.Database.DatabaseTable_Vehicles +
                     "(id INT(8) NOT NULL AUTO_INCREMENT," +
                     "vehicleID INT UNSIGNED NOT NULL," +
                     "buyCost DECIMAL(10,2) NULL," +
@@ -85,16 +85,17 @@ namespace Tavstal.TShop
 
             try
             {
-                if (pluginConfig.databaseData.DatabasePort == 0)
+                if (pluginConfig.Database.Port == 0)
                 {
-                    pluginConfig.databaseData.DatabasePort = 3306;
+                    pluginConfig.Database.Port = 3306;
                 }
                 MySQLConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};DEFAULT COMMAND TIMEOUT=120;CharSet=utf8;", new object[] {
-                    pluginConfig.databaseData.DatabaseAddress,
-                    pluginConfig.databaseData.DatabaseName,
-                    pluginConfig.databaseData.DatabaseUser,
-                    pluginConfig.databaseData.DatabasePassword,
-                    pluginConfig.databaseData.DatabasePort
+                    pluginConfig.Database.DatabaseAddress,
+                    pluginConfig.Database.DatabaseName,
+                    pluginConfig.Database.DatabaseUser,
+                    pluginConfig.Database.DatabasePassword,
+                    pluginConfig.Database.Port,
+                    pluginConfig.Database.TimeOut
                 }));
             }
             catch (Exception ex)
@@ -121,13 +122,13 @@ namespace Tavstal.TShop
                 MySQLCommand.Parameters.AddWithValue("@IDIS", "False");
                 MySQLCommand.Parameters.AddWithValue("@DIS", "0");
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Items + "` WHERE itemID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
                 object data = MySQLCommand.ExecuteScalar();
 
                 Asset a = Assets.find(EAssetType.ITEM, ID);
                 if (data == null)
                 {
-                    MySQLCommand.CommandText = "INSERT INTO `" + pluginConfig.databaseData.DatabaseTable_Items + "` (ItemID,BuyCost,SellCost,hasPermission,Permission,isDiscounted,discount) " +
+                    MySQLCommand.CommandText = "INSERT INTO `" + pluginConfig.Database.DatabaseTable_Items + "` (ItemID,BuyCost,SellCost,hasPermission,Permission,isDiscounted,discount) " +
                         "VALUES (@ID,@BCOST,@SCOST,@HP,@P,@IDIS,@DIS);";
                     MySQLCommand.ExecuteNonQuery();
                     success = true;
@@ -153,7 +154,7 @@ namespace Tavstal.TShop
                 MySQLConnection.Open();
                 MySQLCommand.Parameters.AddWithValue("@ID", ID);
 
-                MySQLCommand.CommandText = "DELETE FROM `" + pluginConfig.databaseData.DatabaseTable_Items + "` WHERE itemID=@ID;";
+                MySQLCommand.CommandText = "DELETE FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
                 MySQLCommand.ExecuteNonQuery();
                 success = true;
 
@@ -176,7 +177,7 @@ namespace Tavstal.TShop
                 MySQLConnection.Open();
                 MySQLCommand.Parameters.AddWithValue("@ID", ID);
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Items + "` WHERE itemID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
                 object data = MySQLCommand.ExecuteScalar();
 
                 Asset a = Assets.find(EAssetType.ITEM, ID);
@@ -187,7 +188,7 @@ namespace Tavstal.TShop
                     MySQLCommand.Parameters.AddWithValue("@EP", enablepermission);
                     MySQLCommand.Parameters.AddWithValue("@P", permission ?? String.Empty);
 
-                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.databaseData.DatabaseTable_Items + "` SET buyCost=@BCOST,sellCost=@SCOST,haspermission=@EP,permission=@P WHERE itemID=@ID;";
+                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.Database.DatabaseTable_Items + "` SET buyCost=@BCOST,sellCost=@SCOST,haspermission=@EP,permission=@P WHERE itemID=@ID;";
                     MySQLCommand.ExecuteNonQuery();
                     success = true;
                 }
@@ -211,7 +212,7 @@ namespace Tavstal.TShop
                 MySQLConnection.Open();
                 MySQLCommand.Parameters.AddWithValue("@ID", ID);
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Items + "` WHERE itemID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
                 object data = MySQLCommand.ExecuteScalar();
 
                 Asset a = Assets.find(EAssetType.ITEM, ID);
@@ -220,7 +221,7 @@ namespace Tavstal.TShop
                     MySQLCommand.Parameters.AddWithValue("@DISCOUNTED", isdiscounted);
                     MySQLCommand.Parameters.AddWithValue("@PER", percent);
 
-                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.databaseData.DatabaseTable_Items + "` SET isDiscounted=@DISCOUNTED,discount=@PER WHERE itemID=@ID;";
+                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.Database.DatabaseTable_Items + "` SET isDiscounted=@DISCOUNTED,discount=@PER WHERE itemID=@ID;";
                     MySQLCommand.ExecuteNonQuery();
                     success = true;
                 }
@@ -242,7 +243,7 @@ namespace Tavstal.TShop
                 MySqlConnection MySQLConnection = CreateConnection();
                 MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
                 MySQLConnection.Open();
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Items + "`;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "`;";
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
 
                 while (Reader.Read())
@@ -273,7 +274,7 @@ namespace Tavstal.TShop
                 MySQLConnection.Open();
                 MySQLCommand.Parameters.AddWithValue("@ID", ItemId);
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Items + "` WHERE itemID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
 
                 if (Reader == null)
@@ -310,14 +311,14 @@ namespace Tavstal.TShop
                 MySQLConnection.Open();
                 MySQLCommand.Parameters.AddWithValue("@ID", ID);
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
                 object data = MySQLCommand.ExecuteScalar();
 
                 Asset a = Assets.find(EAssetType.ITEM, ID);
                 if (data == null)
                 {
 
-                    MySQLCommand.CommandText = "INSERT INTO `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` (vehicleID,BuyCost,SellCost,hasPermission,Permission,isDiscounted,discount) " +
+                    MySQLCommand.CommandText = "INSERT INTO `" + pluginConfig.Database.DatabaseTable_Vehicles + "` (vehicleID,BuyCost,SellCost,hasPermission,Permission,isDiscounted,discount) " +
                         "VALUES ('" + ID + "','" + buycost + "','" + sellcost + "','" + enableperm + "','" + permission + "','" + "False" + "','" + "0" + "');";
                     MySQLCommand.ExecuteNonQuery();
                     success = true;
@@ -342,13 +343,13 @@ namespace Tavstal.TShop
                 MySQLConnection.Open();
                 MySQLCommand.Parameters.AddWithValue("@ID", ID);
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
                 object data = MySQLCommand.ExecuteScalar();
 
                 Asset a = Assets.find(EAssetType.ITEM, ID);
                 if (data != null)
                 {
-                    MySQLCommand.CommandText = "DELETE FROM `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
+                    MySQLCommand.CommandText = "DELETE FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
                     MySQLCommand.ExecuteNonQuery();
                     success = true;
                 }
@@ -370,10 +371,10 @@ namespace Tavstal.TShop
                 MySqlConnection MySQLConnection = CreateConnection();
                 MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
                 MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@TABLE", pluginConfig.databaseData.DatabaseTable_Vehicles);
+                MySQLCommand.Parameters.AddWithValue("@TABLE", pluginConfig.Database.DatabaseTable_Vehicles);
                 MySQLCommand.Parameters.AddWithValue("@ID", ID);
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
                 object data = MySQLCommand.ExecuteScalar();
 
                 Asset a = Assets.find(EAssetType.ITEM, ID);
@@ -385,7 +386,7 @@ namespace Tavstal.TShop
                     MySQLCommand.Parameters.AddWithValue("@EP", enablepermission);
                     MySQLCommand.Parameters.AddWithValue("@P", permission);
 
-                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` SET buyCost=@BCOST,sellCost=@SCOST,haspermission=@EP,permission=@P WHERE vehicleID=@ID;";
+                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.Database.DatabaseTable_Vehicles + "` SET buyCost=@BCOST,sellCost=@SCOST,haspermission=@EP,permission=@P WHERE vehicleID=@ID;";
                     MySQLCommand.ExecuteNonQuery();
                     success = true;
                 }
@@ -409,7 +410,7 @@ namespace Tavstal.TShop
                 MySQLConnection.Open();
                 MySQLCommand.Parameters.AddWithValue("@ID", ID);
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
                 object data = MySQLCommand.ExecuteScalar();
 
                 Asset a = Assets.find(EAssetType.ITEM, ID);
@@ -418,7 +419,7 @@ namespace Tavstal.TShop
                     MySQLCommand.Parameters.AddWithValue("@DISCOUNTED", isdiscounted);
                     MySQLCommand.Parameters.AddWithValue("@PER", percent);
 
-                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` SET isDiscounted=@DISCOUNTED,discount=@PER WHERE vehicleID=@ID;";
+                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.Database.DatabaseTable_Vehicles + "` SET isDiscounted=@DISCOUNTED,discount=@PER WHERE vehicleID=@ID;";
                     MySQLCommand.ExecuteNonQuery();
                     success = true;
                 }
@@ -441,7 +442,7 @@ namespace Tavstal.TShop
                 MySqlConnection MySQLConnection = CreateConnection();
                 MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
                 MySQLConnection.Open();
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "`;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "`;";
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
 
                 while (Reader.Read())
@@ -472,7 +473,7 @@ namespace Tavstal.TShop
                 MySQLConnection.Open();
                 MySQLCommand.Parameters.AddWithValue("@ID", ItemId);
 
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.databaseData.DatabaseTable_Vehicles + "` vehicleID=@ID;";
+                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` vehicleID=@ID;";
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
 
                 if (Reader == null)
@@ -502,16 +503,16 @@ namespace Tavstal.TShop
             MySqlConnection mySqlConnection = null;
             try
             {
-                if (pluginConfig.databaseData.DatabasePort == 0)
+                if (pluginConfig.Database.DatabasePort == 0)
                 {
-                    pluginConfig.databaseData.DatabasePort = 3306;
+                    pluginConfig.Database.DatabasePort = 3306;
                 }
                 mySqlConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};", new object[] {
-                    pluginConfig.databaseData.DatabaseAddress,
-                    pluginConfig.databaseData.DatabaseName,
-                    pluginConfig.databaseData.DatabaseUser,
-                    pluginConfig.databaseData.DatabasePassword,
-                    pluginConfig.databaseData.DatabasePort
+                    pluginConfig.Database.DatabaseAddress,
+                    pluginConfig.Database.DatabaseName,
+                    pluginConfig.Database.DatabaseUser,
+                    pluginConfig.Database.DatabasePassword,
+                    pluginConfig.Database.DatabasePort
                 }));
             }
             catch (Exception exception)

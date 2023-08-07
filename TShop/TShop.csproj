@@ -109,6 +109,9 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="TLibrary">
+      <HintPath>..\Libraries\TLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\Libraries\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -120,6 +123,9 @@
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>..\Libraries\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>..\Libraries\YamlDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -137,22 +143,10 @@
     <Compile Include="Compability\Classes\DatabaseData.cs" />
     <Compile Include="Compability\Classes\ShopItem.cs" />
     <Compile Include="Compability\Classes\Product.cs" />
-    <Compile Include="Compability\Classes\Transaction.cs" />
-    <Compile Include="Compability\Enums\PaymentEnum.cs" />
-    <Compile Include="Compability\Enums\TransactionEnum.cs" />
-    <Compile Include="Compability\Enums\CurrencyEnum.cs" />
-    <Compile Include="Compability\Extensions\EnumExtensions.cs" />
-    <Compile Include="Compability\Extensions\ArrayExtensions.cs" />
-    <Compile Include="Compability\Extensions\StringExtensions.cs" />
     <Compile Include="Compability\Format\TextFormat.cs" />
     <Compile Include="Compability\Format\ConsoleFormat.cs" />
-    <Compile Include="Compability\Hooks\Hook.cs" />
-    <Compile Include="Compability\Hooks\HookManager.cs" />
     <Compile Include="Compability\Hooks\Hook_TEconomy.cs" />
     <Compile Include="Compability\Hooks\Hook_Uconomy.cs" />
-    <Compile Include="Compability\Hooks\Interfaces.cs" />
-    <Compile Include="Helpers\MathHelper.cs" />
-    <Compile Include="Helpers\FormatHelper.cs" />
     <Compile Include="Helpers\LoggerHelper.cs" />
     <Compile Include="Managers\Database.cs" />
     <Compile Include="Helpers\UnturnedHelper.cs" />

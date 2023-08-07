@@ -22,12 +22,18 @@ using PlayerGesture =  Rocket.Unturned.Events.UnturnedPlayerEvents.PlayerGesture
 using SDG.Framework.Utilities;
 using System.Reflection;
 using Tavstal.TShop.Helpers;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Helpers;
+using Tavstal.TLibrary.Managers;
+using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary;
 
 namespace Tavstal.TShop
 {
-    public class TShop : RocketPlugin<TShopConfiguration>
+    public class TShop : PluginBase<TShopConfiguration>
     {
-        public static TShop Instance { get; private set; }
+        public new static TShop Instance { get; private set; }
         public static DatabaseManager Database { get; private set; }
         internal HookManager hookManager { get; private set; }
         public static IEconomyProvider economyProvider { get; private set; }
@@ -109,7 +115,7 @@ namespace Tavstal.TShop
 
         private void Event_OnPlayerJoin(UnturnedPlayer player)
         {
-            EffectManager.sendUIEffect(Configuration.Instance.EffectID, (short)Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, true);
+            EffectManager.sendUIEffect(Config.EffectID, (short)Config.EffectID, player.SteamPlayer().transportConnection, true);
         }
 
         private void Event_OnInputFieldEdit(Player player, string button, string text)
@@ -121,7 +127,7 @@ namespace Tavstal.TShop
             {
                 int index = 6 * comp.cart_page + Convert.ToInt32(button.Replace("inputf_shop_cont_cart_item#", "").Replace("_amount", "")) - 1;
 
-                if (comp.products.isValidIndex(index))
+                if (comp.products.IsValidIndex(index))
                 {
                     comp.products[index].Amount = MathHelper.Clamp(Convert.ToInt32(text), 1, comp.products[index].isVehicle ? 1 : 100);
                     UIManager.UpdateTotalPay(uPlayer);
@@ -136,21 +142,21 @@ namespace Tavstal.TShop
 
             if (button.EqualsIgnoreCase("bt_shop_cart_payment#wallet"))
             {
-                comp.PaymentMethod = EUconomyMethod.CASH;
+                comp.PaymentMethod = EPaymentMethod.WALLET;
             }
             else if (button.EqualsIgnoreCase("bt_shop_cart_payment#bank"))
             {
-                comp.PaymentMethod = EUconomyMethod.BANK;
+                comp.PaymentMethod = EPaymentMethod.BANK;
             }
             else if (button.EqualsIgnoreCase("bt_shop_cart_payment#crypto"))
             {
-                comp.PaymentMethod = EUconomyMethod.CRYPTO;
+                comp.PaymentMethod = EPaymentMethod.CRYPTO;
             }
             else if (button.ContainsIgnoreCase("bt_shop_cont_cart_item#") && button.ContainsIgnoreCase("_remove"))
             {
                 int index = 6 * comp.cart_page + Convert.ToInt32(button.Replace("bt_shop_cont_cart_item#", "").Replace("_remove", "")) - 1;
 
-                if (comp.products.isValidIndex(index))
+                if (comp.products.IsValidIndex(index))
                 {
                     comp.products.RemoveAt(index);
                     UIManager.UpdatePaymentPage(uPlayer);
@@ -312,7 +318,7 @@ namespace Tavstal.TShop
             else if (button.EqualsIgnoreCase("bt_shop_menu#logout"))
             {
                 player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, false);
-                EffectManager.sendUIEffectVisibility((short)Configuration.Instance.EffectID, uPlayer.SteamPlayer().transportConnection, true, "Panel_Shop", false);
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, uPlayer.SteamPlayer().transportConnection, true, "Panel_Shop", false);
             }
             else if (button.EqualsIgnoreCase("bt_shop_menu#items"))
             {
@@ -332,7 +338,7 @@ namespace Tavstal.TShop
                 int index = 8 * comp.cart_page + Convert.ToInt32(button.Replace("bt_shop_item#", "").Replace("_addcart", "")) - 1;
                 List<ShopItem> items = Database.GetItems().FindAll(x => !comp.products.Any(y => y.Id == x.Id && !y.isVehicle));
 
-                if (items.isValidIndex(index))
+                if (items.IsValidIndex(index))
                 {
                     comp.products.Add(new Product(items[index].Id, 1, false));
                     UIManager.UpdateItemsPage(uPlayer);
@@ -343,7 +349,7 @@ namespace Tavstal.TShop
                 int index = 8 * comp.vehicle_page + Convert.ToInt32(button.Replace("bt_shop_vehicles#", "").Replace("_addcart", "")) - 1;
                 List<ShopItem> items = Database.GetVehicles().FindAll(x => !comp.products.Any(y => y.Id == x.Id && y.isVehicle));
 
-                if (items.isValidIndex(index))
+                if (items.IsValidIndex(index))
                 {
                     comp.products.Add(new Product(items[index].Id, 1, true));
                     UIManager.UpdateVehiclessPage(uPlayer);
@@ -353,7 +359,7 @@ namespace Tavstal.TShop
 
         private void Update()
         {
-            if (_nextUpdate > DateTime.Now || !Configuration.Instance.EnableDiscounts)
+            if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
                 return;
 
             List<ShopItem> items = Database.GetItems();
@@ -370,34 +376,19 @@ namespace Tavstal.TShop
             if (items.Count > 2)
                 vehs.Shuffle();
 
-            for (int i = 0; i < Configuration.Instance.ItemCountToDiscount; i++)
+            for (int i = 0; i < Config.ItemCountToDiscount; i++)
             {
-                if (items.isValidIndex(i))
-                    Database.UpdateItem(items[i].Id, true, Math.Round((decimal)MathHelper.Next(Configuration.Instance.minDiscountInPercent, Configuration.Instance.maxDiscountInPercent), 2));
+                if (items.IsValidIndex(i))
+                    Database.UpdateItem(items[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscountInPercent, Config.maxDiscountInPercent), 2));
             }
 
-            for (int i = 0; i < Configuration.Instance.VehicleCountToDiscount; i++)
+            for (int i = 0; i < Config.VehicleCountToDiscount; i++)
             {
-                if (vehs.isValidIndex(i))
-                    Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)MathHelper.Next(Configuration.Instance.minDiscountInPercent, Configuration.Instance.maxDiscountInPercent), 2));
+                if (vehs.IsValidIndex(i))
+                    Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscountInPercent, Config.maxDiscountInPercent), 2));
             }
 
-            _nextUpdate = DateTime.Now.AddSeconds(Configuration.Instance.DiscountInterval);
-        }
-
-        [Obsolete]
-        public new string Translate(string translationKey, params object[] placeholder)
-        {
-            Logger.LogWarning($"OLD TRANSLATION METHOD WAS USED FOR '{translationKey}'");
-            return Translations.Instance.Translate(translationKey, placeholder);
-        }
-
-        public string Translate(bool AddPrefix, string translationKey, params object[] placeholder)
-        {
-            if (AddPrefix)
-                return Translations.Instance.Translate("prefix") + Translations.Instance.Translate(translationKey, placeholder);
-            else
-                return Translations.Instance.Translate(translationKey, placeholder);
+            _nextUpdate = DateTime.Now.AddSeconds(Config.DiscountInterval);
         }
 
         public override TranslationList DefaultTranslations =>

@@ -6,12 +6,14 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop.Helpers
 {
     internal static class LoggerHelper
     {
         private static string Name = Assembly.GetExecutingAssembly().GetName().Name;
+        private static bool IsDebug = false;
 
         public static void LogRich(object message, string prefix = "&a[INFO] >&f")
         {
@@ -53,6 +55,12 @@ namespace Tavstal.TShop.Helpers
             LogRich(message, prefix);
         }
 
+        public static void LogRichDebug(object message, string prefix = "&d[DEBUG] >&f")
+        {
+            if (IsDebug)
+                LogRich(message, prefix);
+        }
+
         public static void Log(object message, ConsoleColor color = ConsoleColor.Green, string prefix = "[INFO] >")
         {
 
@@ -71,7 +79,7 @@ namespace Tavstal.TShop.Helpers
             }
             catch
             {
-                Rocket.Core.Logging.Logger.Log(text);
+                Rocket.Core.Logging.Logger.Log(text.Replace($"[{Name}] ", ""), color);
             }
         }
 
@@ -88,6 +96,12 @@ namespace Tavstal.TShop.Helpers
         public static void LogError(object message, ConsoleColor color = ConsoleColor.Red, string prefix = "[ERROR] >")
         {
             Log(message, color, prefix);
+        }
+
+        public static void LogDebug(object message, ConsoleColor color = ConsoleColor.Magenta, string prefix = "[DEBUG] >")
+        {
+            if (IsDebug)
+                Log(message, color, prefix);
         }
 
         public static void LogLateInit()

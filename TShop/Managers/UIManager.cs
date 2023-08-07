@@ -18,6 +18,8 @@ using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
 using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using Tavstal.TShop.Compability.Hooks;
+using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Extensions;
 
 namespace Tavstal.TShop.Managers
 {
@@ -34,7 +36,7 @@ namespace Tavstal.TShop.Managers
                 {
                     int nameindex = i + 1;
                     int index = i + comp.item_page * 8;
-                    if (products.isValidIndex(index))
+                    if (products.IsValidIndex(index))
                     {
                         ShopItem item = products[index];
                         ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, item.Id);
@@ -47,35 +49,35 @@ namespace Tavstal.TShop.Managers
 
                         if (asset.size_x == asset.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:1", UnturnedHelper.GetItemIcon(asset.id));
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:1", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_2:1", false);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:2", false);
+                            EffectManager.sendUIEffectImageURL((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:1", UnturnedHelper.GetItemIcon(asset.id));
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:1", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_2:1", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:2", false);
                         }
                         else if (asset.size_x > asset.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_2:1", UnturnedHelper.GetItemIcon(asset.id));
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:1", false);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_2:1", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:2", false);
+                            EffectManager.sendUIEffectImageURL((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_2:1", UnturnedHelper.GetItemIcon(asset.id));
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:1", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_2:1", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:2", false);
                         }
                         else
                         {
-                            EffectManager.sendUIEffectImageURL((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:2", UnturnedHelper.GetItemIcon(asset.id));
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:1", false);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_2:1", false);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:2", true);
+                            EffectManager.sendUIEffectImageURL((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:2", UnturnedHelper.GetItemIcon(asset.id));
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:1", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_2:1", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_item#" + nameindex + "_1:2", true);
                         }
 
-                        EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_item#" + nameindex + "_name", asset.itemName);
-                        EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_item#" + nameindex + "_cost", item != null ? item.GetBuyCostFormatted() : "ShopItem not found");
-                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "shop_item#" + nameindex, true);
+                        EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_item#" + nameindex + "_name", asset.itemName);
+                        EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_item#" + nameindex + "_cost", item != null ? item.GetBuyCostFormatted() : "ShopItem not found");
+                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "shop_item#" + nameindex, true);
                     }
                     else
-                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "shop_item#" + nameindex, false);
+                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "shop_item#" + nameindex, false);
                 }
 
-                EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_items_page", (comp.item_page + 1) + "/" + (products.Count / 8 + 1));
+                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_items_page", (comp.item_page + 1) + "/" + (products.Count / 8 + 1));
             }
             catch (Exception ex)
             {
@@ -95,7 +97,7 @@ namespace Tavstal.TShop.Managers
                 {
                     int nameindex = i + 1;
                     int index = i + comp.vehicle_page * 8;
-                    if (products.isValidIndex(index))
+                    if (products.IsValidIndex(index))
                     {
                         ShopItem item = products[index];
                         VehicleAsset asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, item.Id);
@@ -106,17 +108,17 @@ namespace Tavstal.TShop.Managers
                             continue;
                         }
 
-                        EffectManager.sendUIEffectImageURL((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_vehicles#" + nameindex + "_1:1", "");
+                        EffectManager.sendUIEffectImageURL((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_vehicles#" + nameindex + "_1:1", "");
 
-                        EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_vehicles#" + nameindex + "_name", asset.vehicleName);
-                        EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_vehicles#" + nameindex + "_cost", item != null ? item.GetBuyCostFormatted() : "ShopItem not found");
-                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "shop_vehicles#" + nameindex, true);
+                        EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_vehicles#" + nameindex + "_name", asset.vehicleName);
+                        EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_vehicles#" + nameindex + "_cost", item != null ? item.GetBuyCostFormatted() : "ShopItem not found");
+                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "shop_vehicles#" + nameindex, true);
                     }
                     else
-                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "shop_vehicles#" + nameindex, false);
+                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "shop_vehicles#" + nameindex, false);
                 }
 
-                EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_vehicles_page", (comp.item_page + 1) + "/" + (products.Count / 8 + 1));
+                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_vehicles_page", (comp.item_page + 1) + "/" + (products.Count / 8 + 1));
             }
             catch (Exception ex)
             {
@@ -138,7 +140,7 @@ namespace Tavstal.TShop.Managers
                 {
                     int nameindex = i + 1;
                     int index = i + comp.cart_page * 6;
-                    if (comp.products.isValidIndex(index))
+                    if (comp.products.IsValidIndex(index))
                     {
                         Product item = comp.products.ElementAt(index);
                         if (item.isVehicle)
@@ -152,16 +154,16 @@ namespace Tavstal.TShop.Managers
                             }
                             ShopItem sitem = vehs.Find(x => x.Id == item.Id);
 
-                            EffectManager.sendUIEffectImageURL((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", "");
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", false);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", false);
+                            EffectManager.sendUIEffectImageURL((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", "");
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", false);
 
 
-                            EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "inputf_shop_cont_cart_item#" + nameindex + "_amount", item.Amount.ToString());
-                            EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_item#" + nameindex + "_name", asset.vehicleName);
-                            EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_item#" + nameindex + "_cost", sitem != null ? sitem.GetBuyCostFormatted(item.Amount) : "ShopItem not found");
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "shop_cont_cart_item#" + nameindex, true);
+                            EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "inputf_shop_cont_cart_item#" + nameindex + "_amount", item.Amount.ToString());
+                            EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_item#" + nameindex + "_name", asset.vehicleName);
+                            EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_item#" + nameindex + "_cost", sitem != null ? sitem.GetBuyCostFormatted(item.Amount) : "ShopItem not found");
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "shop_cont_cart_item#" + nameindex, true);
                         }
                         else
                         {
@@ -176,37 +178,37 @@ namespace Tavstal.TShop.Managers
 
                             if (asset.size_x == asset.size_y)
                             {
-                                EffectManager.sendUIEffectImageURL((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", UnturnedHelper.GetItemIcon(asset.id));
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", true);
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", false);
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", false);
+                                EffectManager.sendUIEffectImageURL((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", UnturnedHelper.GetItemIcon(asset.id));
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", true);
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", false);
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", false);
                             }
                             else if (asset.size_x > asset.size_y)
                             {
-                                EffectManager.sendUIEffectImageURL((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", UnturnedHelper.GetItemIcon(asset.id));
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", false);
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", false);
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", true);
+                                EffectManager.sendUIEffectImageURL((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", UnturnedHelper.GetItemIcon(asset.id));
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", false);
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", false);
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", true);
                             }
                             else
                             {
-                                EffectManager.sendUIEffectImageURL((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", UnturnedHelper.GetItemIcon(asset.id));
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", false);
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", true);
-                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", false);
+                                EffectManager.sendUIEffectImageURL((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", UnturnedHelper.GetItemIcon(asset.id));
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:1", false);
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_1:2", true);
+                                EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "img_shop_cont_cart_item#" + nameindex + "_2:1", false);
                             }
 
-                            EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "inputf_shop_cont_cart_item#" + nameindex + "_amount", item.Amount.ToString());
-                            EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_item#" + nameindex + "_name", asset.itemName);
-                            EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_item#" + nameindex + "_cost", sitem != null ? sitem.GetBuyCostFormatted(item.Amount) : "ShopItem not found");
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "shop_cont_cart_item#" + nameindex, true);
+                            EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "inputf_shop_cont_cart_item#" + nameindex + "_amount", item.Amount.ToString());
+                            EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_item#" + nameindex + "_name", asset.itemName);
+                            EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_item#" + nameindex + "_cost", sitem != null ? sitem.GetBuyCostFormatted(item.Amount) : "ShopItem not found");
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "shop_cont_cart_item#" + nameindex, true);
                         }
                     }
                     else
-                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "shop_cont_cart_item#" + nameindex, false);
+                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "shop_cont_cart_item#" + nameindex, false);
                 }
 
-                EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_page", (comp.item_page + 1) + "/" + (comp.products.Count / 6 + 1));
+                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cont_cart_page", (comp.item_page + 1) + "/" + (comp.products.Count / 6 + 1));
             }
             catch (Exception ex)
             {
@@ -231,8 +233,8 @@ namespace Tavstal.TShop.Managers
                     sellCost += p.isVehicle ? 0 : items.Find(x => x.Id == p.Id).GetSellCost(p.Amount);
                 }
 
-                EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cart_payment_total", TShop.Instance.Translate(true, "ui_total_buy", buyCost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
-                EffectManager.sendUIEffectText((short)TShop.Instance.Configuration.Instance.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cart_payment_total_sell", TShop.Instance.Translate(true, "ui_total_sell", sellCost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
+                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cart_payment_total", TShop.Instance.Translate(true, "ui_total_buy", buyCost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
+                EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, player.SteamPlayer().transportConnection, false, "tb_shop_cart_payment_total_sell", TShop.Instance.Translate(true, "ui_total_sell", sellCost, TShop.economyProvider.GetConfigValue("MoneySymbol")));
             }
             catch (Exception ex)
             {

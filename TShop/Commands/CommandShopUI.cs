@@ -26,7 +26,7 @@ namespace Tavstal.TShop
             TShopComponent cp = p.GetComponent<TShopComponent>();
 
             p.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, true);
-            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Configuration.Instance.EffectID, p.SteamPlayer().transportConnection, true, "Panel_Shop", true);
+            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, p.SteamPlayer().transportConnection, true, "Panel_Shop", true);
             UIManager.UpdateItemsPage(p);
             UIManager.UpdateVehiclessPage(p);
         }

@@ -30,6 +30,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Compatibility.Database;
+using Tavstal.TLibrary.Compatibility;
 #endregion
 
 namespace Tavstal.TShop.Compability.Hooks
@@ -56,12 +60,19 @@ namespace Tavstal.TShop.Compability.Hooks
         private MethodInfo _increaseCryptoBalanceMethod;
         private MethodInfo _increaseBankBalanceMethod;
         private MethodInfo _addTransactionMethod;
+        private MethodInfo _getPlayerTransactionMethod;
+        private MethodInfo _getBankCard;
+        private MethodInfo _addBankCard;
+        private MethodInfo _updateBankCard;
+        private MethodInfo _removeBankCard;
+        private MethodInfo _generateCardId;
         private MethodInfo _getTranslation;
         private object _databaseInstance;
         private object _pluginInstance;
         private object teconomyConfig;
+        private Type helperType;
 
-        public TEconomyHook() : base("teconomy_tphone") { }
+        public TEconomyHook() : base("teconomy_tshop", false) { }
 
         public override void OnLoad()
         {
@@ -106,14 +117,8 @@ namespace Tavstal.TShop.Compability.Hooks
                 _addTransactionMethod = _databaseInstance.GetType().GetMethod(
                     "AddPlayerTransaction", new[] { typeof(CSteamID), typeof(string) });
 
-                _getTranslation = _pluginInstance.GetType().GetMethod("Translate", new[] { typeof(string), typeof(object[]) });
+                _getTranslation = _pluginInstance.GetType().GetMethod("Localize", new[] { typeof(bool), typeof(string), typeof(object[]) });
 
-                //var ucPlugin = _pluginInstance.GetType().GetProperty("uconomyPlugin", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_pluginInstance);
-                //var ucType = ucPlugin.GetType().Assembly.GetType("fr34kyn01535.Uconomy.Uconomy");
-                //var ucInstance = ucType.GetField("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(ucPlugin);
-
-                //Logger.LogException("Currency Name >> " + GetCurrencyName());
-                //Logger.LogException("Initial Balance >> " + GetConfigValue("InitialBalance").ToString());
                 Logger.Log("TEconomy hook loaded.");
             }
             catch (Exception e)
@@ -129,7 +134,207 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             return R.Plugins.GetPlugins().Any(c => c.Name.EqualsIgnoreCase("teconomy"));
         }
-        
+
+        public bool HasBuiltInTransactionSystem() { return true; }
+
+        public bool HasBuiltInBankCardSystem() { return true; }
+
+        public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        {
+            return Withdraw(player.CSteamID, amount, method);
+        }
+
+        public decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        {
+            return Deposit(player.CSteamID, amount, method);
+        }
+
+        public decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.BANK)
+        {
+            return GetBalance(player.CSteamID, method);
+        }
+
+        public bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        {
+            return Has(player.CSteamID, amount, method);
+        }
+
+        public void AddTransaction(UnturnedPlayer player, Transaction transaction)
+        {
+            AddTransaction(player.CSteamID, transaction);
+        }
+
+        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        {
+            switch (method)
+            {
+                case EPaymentMethod.BANK:
+                    {
+                        return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player, -amount });
+                    }
+                case EPaymentMethod.CRYPTO:
+                    {
+                        return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player, -amount });
+                    }
+                case EPaymentMethod.WALLET:
+                    {
+                        return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player, -amount });
+                    }
+                default:
+                    {
+                        return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player.m_SteamID.ToString(), -amount });
+                    }
+            }
+        }
+
+        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        {
+            switch (method)
+            {
+                case EPaymentMethod.BANK:
+                    {
+                        return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player, amount });
+                    }
+                case EPaymentMethod.CRYPTO:
+                    {
+                        return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player, amount });
+                    }
+                case EPaymentMethod.WALLET:
+                    {
+                        return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player, amount });
+                    }
+                default:
+                    {
+                        return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player.m_SteamID.ToString(), amount });
+                    }
+            }
+        }
+
+        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK)
+        {
+            switch (method)
+            {
+                case EPaymentMethod.BANK:
+                    {
+                        return (decimal)_getBankBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player});
+                    }
+                case EPaymentMethod.CRYPTO:
+                    {
+                        return (decimal)_getCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player});
+                    }
+                case EPaymentMethod.WALLET:
+                    {
+                        return (decimal)_getCashBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player});
+                    }
+                default:
+                    {
+                        return (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
+                            player.m_SteamID.ToString()});
+                    }
+            }
+        }
+
+        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        {
+            return (GetBalance(player, method) - amount) >= 0;
+        }
+
+        public void AddTransaction(CSteamID player, Transaction transaction)
+        {
+            _addTransactionMethod.Invoke(_databaseInstance, new object[] { player, JObject.FromObject(transaction).ToString(Formatting.None) });
+        }
+
+        public List<Transaction> GetTransactions(UnturnedPlayer player)
+        {
+            try
+            {
+                var result = _getPlayerTransactionMethod.Invoke(_databaseInstance, new object[] { player.CSteamID });
+
+                if (result == null)
+                    return new List<Transaction>();
+
+                return JsonConvert.DeserializeObject<List<Transaction>>(JObject.FromObject(result)["Transactions"].ToString(Formatting.None));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Error in GetTransactions(): " + ex);
+                return new List<Transaction>();
+            }
+        }
+
+        public void AddPlayerCard(CSteamID steamID, BankCard newCard)
+        {
+            newCard.CardID = Convert.ToString(_generateCardId.Invoke(helperType, null));
+            _addBankCard.Invoke(_databaseInstance, new object[] { steamID, JObject.FromObject(newCard).ToString(Formatting.None) });
+        }
+
+        public void UpdatePlayerCard(CSteamID steamID, string id, BankCardDetails newData)
+        {
+            _updateBankCard.Invoke(_databaseInstance, new object[] { steamID, id, JObject.FromObject(newData).ToString(Formatting.None) });
+        }
+
+        public void RemovePlayerCard(CSteamID steamID, int index, bool isReversed = false)
+        {
+            _removeBankCard.Invoke(_databaseInstance, new object[] { steamID, index, isReversed });
+        }
+
+        public List<BankCard> GetPlayerCards(CSteamID steamID)
+        {
+            JObject account = GetPlayerAccount(steamID);
+            return JsonConvert.DeserializeObject<List<BankCard>>(account["bankCards"].ToString(Formatting.None));
+        }
+
+        public BankCard GetPlayerCard(CSteamID steamID, int index)
+        {
+            var cards = GetPlayerCards(steamID);
+            if (cards.IsValidIndex(index))
+                return cards[index];
+            else
+                return null;
+        }
+
+        public BankCard GetPlayerCard(CSteamID steamID, string id)
+        {
+            return GetPlayerCards(steamID).Find(x => x.CardID == id);
+        }
+
+        private JObject GetPlayerAccount(CSteamID steamID)
+        {
+            var result = _getPlayerTransactionMethod.Invoke(_databaseInstance, new object[] { steamID });
+            return JObject.FromObject(result);
+        }
+
+        public T GetConfigValue<T>(string VariableName)
+        {
+            try
+            {
+                return (T)Convert.ChangeType(teconomyConfig.GetType().GetField(VariableName).GetValue(teconomyConfig), typeof(T));
+            }
+            catch
+            {
+                try
+                {
+                    return (T)Convert.ChangeType(teconomyConfig.GetType().GetProperty(VariableName).GetValue(teconomyConfig), typeof(T));
+                }
+                catch
+                {
+                    Logger.LogError($"Failed to get '{VariableName}' variable!");
+                    return default;
+                }
+            }
+        }
+
         public object GetConfigValue(string VariableName)
         {
             object local = new object();
@@ -148,125 +353,27 @@ namespace Tavstal.TShop.Compability.Hooks
             return local;
         }
 
-        public decimal Withdraw(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
+        public JObject GetConfig()
         {
-            return Withdraw(player.CSteamID, amount, method);
-        }
-
-        public decimal Deposit(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
-        {
-            return Deposit(player.CSteamID, amount, method);
-        }
-
-        public decimal GetBalance(UnturnedPlayer player, EUconomyMethod method = EUconomyMethod.BANK)
-        {
-            return GetBalance(player.CSteamID, method);
-        }
-
-        public bool Has(UnturnedPlayer player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
-        {
-            return (GetBalance(player) - amount) >= 0;
-        }
-
-        public void AddTransaction(UnturnedPlayer player, Transaction transaction)
-        {
-            AddTransaction(player.CSteamID, transaction);
-        }
-
-        public decimal Withdraw(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
-        {
-            switch (method)
+            try
             {
-                case EUconomyMethod.BANK:
-                    {
-                        return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, -amount });
-                    }
-                case EUconomyMethod.CRYPTO:
-                    {
-                        return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, -amount });
-                    }
-                case EUconomyMethod.CASH:
-                    {
-                        return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, -amount });
-                    }
-                default:
-                    {
-                        return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player.m_SteamID.ToString(), -amount });
-                    }
+                return JObject.FromObject(teconomyConfig.GetType());
+            }
+            catch
+            {
+                Logger.LogError($"Failed to get config jobj.");
+                return null;
             }
         }
 
-        public decimal Deposit(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
+        public string Localize(bool addPrefix, string translationKey, params object[] placeholder)
         {
-            switch (method)
-            {
-                case EUconomyMethod.BANK:
-                    {
-                        return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, amount });
-                    }
-                case EUconomyMethod.CRYPTO:
-                    {
-                        return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, amount });
-                    }
-                case EUconomyMethod.CASH:
-                    {
-                        return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, amount });
-                    }
-                default:
-                    {
-                        return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player.m_SteamID.ToString(), amount });
-                    }
-            }
+            return ((string)_getTranslation.Invoke(_pluginInstance, new object[] { addPrefix, translationKey, placeholder }));
         }
 
-        public decimal GetBalance(CSteamID player, EUconomyMethod method = EUconomyMethod.BANK)
+        public string Localize(string translationKey, params object[] placeholder)
         {
-            switch (method)
-            {
-                case EUconomyMethod.BANK:
-                    {
-                        return (decimal)_getBankBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player});
-                    }
-                case EUconomyMethod.CRYPTO:
-                    {
-                        return (decimal)_getCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player});
-                    }
-                case EUconomyMethod.CASH:
-                    {
-                        return (decimal)_getCashBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player});
-                    }
-                default:
-                    {
-                        return (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player.m_SteamID.ToString()});
-                    }
-            }
-        }
-
-        public bool Has(CSteamID player, decimal amount, EUconomyMethod method = EUconomyMethod.BANK)
-        {
-            return (GetBalance(player, method) - amount) >= 0;
-        }
-
-        public void AddTransaction(CSteamID player, Transaction transaction)
-        {
-            _addTransactionMethod.Invoke(_databaseInstance, new object[] { player, JObject.FromObject(transaction).ToString(Formatting.None) });
-        }
-
-        public string Translate(string translationKey, params object[] placeholder)
-        {
-            return ((string)_getTranslation.Invoke(_pluginInstance, new object[] { translationKey, placeholder })).Replace("((", "<").Replace("))", ">");
+            return Localize(false, translationKey, placeholder);
         }
     }
 }

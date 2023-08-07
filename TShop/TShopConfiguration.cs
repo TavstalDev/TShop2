@@ -1,29 +1,48 @@
 ﻿using System.Collections.Generic;
 using Rocket.API;
+using Tavstal.TLibrary.Compatibility;
 using Tavstal.TShop.Compability;
+using YamlDotNet.Serialization;
 
 namespace Tavstal.TShop
 {
-    public class TShopConfiguration : IRocketPluginConfiguration
+    public class TShopConfiguration : ConfigurationBase
     {
-        public DatabaseData databaseData;
+        [YamlMember(Order = 3)]
+        public DatabaseData Database;
+        [YamlMember(Order = 4)]
         public bool UsingQuality;
+        [YamlMember(Order = 5)]
         public bool ExpMode;
+        [YamlMember(Order = 6)]
         public bool EnableDiscounts;
+        [YamlMember(Order = 7)]
         public float minDiscountInPercent;
+        [YamlMember(Order = 8)]
         public float maxDiscountInPercent;
+        [YamlMember(Order = 9)]
         public int ItemCountToDiscount;
+        [YamlMember(Order = 10)]
         public int VehicleCountToDiscount;
+        [YamlMember(Order = 11)]
         public int DiscountInterval;
+        [YamlMember(Order = 12)]
         public string DefaultProductIconUrl;
+        [YamlMember(Order = 13)]
         public List<GithubFolders> GithubItemFolders = new List<GithubFolders>();
+        [YamlMember(Order = 14)]
         public List<GithubFolders> GithubVehicleFolders = new List<GithubFolders>();
+        [YamlIgnore]
         public readonly string MessageIcon = "";
+        [YamlIgnore]
         public readonly ushort EffectID = 8818;
 
-        public void LoadDefaults()
+        public override void LoadDefaults()
         {
-            databaseData = new DatabaseData("127.0.0.1", 3306, "root", "ascent", "unturned", "tshop_items", "tshop_vehicles");
+            base.LoadDefaults();
+            Database = new DatabaseData();
+            Database.DatabaseTable_Items = "tshop_items";
+            Database.DatabaseTable_Vehicles = "tshop_vehicles";
             UsingQuality = true;
             ExpMode = false;
             EnableDiscounts = true;

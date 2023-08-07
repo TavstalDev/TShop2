@@ -32,15 +32,17 @@ using Tavstal.TShop.Compability;
 using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using static SDG.Unturned.ItemCurrencyAsset;
 using Tavstal.TShop.Helpers;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop.Managers
 {
     public class UnturnedHelper
     {
         private static TShop pluginMain => TShop.Instance;
-        private static TShopConfiguration pluginConfig => TShop.Instance.Configuration.Instance;
+        private static TShopConfiguration pluginConfig => TShop.Instance.Config;
 
-        private static string Translate(bool addPrefix, string key, params object[] args) => TShop.Instance.Translate(addPrefix, key, args);
+        private static string Translate(bool addPrefix, string key, params object[] args) => TShop.Instance(addPrefix, key, args);
 
         public static void ServerSendChatMessage(string text, string icon = null, SteamPlayer fromPlayer = null, SteamPlayer toPlayer = null, EChatMode mode = EChatMode.GLOBAL)
         => ChatManager.serverSendMessage(text, Color.white, fromPlayer, toPlayer, mode, icon, true);
@@ -70,70 +72,6 @@ namespace Tavstal.TShop.Managers
         {
             string icon = "";
             ServerSendChatMessage(text, icon, null, toPlayer, EChatMode.GLOBAL);
-        }
-
-        public static List<ItemAsset> GetItemAssets()
-        {
-            Asset[] assets = null;
-            List<ItemAsset> values = new List<ItemAsset>();
-
-            assets = Assets.find(EAssetType.ITEM);
-
-            foreach (Asset a in assets)
-            {
-                values.Add((ItemAsset)a);
-            }
-            return values;
-        }
-
-        public static List<VehicleAsset> GetVehicleAssets()
-        {
-            Asset[] assets = null;
-            List<VehicleAsset> values = new List<VehicleAsset>();
-
-            assets = Assets.find(EAssetType.VEHICLE);
-
-            foreach (Asset a in assets)
-            {
-                values.Add((VehicleAsset)a);
-            }
-            return values;
-        }
-
-        public static ItemAsset FindItemAsset(string name)
-        {
-            ItemAsset asset = null;
-            foreach (ItemAsset a in GetItemAssets())
-            {
-                if (a.itemName != null && a.itemName.Length > 0)
-                {
-                    if (a.itemName.ContainsIgnoreCase(name))
-                    {
-                        asset = a;
-                        break;
-                    }
-                }
-            }
-
-            return asset;
-        }
-
-        public static VehicleAsset FindVehicleAsset(string name)
-        {
-            VehicleAsset asset = null;
-            foreach (VehicleAsset a in GetVehicleAssets())
-            {
-                if (a.vehicleName != null && a.vehicleName.Length > 0)
-                {
-                    if (a.vehicleName.ContainsIgnoreCase(name))
-                    {
-                        asset = a;
-                        break;
-                    }
-                }
-            }
-
-            return asset;
         }
 
         public static string GetItemIcon(ushort id)
