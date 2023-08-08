@@ -10,15 +10,15 @@ namespace Tavstal.TShop.Compability
     [Serializable]
     public class ShopItem
     {
-        [SqlMember(isPrimaryKey: true, shouldAutoIncrement: true)]
+        [SqlMember(isPrimaryKey: true, isUnsigned: true)]
         public ushort Id { get; set; }
-        [SqlMember]
+        [SqlMember(columnType: "decimal(11, 1)")]
         public decimal BuyCost { get; set; }
-        [SqlMember]
+        [SqlMember(columnType: "decimal(11, 1)")]
         public decimal SellCost { get; set; }
         [SqlMember]
         public bool hasPermission { get; set; }
-        [SqlMember(isNullable: true)]
+        [SqlMember(columnType: "varchar(255)", isNullable: true)]
         public string Permission { get; set; }
         [SqlMember]
         public bool isDiscounted { get; set; }

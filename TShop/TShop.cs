@@ -35,7 +35,6 @@ namespace Tavstal.TShop
     {
         public new static TShop Instance { get; private set; }
         public static DatabaseManager Database { get; private set; }
-        internal HookManager hookManager { get; private set; }
         public static IEconomyProvider economyProvider { get; private set; }
         internal DateTime _nextUpdate { get; set; }
 
@@ -66,10 +65,14 @@ namespace Tavstal.TShop
                 EffectManager.onEffectTextCommitted += Event_OnInputFieldEdit;
                 EffectManager.onEffectButtonClicked += Event_OnButtonClick;
                 U.Events.OnPlayerConnected += Event_OnPlayerJoin;
+               
                 if (!Level.isLoaded || Level.isLoading)
                     Level.onPostLevelLoaded += Event_OnPluginsLoaded;
                 else
                     Event_OnPluginsLoaded(0);
+
+                if (MySqlExtensions.IsConnectionAuthFailed)
+                    return;
 
                 Logger.Log("# TShop has been loaded.");
                 Logger.Log("# Starting late initialization...");
@@ -92,22 +95,29 @@ namespace Tavstal.TShop
 
         private void Event_OnPluginsLoaded(int i)
         {
+            if (MySqlExtensions.IsConnectionAuthFailed)
+            {
+                Logger.LogWarning($"# Unloading {PluginName} due to database authentication error.");
+                UnloadPlugin();
+                return;
+            }
+
             Logger.LogLateInit();
             Logger.LogWarning("# Searching for economy plugin...");
-            hookManager = new HookManager();
-            hookManager.LoadAll();
+            HookManager = new HookManager();
+            HookManager.LoadAll(Assembly);
 
-            if (hookManager.IsHookLoadable<TEconomyHook>())
-                economyProvider = hookManager.GetHook<TEconomyHook>();
+            if (HookManager.IsHookLoadable<TEconomyHook>())
+                economyProvider = HookManager.GetHook<TEconomyHook>();
             else
             {
-                if (!hookManager.IsHookLoadable<UconomyHook>())
+                if (!HookManager.IsHookLoadable<UconomyHook>())
                 {
                     Logger.LogError("# Failed to load economy hook. Unloading TShop...");
                     this?.UnloadPlugin();
                     return;
                 }
-                economyProvider = hookManager.GetHook<UconomyHook>();
+                economyProvider = HookManager.GetHook<UconomyHook>();
             }
         }
 
@@ -357,7 +367,7 @@ namespace Tavstal.TShop
 
         private void Update()
         {
-            if (this.State != PluginState.Loaded)
+            if (MySqlExtensions.IsConnectionAuthFailed)
                 return;
 
             if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)

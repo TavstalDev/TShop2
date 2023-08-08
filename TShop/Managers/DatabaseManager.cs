@@ -18,6 +18,7 @@ using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Helpers;
 using Tavstal.TLibrary.Compatibility.Database;
 using Tavstal.TLibrary.Extensions;
+using Rocket.Core.Logging;
 
 namespace Tavstal.TShop
 {
@@ -33,23 +34,19 @@ namespace Tavstal.TShop
         {
             try
             {
-                Logger.LogWarning("1");
                 using (var connection = CreateConnection())
                 {
                     connection.OpenSafe();
                     if (connection.State != System.Data.ConnectionState.Open)
                     {
-                        throw new Exception("Failed to connect to the database. Please check the config file.");
+                        throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
                     }
-                    else
-                        Logger.LogWarning(connection.State.ToString());
                 }
-                Logger.LogWarning("2");
 
                 MySqlConnection MySQLConnection = CreateConnection();
                 if (MySQLConnection == null)
                 {
-                    throw new Exception("Failed to connect to the database. Please check the config file.");
+                    throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
                 }
 
                 //Item Shop

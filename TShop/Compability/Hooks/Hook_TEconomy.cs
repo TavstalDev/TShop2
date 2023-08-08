@@ -135,6 +135,7 @@ namespace Tavstal.TShop.Compability.Hooks
             return R.Plugins.GetPlugins().Any(c => c.Name.EqualsIgnoreCase("teconomy"));
         }
 
+
         public bool HasBuiltInTransactionSystem() { return true; }
 
         public bool HasBuiltInBankCardSystem() { return true; }
