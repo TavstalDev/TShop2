@@ -15,6 +15,9 @@ using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using static SDG.Provider.SteamGetInventoryResponse;
 using Tavstal.TLibrary.Managers;
 using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Helpers;
+using Tavstal.TLibrary.Compatibility.Database;
+using Tavstal.TLibrary.Extensions;
 
 namespace Tavstal.TShop
 {
@@ -31,45 +34,18 @@ namespace Tavstal.TShop
             try
             {
                 MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-
                 //Item Shop
-                MySQLCommand.CommandText = "SHOW TABLES LIKE '" + pluginConfig.Database.DatabaseTable_Items + "'";
-                MySQLConnection.Open();
+                if (MySQLConnection.DoesTableExist<ShopItem>(pluginConfig.Database.DatabaseTable_Items))
+                    MySQLConnection.CheckTable<ShopItem>(pluginConfig.Database.DatabaseTable_Items);
+                else
+                    MySQLConnection.CreateTable<ShopItem>(pluginConfig.Database.DatabaseTable_Items);
 
-                object result = MySQLCommand.ExecuteScalar();
-                if (result == null)
-                {
-                    MySQLCommand.CommandText = "CREATE TABLE " + pluginConfig.Database.DatabaseTable_Items +
-                    "(id INT(8) NOT NULL AUTO_INCREMENT," +
-                    "itemID INT UNSIGNED NOT NULL," +
-                    "buyCost DECIMAL(10,2) NULL," +
-                    "sellCost DECIMAL(10,2) NULL," +
-                    "hasPermission BOOL NOT NULL," +
-                    "permission TEXT NULL," +
-                    "isDiscounted BOOL NOT NULL," +
-                    "discount TINYINT NULL," +
-                    "PRIMARY KEY(id));";
-                    MySQLCommand.ExecuteNonQuery();
-                }
 
                 //Vehicle Shop
-                MySQLCommand.CommandText = "SHOW TABLES LIKE '" + pluginConfig.Database.DatabaseTable_Vehicles + "'";
-                result = MySQLCommand.ExecuteScalar();
-                if (result == null)
-                {
-                    MySQLCommand.CommandText = "CREATE TABLE " + pluginConfig.Database.DatabaseTable_Vehicles +
-                    "(id INT(8) NOT NULL AUTO_INCREMENT," +
-                    "vehicleID INT UNSIGNED NOT NULL," +
-                    "buyCost DECIMAL(10,2) NULL," +
-                    "sellCost DECIMAL(10,2) NULL," +
-                    "hasPermission BOOL NOT NULL," +
-                    "permission TEXT NULL," +
-                    "isDiscounted BOOL NOT NULL," +
-                    "discount TINYINT NULL," +
-                    "PRIMARY KEY(id));";
-                    MySQLCommand.ExecuteNonQuery();
-                }
+                if (MySQLConnection.DoesTableExist<ShopItem>(pluginConfig.Database.DatabaseTable_Vehicles))
+                    MySQLConnection.CheckTable<ShopItem>(pluginConfig.Database.DatabaseTable_Vehicles);
+                else
+                    MySQLConnection.CreateTable<ShopItem>(pluginConfig.Database.DatabaseTable_Vehicles);
 
                 MySQLConnection.Close();
             }
@@ -78,440 +54,113 @@ namespace Tavstal.TShop
                 Logger.LogException(ex);
             }
         }
-        public MySqlConnection CreateConnection()
-        {
-            MySqlConnection MySQLConnection = null;
 
+        #region Items
+        public bool AddItem(ushort itemId, decimal buycost, decimal sellcost, bool enableperm, string permission)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.AddTableRow(tableName: pluginConfig.Database.DatabaseTable_Items, new ShopItem(itemId, buycost, sellcost, enableperm, permission, false, 0));
+        }  
+        
+        public bool RemoveItem(ushort itemId)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.RemoveTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, $"Id='{itemId}'", null);
+        }
+        public bool UpdateItem(ushort itemId, decimal buycost, decimal sellcost, bool enablepermission, string permission)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, $"Id='{itemId}'", new List<SqlParameter>
+            {
+                SqlParameter.Get<ShopItem>(x => x.BuyCost, buycost),
+                SqlParameter.Get<ShopItem>(x => x.SellCost, sellcost),
+                SqlParameter.Get<ShopItem>(x => x.hasPermission, enablepermission),
+                SqlParameter.Get<ShopItem>(x => x.Permission, permission)
+            });
+        }
+        public bool UpdateItem(ushort itemId, bool isdiscounted, decimal percent)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, $"Id='{itemId}'", new List<SqlParameter>
+            {
+                SqlParameter.Get<ShopItem>(x => x.isDiscounted, isdiscounted),
+                SqlParameter.Get<ShopItem>(x => x.discountPercent, percent)
+            });
+        }
+        public List<ShopItem> GetItems()
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, whereClause: string.Empty, null);
+        }
+        public ShopItem FindItem(ushort itemId)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.GetTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, whereClause: $"Id='{itemId}'", null);
+        }
+        #endregion
+
+        #region Vehicles
+        public bool AddVehicle(ushort vehicleId, decimal buycost, decimal sellcost, bool enableperm, string permission)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.AddTableRow(tableName: pluginConfig.Database.DatabaseTable_Vehicles, new ShopItem(vehicleId, buycost, sellcost, enableperm, permission, false, 0));
+        }
+        public bool RemoveVehicle(ushort vehicleId)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.RemoveTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, $"Id='{vehicleId}'", null);
+        }
+        public bool UpdateVehicle(ushort vehicleId, decimal buycost, decimal sellcost, bool enablepermission, string permission)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, $"Id='{vehicleId}'", new List<SqlParameter>
+            {
+                SqlParameter.Get<ShopItem>(x => x.BuyCost, buycost),
+                SqlParameter.Get<ShopItem>(x => x.SellCost, sellcost),
+                SqlParameter.Get<ShopItem>(x => x.hasPermission, enablepermission),
+                SqlParameter.Get<ShopItem>(x => x.Permission, permission)
+            });
+        }
+
+        public bool UpdateVehicle(ushort vehicleId, bool isdiscounted, decimal percent)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, $"Id='{vehicleId}'", new List<SqlParameter>
+            {
+                SqlParameter.Get<ShopItem>(x => x.isDiscounted, isdiscounted),
+                SqlParameter.Get<ShopItem>(x => x.discountPercent, percent)
+            });
+        }
+
+        public List<ShopItem> GetVehicles()
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, whereClause: string.Empty, null);
+        }
+        public ShopItem FindVehicle(ushort vehicleId)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.GetTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, whereClause: $"Id='{vehicleId}'", null);
+        }
+        #endregion
+
+        #region Zaup
+        public MySqlConnection CreateZaupConnection()
+        {
+            MySqlConnection mySqlConnection = null;
             try
             {
                 if (pluginConfig.Database.Port == 0)
                 {
                     pluginConfig.Database.Port = 3306;
-                }
-                MySQLConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};DEFAULT COMMAND TIMEOUT=120;CharSet=utf8;", new object[] {
-                    pluginConfig.Database.DatabaseAddress,
-                    pluginConfig.Database.DatabaseName,
-                    pluginConfig.Database.DatabaseUser,
-                    pluginConfig.Database.DatabasePassword,
-                    pluginConfig.Database.Port,
-                    pluginConfig.Database.TimeOut
-                }));
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-            }
-            return MySQLConnection;
-        }
-
-        #region Items
-        public bool AddItem(ushort ID, decimal buycost, decimal sellcost, bool enableperm, string permission)
-        {
-            bool success = false;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ID);
-                MySQLCommand.Parameters.AddWithValue("@BCOST", buycost.ToString());
-                MySQLCommand.Parameters.AddWithValue("@SCOST", sellcost.ToString());
-                MySQLCommand.Parameters.AddWithValue("@HP", enableperm);
-                MySQLCommand.Parameters.AddWithValue("@P", permission ?? string.Empty);
-                MySQLCommand.Parameters.AddWithValue("@IDIS", "False");
-                MySQLCommand.Parameters.AddWithValue("@DIS", "0");
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
-                object data = MySQLCommand.ExecuteScalar();
-
-                Asset a = Assets.find(EAssetType.ITEM, ID);
-                if (data == null)
-                {
-                    MySQLCommand.CommandText = "INSERT INTO `" + pluginConfig.Database.DatabaseTable_Items + "` (ItemID,BuyCost,SellCost,hasPermission,Permission,isDiscounted,discount) " +
-                        "VALUES (@ID,@BCOST,@SCOST,@HP,@P,@IDIS,@DIS);";
-                    MySQLCommand.ExecuteNonQuery();
-                    success = true;
-                }
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in AddItem():");
-                Logger.LogError(ex);
-            }
-            return success;
-        }  
-        
-        public bool RemoveItem(ushort ID)
-        {
-            bool success = false;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ID);
-
-                MySQLCommand.CommandText = "DELETE FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
-                MySQLCommand.ExecuteNonQuery();
-                success = true;
-
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in RemoveItem():");
-                Logger.LogError(ex);
-            }
-            return success;
-        }
-        public bool UpdateItem(ushort ID, decimal buycost, decimal sellcost, bool enablepermission, string permission)
-        {
-            bool success = false;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ID);
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
-                object data = MySQLCommand.ExecuteScalar();
-
-                Asset a = Assets.find(EAssetType.ITEM, ID);
-                if (data != null)
-                {
-                    MySQLCommand.Parameters.AddWithValue("@BCOST", buycost);
-                    MySQLCommand.Parameters.AddWithValue("@SCOST", sellcost);
-                    MySQLCommand.Parameters.AddWithValue("@EP", enablepermission);
-                    MySQLCommand.Parameters.AddWithValue("@P", permission ?? String.Empty);
-
-                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.Database.DatabaseTable_Items + "` SET buyCost=@BCOST,sellCost=@SCOST,haspermission=@EP,permission=@P WHERE itemID=@ID;";
-                    MySQLCommand.ExecuteNonQuery();
-                    success = true;
-                }
-
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in UpdateItem():");
-                Logger.LogError(ex);
-            }
-            return success;
-        }
-        public bool UpdateItem(ushort ID, bool isdiscounted, decimal percent)
-        {
-            bool success = false;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ID);
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
-                object data = MySQLCommand.ExecuteScalar();
-
-                Asset a = Assets.find(EAssetType.ITEM, ID);
-                if (data != null)
-                {
-                    MySQLCommand.Parameters.AddWithValue("@DISCOUNTED", isdiscounted);
-                    MySQLCommand.Parameters.AddWithValue("@PER", percent);
-
-                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.Database.DatabaseTable_Items + "` SET isDiscounted=@DISCOUNTED,discount=@PER WHERE itemID=@ID;";
-                    MySQLCommand.ExecuteNonQuery();
-                    success = true;
-                }
-
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in UpdateItem():");
-                Logger.LogError(ex);
-            }
-            return success;
-        }
-        public List<ShopItem> GetItems()
-        {
-            List<ShopItem> i = new List<ShopItem>();
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "`;";
-                MySqlDataReader Reader = MySQLCommand.ExecuteReader();
-
-                while (Reader.Read())
-                {
-                    ShopItem item = new ShopItem(Reader.GetUInt16("itemID"), decimal.Parse(Reader.GetString("buyCost").Replace(".", ",")),
-                        decimal.Parse(Reader.GetString("sellCost").Replace(".", ",")), Reader.GetBoolean("hasPermission"),
-                        Reader.GetString("permission"), Reader.GetBoolean("isDiscounted"),
-                        decimal.Parse(Reader.GetString("discount").Replace(".", ",")));
-                    if (item !=  null)
-                        i.Add(item);
-                }
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in GetItems():");
-                Logger.LogError(ex);
-            }
-            return i;
-        }
-        public ShopItem FindItem(ushort ItemId)
-        {
-            ShopItem i = null;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ItemId);
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Items + "` WHERE itemID=@ID;";
-                MySqlDataReader Reader = MySQLCommand.ExecuteReader();
-
-                if (Reader == null)
-                    return null;
-
-                while (Reader.Read())
-                {
-                    i = new ShopItem(Reader.GetUInt16("itemID"), decimal.Parse(Reader.GetString("buyCost").Replace(".", ",")),
-                        decimal.Parse(Reader.GetString("sellCost").Replace(".", ",")), Reader.GetBoolean("hasPermission"),
-                        Reader.GetString("permission"), Reader.GetBoolean("isDiscounted"),
-                        decimal.Parse(Reader.GetString("discount").Replace(".", ",")));
-                    break;    
-                }
-                Reader.Close();
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in FindItem():");
-                Logger.LogError(ex);
-            }
-            return i;
-        }
-        #endregion
-
-        #region Vehicles
-        public bool AddVehicle(ushort ID, decimal buycost, decimal sellcost, bool enableperm, string permission)
-        {
-            bool success = false;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ID);
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
-                object data = MySQLCommand.ExecuteScalar();
-
-                Asset a = Assets.find(EAssetType.ITEM, ID);
-                if (data == null)
-                {
-
-                    MySQLCommand.CommandText = "INSERT INTO `" + pluginConfig.Database.DatabaseTable_Vehicles + "` (vehicleID,BuyCost,SellCost,hasPermission,Permission,isDiscounted,discount) " +
-                        "VALUES ('" + ID + "','" + buycost + "','" + sellcost + "','" + enableperm + "','" + permission + "','" + "False" + "','" + "0" + "');";
-                    MySQLCommand.ExecuteNonQuery();
-                    success = true;
-                }
-
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in AddVehicle():");
-                Logger.LogError(ex);
-            }
-            return success;
-        }
-        public bool RemoveVehicle(ushort ID)
-        {
-            bool success = false;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ID);
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
-                object data = MySQLCommand.ExecuteScalar();
-
-                Asset a = Assets.find(EAssetType.ITEM, ID);
-                if (data != null)
-                {
-                    MySQLCommand.CommandText = "DELETE FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
-                    MySQLCommand.ExecuteNonQuery();
-                    success = true;
-                }
-
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in RemoveVehicle():");
-                Logger.LogError(ex);
-            }
-            return success;
-        }
-        public bool UpdateVehicle(ushort ID, decimal buycost, decimal sellcost, bool enablepermission, string permission)
-        {
-            bool success = false;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@TABLE", pluginConfig.Database.DatabaseTable_Vehicles);
-                MySQLCommand.Parameters.AddWithValue("@ID", ID);
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
-                object data = MySQLCommand.ExecuteScalar();
-
-                Asset a = Assets.find(EAssetType.ITEM, ID);
-                if (data != null)
-                {
-                    MySQLCommand.Parameters.AddWithValue("@ID", ID);
-                    MySQLCommand.Parameters.AddWithValue("@BCOST", buycost);
-                    MySQLCommand.Parameters.AddWithValue("@SCOST", sellcost);
-                    MySQLCommand.Parameters.AddWithValue("@EP", enablepermission);
-                    MySQLCommand.Parameters.AddWithValue("@P", permission);
-
-                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.Database.DatabaseTable_Vehicles + "` SET buyCost=@BCOST,sellCost=@SCOST,haspermission=@EP,permission=@P WHERE vehicleID=@ID;";
-                    MySQLCommand.ExecuteNonQuery();
-                    success = true;
-                }
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in UpdateVehicle():");
-                Logger.LogError(ex);
-            }
-            return success;
-        }
-
-        public bool UpdateVehicle(ushort ID, bool isdiscounted, decimal percent)
-        {
-            bool success = false;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ID);
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` WHERE vehicleID=@ID;";
-                object data = MySQLCommand.ExecuteScalar();
-
-                Asset a = Assets.find(EAssetType.ITEM, ID);
-                if (data != null)
-                {
-                    MySQLCommand.Parameters.AddWithValue("@DISCOUNTED", isdiscounted);
-                    MySQLCommand.Parameters.AddWithValue("@PER", percent);
-
-                    MySQLCommand.CommandText = "UPDATE `" + pluginConfig.Database.DatabaseTable_Vehicles + "` SET isDiscounted=@DISCOUNTED,discount=@PER WHERE vehicleID=@ID;";
-                    MySQLCommand.ExecuteNonQuery();
-                    success = true;
-                }
-
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in UpdateVehicle():");
-                Logger.LogError(ex);
-            }
-            return success;
-        }
-
-        public List<ShopItem> GetVehicles()
-        {
-            List<ShopItem> i = new List<ShopItem>();
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "`;";
-                MySqlDataReader Reader = MySQLCommand.ExecuteReader();
-
-                while (Reader.Read())
-                {
-                    ShopItem item = new ShopItem(Reader.GetUInt16("vehicleID"), decimal.Parse(Reader.GetString("buyCost").Replace(".", ",")),
-                        decimal.Parse(Reader.GetString("sellCost").Replace(".", ",")), Reader.GetBoolean("hasPermission"),
-                        Reader.GetString("permission"), Reader.GetBoolean("isDiscounted"),
-                        decimal.Parse(Reader.GetString("discount").Replace(".", ",")));
-                    if (item != null)
-                        i.Add(item);
-                }
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in GetVehicles():");
-                Logger.LogError(ex);
-            }
-            return i;
-        }
-        public ShopItem FindVehicle(ushort ItemId)
-        {
-            ShopItem i = null;
-            try
-            {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
-                MySQLCommand.Parameters.AddWithValue("@ID", ItemId);
-
-                MySQLCommand.CommandText = "SELECT * FROM `" + pluginConfig.Database.DatabaseTable_Vehicles + "` vehicleID=@ID;";
-                MySqlDataReader Reader = MySQLCommand.ExecuteReader();
-
-                if (Reader == null)
-                    return null;
-
-                while (Reader.Read())
-                {
-                    i = new ShopItem(Reader.GetUInt16("vehicleID"), decimal.Parse(Reader.GetString("buyCost").Replace(".", ",")),
-                        decimal.Parse(Reader.GetString("sellCost").Replace(".", ",")), Reader.GetBoolean("hasPermission"),
-                        Reader.GetString("permission"), Reader.GetBoolean("isDiscounted"),
-                        decimal.Parse(Reader.GetString("discount").Replace(".", ",")));
-                }
-                MySQLConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error in FindVehicle():");
-                Logger.LogError(ex);
-            }
-            return i;
-        }
-        #endregion
-
-        #region Zaup
-        public MySqlConnection createConnectionzaup()
-        {
-            MySqlConnection mySqlConnection = null;
-            try
-            {
-                if (pluginConfig.Database.DatabasePort == 0)
-                {
-                    pluginConfig.Database.DatabasePort = 3306;
+                    pluginConfig.SaveConfig();
                 }
                 mySqlConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};", new object[] {
-                    pluginConfig.Database.DatabaseAddress,
+                    pluginConfig.Database.Host,
                     pluginConfig.Database.DatabaseName,
-                    pluginConfig.Database.DatabaseUser,
-                    pluginConfig.Database.DatabasePassword,
-                    pluginConfig.Database.DatabasePort
+                    pluginConfig.Database.UserName,
+                    pluginConfig.Database.UserPassword,
+                    pluginConfig.Database.Port
                 }));
             }
             catch (Exception exception)

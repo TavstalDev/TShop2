@@ -38,8 +38,6 @@ namespace Tavstal.TShop
         internal HookManager hookManager { get; private set; }
         public static IEconomyProvider economyProvider { get; private set; }
         internal DateTime _nextUpdate { get; set; }
-        internal System.Version _Version => Assembly.GetExecutingAssembly().GetName().Version;
-        internal DateTime _BuildDate => new DateTime(2000, 1, 1).AddDays(_Version.Build).AddSeconds(_Version.Revision * 2);
 
         protected override void Load()
         {
@@ -58,8 +56,8 @@ namespace Tavstal.TShop
             Logger.Log("# Website: https://redstoneplugins.com");
             Logger.Log("# Discord: https://discord.gg/redstoneplugins");
             Logger.Log("#########################################");
-            Logger.Log(string.Format("# Build Version: {0}", _Version));
-            Logger.Log(string.Format("# Build Date: {0}", _BuildDate));
+            Logger.Log(string.Format("# Build Version: {0}", Version));
+            Logger.Log(string.Format("# Build Date: {0}", BuildDate));
             Logger.Log("#########################################");
             try
             {

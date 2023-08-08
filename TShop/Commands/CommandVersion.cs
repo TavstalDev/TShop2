@@ -24,8 +24,8 @@ namespace Tavstal.TShop
         public void Execute(IRocketPlayer caller, string[] command)
         {
             Logger.Log("#########################################");
-            Logger.Log(string.Format("# Build Version: {0}", TShop.Instance._Version));
-            Logger.Log(string.Format("# Build Date: {0}", TShop.Instance._BuildDate));
+            Logger.Log(string.Format("# Build Version: {0}", TShop.Version));
+            Logger.Log(string.Format("# Build Date: {0}", TShop.BuildDate));
             Logger.Log("#########################################");
         }
     }
