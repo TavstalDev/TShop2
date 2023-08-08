@@ -33,7 +33,25 @@ namespace Tavstal.TShop
         {
             try
             {
+                Logger.LogWarning("1");
+                using (var connection = CreateConnection())
+                {
+                    connection.OpenSafe();
+                    if (connection.State != System.Data.ConnectionState.Open)
+                    {
+                        throw new Exception("Failed to connect to the database. Please check the config file.");
+                    }
+                    else
+                        Logger.LogWarning(connection.State.ToString());
+                }
+                Logger.LogWarning("2");
+
                 MySqlConnection MySQLConnection = CreateConnection();
+                if (MySQLConnection == null)
+                {
+                    throw new Exception("Failed to connect to the database. Please check the config file.");
+                }
+
                 //Item Shop
                 if (MySQLConnection.DoesTableExist<ShopItem>(pluginConfig.Database.DatabaseTable_Items))
                     MySQLConnection.CheckTable<ShopItem>(pluginConfig.Database.DatabaseTable_Items);
@@ -177,7 +195,7 @@ namespace Tavstal.TShop
             {
                 MySqlConnection MySQLConnection = CreateConnection();
                 MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
+                MySQLConnection.OpenSafe();
 
                 MySQLCommand.CommandText = "SELECT * FROM " + tablename;
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
@@ -199,7 +217,7 @@ namespace Tavstal.TShop
             {
                 MySqlConnection MySQLConnection = CreateConnection();
                 MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                MySQLConnection.Open();
+                MySQLConnection.OpenSafe();
 
                 MySQLCommand.CommandText = "SELECT * FROM " + tablename;
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();

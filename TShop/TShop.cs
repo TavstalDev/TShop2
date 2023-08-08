@@ -39,7 +39,7 @@ namespace Tavstal.TShop
         public static IEconomyProvider economyProvider { get; private set; }
         internal DateTime _nextUpdate { get; set; }
 
-        protected override void Load()
+        public override void OnLoad()
         {
             Instance = this;
             
@@ -81,7 +81,7 @@ namespace Tavstal.TShop
             }
         }
 
-        protected override void Unload()
+        public override void OnUnLoad()
         {
             EffectManager.onEffectTextCommitted -= Event_OnInputFieldEdit;
             EffectManager.onEffectButtonClicked -= Event_OnButtonClick;
@@ -357,6 +357,9 @@ namespace Tavstal.TShop
 
         private void Update()
         {
+            if (this.State != PluginState.Loaded)
+                return;
+
             if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
                 return;
 
