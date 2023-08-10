@@ -48,7 +48,7 @@ namespace Tavstal.TShop
 
                 if (asset == null)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_vehicle_not_exists", args[0]));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
                     return;
                 }
                 id = asset.id;
@@ -56,7 +56,7 @@ namespace Tavstal.TShop
                 ShopItem item = TShop.Database.FindVehicle(id);
                 if (item == null)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_vehicle_not_added", args[0]));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
                     return;
                 }
 
@@ -64,23 +64,23 @@ namespace Tavstal.TShop
 
                 if (TShop.economyProvider.GetBalance(callerPlayer) < cost)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_balance_not_enough"));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_balance_not_enough");
                     return;
                 }
 
                 if (cost == 0)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_vehicle_buy_error"));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_buy_error");
                     return;
                 }
 
                 TShop.economyProvider.Withdraw(callerPlayer, cost);
                 VehicleManager.spawnLockedVehicleForPlayerV2(asset.id, callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation, callerPlayer.Player);
                 TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_vehicle_buy", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_vehicle_buy", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_buyvehicle_args"));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_buyvehicle_args");
         }
     }
 }

@@ -107,17 +107,30 @@ namespace Tavstal.TShop
             HookManager = new HookManager();
             HookManager.LoadAll(Assembly);
 
-            if (HookManager.IsHookLoadable<TEconomyHook>())
-                economyProvider = HookManager.GetHook<TEconomyHook>();
-            else
+            if (Config.ExpMode)
             {
-                if (!HookManager.IsHookLoadable<UconomyHook>())
+                if (!HookManager.IsHookLoadable<ExpEconomyHook>())
                 {
                     Logger.LogError("# Failed to load economy hook. Unloading TShop...");
                     this?.UnloadPlugin();
                     return;
                 }
-                economyProvider = HookManager.GetHook<UconomyHook>();
+                economyProvider = HookManager.GetHook<ExpEconomyHook>();
+            }
+            else
+            {
+                if (HookManager.IsHookLoadable<TEconomyHook>())
+                    economyProvider = HookManager.GetHook<TEconomyHook>();
+                else
+                {
+                    if (!HookManager.IsHookLoadable<UconomyHook>())
+                    {
+                        Logger.LogError("# Failed to load economy hook. Unloading TShop...");
+                        this?.UnloadPlugin();
+                        return;
+                    }
+                    economyProvider = HookManager.GetHook<UconomyHook>();
+                }
             }
         }
 
@@ -390,20 +403,20 @@ namespace Tavstal.TShop
             for (int i = 0; i < Config.ItemCountToDiscount; i++)
             {
                 if (items.IsValidIndex(i))
-                    Database.UpdateItem(items[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscountInPercent, Config.maxDiscountInPercent), 2));
+                    Database.UpdateItem(items[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
             }
 
             for (int i = 0; i < Config.VehicleCountToDiscount; i++)
             {
                 if (vehs.IsValidIndex(i))
-                    Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscountInPercent, Config.maxDiscountInPercent), 2));
+                    Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
             }
 
             _nextUpdate = DateTime.Now.AddSeconds(Config.DiscountInterval);
         }
 
-        public override TranslationList DefaultTranslations =>
-            new TranslationList
+        public override Dictionary<string, string> DefaultLocalization =>
+            new Dictionary<string, string>
             {
                 { "prefix", "&e[TShop] " },
                 { "error_command_buyitem_args", "&aUsage: /buy [Item Id | Name] <Amount>" },
@@ -432,9 +445,9 @@ namespace Tavstal.TShop
                 { "error_shop_empty", "&6The shop is empty" },
                 { "error_item_buy_error", "&6You can't buy this item" },
                 { "error_item_sell_error", "&6You can't sell this item" },
-                { "error_item_add", "&6Failed to add {0} to the item store." },
-                { "error_item_remove", "&6Failed to remove {0} from the item store." },
-                { "error_item_update", "&6Failed to update {0} in the item store." },
+                { "error_item_added", "&6Failed to add {0} to the item store." },
+                { "error_item_removed", "&6Failed to remove {0} from the item store." },
+                { "error_item_updated", "&6Failed to update {0} in the item store." },
                 { "error_no_permission", "&6You don't have enough permission to buy or sell that item." },
                 { "error_vehicle_not_exists", "&6This vehicle does not exists." },
                 { "error_vehicle_not_added", "&6This vehicle isn't added to the shop." },
@@ -443,9 +456,9 @@ namespace Tavstal.TShop
                 { "error_vehicle_sell_null", "&6You have to get in a vehicle before trying to sell one." },
                 { "error_vehicle_sell_owner", "&6You are not the owner of this vehicle." },
                 { "error_vehicle_already_added", "&6This vehicle has been already added to the vehicle shop." },
-                { "error_vehicle_add", "&6Failed to add {0} to the vehicle store." },
-                { "error_vehicle_remove", "&6Failed to remove {0} from the vehicle store." },
-                { "error_vehicle_update", "&6Failed to update {0} in the vehicle store." },
+                { "error_vehicle_added", "&6Failed to add {0} to the vehicle store." },
+                { "error_vehicle_removed", "&6Failed to remove {0} from the vehicle store." },
+                { "error_vehicle_updated", "&6Failed to update {0} in the vehicle store." },
                 { "error_migrate_console", "&6Failed to migrate, please check the console." },
                 { "error_item_removed", "&6Failed to remove '{0}' from the database." },
                 //{ "error_", "&6 " },

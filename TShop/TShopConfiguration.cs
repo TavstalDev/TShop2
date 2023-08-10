@@ -8,29 +8,29 @@ namespace Tavstal.TShop
 {
     public class TShopConfiguration : ConfigurationBase
     {
-        [YamlMember(Order = 3)]
-        public DatabaseData Database;
-        [YamlMember(Order = 4)]
-        public bool UsingQuality;
-        [YamlMember(Order = 5)]
-        public bool ExpMode;
-        [YamlMember(Order = 6)]
-        public bool EnableDiscounts;
-        [YamlMember(Order = 7)]
-        public float minDiscountInPercent;
-        [YamlMember(Order = 8)]
-        public float maxDiscountInPercent;
-        [YamlMember(Order = 9)]
-        public int ItemCountToDiscount;
-        [YamlMember(Order = 10)]
-        public int VehicleCountToDiscount;
-        [YamlMember(Order = 11)]
-        public int DiscountInterval;
-        [YamlMember(Order = 12)]
-        public string DefaultProductIconUrl;
-        [YamlMember(Order = 13)]
+        [YamlMember(Order = 3, Description = "Database related settings")]
+        public DatabaseData Database { get; set; }
+        /*[YamlMember(Order = 4)]
+        public bool UseQuality { get; set; }*/
+        [YamlMember(Order = 5, Description = "Enabling this will mean the plugin will use your experience as balance instead of economy plugin.\nWARNING: Don't enable it if you use UconomyExp or any economy plugin that has exp mode.")]
+        public bool ExpMode { get; set; }
+        [YamlMember(Order = 6, Description = "Enables the discount system for items and vehicles in the shop.")]
+        public bool EnableDiscounts { get; set; }
+        [YamlMember(Order = 7, Description = "The minimum discount value in percent. It should be smaller than maxDiscount.\nValue Range: 1.0 - 100.0")]
+        public float minDiscount { get; set; }
+        [YamlMember(Order = 8, Description = "The maximum discount value in percent. It should be bigger than minDiscount.\nValue Range: 1.0 - 100.0")]
+        public float maxDiscount{ get; set; }
+        [YamlMember(Order = 9, Description = "The amount of items to be discounted.")]
+        public int ItemCountToDiscount { get; set; }
+        [YamlMember(Order = 10, Description = "The amount of vehicles to be discounted.")]
+        public int VehicleCountToDiscount { get; set; }
+        [YamlMember(Order = 11, Description = "The time in seconds that controls how often should change the discounted products.")]
+        public int DiscountInterval { get; set; }
+        [YamlMember(Order = 12, Description = "This icon will show up when the plugin couldn't found an icon.")]
+        public string DefaultProductIconUrl { get; set; }
+        [YamlMember(Order = 13, Description = "wip")]
         public List<GithubFolders> GithubItemFolders = new List<GithubFolders>();
-        [YamlMember(Order = 14)]
+        [YamlMember(Order = 14, Description = "wip")]
         public List<GithubFolders> GithubVehicleFolders = new List<GithubFolders>();
         [YamlIgnore]
         public readonly string MessageIcon = "";
@@ -39,15 +39,16 @@ namespace Tavstal.TShop
 
         public override void LoadDefaults()
         {
-            base.LoadDefaults();
+            Locale = "en";
+            DownloadLocalePacks = false;
             Database = new DatabaseData();
             Database.DatabaseTable_Items = "tshop_items";
             Database.DatabaseTable_Vehicles = "tshop_vehicles";
-            UsingQuality = true;
+            //UseQuality = true;
             ExpMode = false;
             EnableDiscounts = true;
-            minDiscountInPercent = 5;
-            maxDiscountInPercent = 10;
+            minDiscount = 5;
+            maxDiscount = 10;
             ItemCountToDiscount = 10;
             VehicleCountToDiscount = 5;
             DiscountInterval = 1800;

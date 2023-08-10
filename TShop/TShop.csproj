@@ -146,6 +146,7 @@
     <Compile Include="Compability\Format\TextFormat.cs" />
     <Compile Include="Compability\Format\ConsoleFormat.cs" />
     <Compile Include="Compability\Hooks\Hook_TEconomy.cs" />
+    <Compile Include="Compability\Hooks\Hook_ExpEconomy.cs" />
     <Compile Include="Compability\Hooks\Hook_Uconomy.cs" />
     <Compile Include="Helpers\LoggerHelper.cs" />
     <Compile Include="Managers\DatabaseManager.cs" />

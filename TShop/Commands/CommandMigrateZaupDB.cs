@@ -41,16 +41,16 @@ namespace Tavstal.TShop
                     {
                         TShop.Database.AddVehicle(item.Id, item.GetBuyCost(), item.GetSellCost(), false, "");
                     }
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "success_migrate"));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_migrate");
                 }
                 catch (Exception ex)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_migrate_console"));
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_migrate_console");
                     Logger.LogError("Migration error: " + ex);
                 }
             }
             else
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(), TShop.Instance.Localize(true, "error_command_migrate_args"));
+                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_migrate_args");
         }
     }
 }
