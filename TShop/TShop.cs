@@ -28,6 +28,7 @@ using Tavstal.TLibrary.Managers;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary;
+using Tavstal.TShop.Handlers;
 
 namespace Tavstal.TShop
 {
@@ -62,9 +63,7 @@ namespace Tavstal.TShop
             {
                 Database = new DatabaseManager(Config);
 
-                EffectManager.onEffectTextCommitted += Event_OnInputFieldEdit;
-                EffectManager.onEffectButtonClicked += Event_OnButtonClick;
-                U.Events.OnPlayerConnected += Event_OnPlayerJoin;
+                UnturnedEventHandler.Attach();
                
                 if (!Level.isLoaded || Level.isLoading)
                     Level.onPostLevelLoaded += Event_OnPluginsLoaded;
@@ -86,9 +85,7 @@ namespace Tavstal.TShop
 
         public override void OnUnLoad()
         {
-            EffectManager.onEffectTextCommitted -= Event_OnInputFieldEdit;
-            EffectManager.onEffectButtonClicked -= Event_OnButtonClick;
-            U.Events.OnPlayerConnected -= Event_OnPlayerJoin;
+            UnturnedEventHandler.Unattach();
             Level.onPostLevelLoaded -= Event_OnPluginsLoaded;
             Logger.Log("# TShop has been successfully unloaded.");
         }
@@ -130,250 +127,6 @@ namespace Tavstal.TShop
                         return;
                     }
                     economyProvider = HookManager.GetHook<UconomyHook>();
-                }
-            }
-        }
-
-        private void Event_OnPlayerJoin(UnturnedPlayer player)
-        {
-            EffectManager.sendUIEffect(Config.EffectID, (short)Config.EffectID, player.SteamPlayer().transportConnection, true);
-        }
-
-        private void Event_OnInputFieldEdit(Player player, string button, string text)
-        {
-            UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
-            TShopComponent comp = player.GetComponent<TShopComponent>();
-
-            if (button.ContainsIgnoreCase("inputf_shop_cont_cart_item#") && button.ContainsIgnoreCase("_amount"))
-            {
-                int index = 6 * comp.cart_page + Convert.ToInt32(button.Replace("inputf_shop_cont_cart_item#", "").Replace("_amount", "")) - 1;
-
-                if (comp.products.IsValidIndex(index))
-                {
-                    comp.products[index].Amount = MathHelper.Clamp(Convert.ToInt32(text), 1, comp.products[index].isVehicle ? 1 : 100);
-                    UIManager.UpdateTotalPay(uPlayer);
-                }
-            }
-        }
-
-        private void Event_OnButtonClick(Player player, string button)
-        {
-            UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
-            TShopComponent comp = player.GetComponent<TShopComponent>();
-
-            if (button.EqualsIgnoreCase("bt_shop_cart_payment#wallet"))
-            {
-                comp.PaymentMethod = EPaymentMethod.WALLET;
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cart_payment#bank"))
-            {
-                comp.PaymentMethod = EPaymentMethod.BANK;
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cart_payment#crypto"))
-            {
-                comp.PaymentMethod = EPaymentMethod.CRYPTO;
-            }
-            else if (button.ContainsIgnoreCase("bt_shop_cont_cart_item#") && button.ContainsIgnoreCase("_remove"))
-            {
-                int index = 6 * comp.cart_page + Convert.ToInt32(button.Replace("bt_shop_cont_cart_item#", "").Replace("_remove", "")) - 1;
-
-                if (comp.products.IsValidIndex(index))
-                {
-                    comp.products.RemoveAt(index);
-                    UIManager.UpdatePaymentPage(uPlayer);
-                    UIManager.UpdateTotalPay(uPlayer);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cart_buy"))
-            {
-                try
-                {
-                    if (comp.products.Count > 0)
-                    {
-                        decimal cost = 0;
-                        int successBought = 0;
-                        List<ShopItem> items = Database.GetItems();
-                        List<ShopItem> vehs = Database.GetVehicles();
-                        foreach (var p in comp.products)
-                        {
-                            if (p.isVehicle)
-                                cost += vehs.Find(x => x.Id == p.Id).GetBuyCost(p.Amount);
-                            else
-                                cost += items.Find(x => x.Id == p.Id).GetBuyCost(p.Amount);
-                        }
-
-                        if (economyProvider.GetBalance(uPlayer, comp.PaymentMethod) < cost)
-                        {
-                            UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(), Localize(true, "error_balance_not_enough", cost - economyProvider.GetBalance(uPlayer, comp.PaymentMethod)));
-                            return;
-                        }
-
-                        economyProvider.Withdraw(uPlayer.CSteamID, cost, comp.PaymentMethod);
-                        foreach (var p in comp.products)
-                        {
-                            if (p.isVehicle)
-                            {
-                                VehicleManager.spawnLockedVehicleForPlayerV2(p.Id, uPlayer.Position + new Vector3(0, 0, 5), player.transform.rotation, player);
-                            }
-                            else
-                            {
-                                for (int i = 0; i < p.Amount; i++)
-                                    if (!uPlayer.Inventory.tryAddItem(new Item(p.Id, true), false))
-                                        ItemManager.dropItem(new Item(p.Id, true), uPlayer.Position, true, true, false);
-                            }
-                            successBought += p.Amount;
-                        }
-                        comp.products = new List<Product>();
-                        economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                        UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(), Localize(true, "success_pruchase", successBought));
-                        UIManager.UpdatePaymentPage(uPlayer);
-                        UIManager.UpdateTotalPay(uPlayer);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("Error in Button click():");
-                    Logger.LogError(ex);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cart_sell"))
-            {
-                try
-                {
-                    if (comp.products.Count > 0)
-                    {
-                        decimal cost = 0;
-                        List<ShopItem> items = Database.GetItems();
-                        List<Product> soldProducts = new List<Product>();
-                        int successSold = 0;
-
-                        foreach (var p in comp.products)
-                        {
-                            ShopItem item = items.Find(x => x.Id == p.Id);
-                            decimal localCost = 0;
-                            if (!p.isVehicle && item.GetSellCost(p.Amount) > 0)
-                                localCost = item.GetSellCost(p.Amount);
-                            cost += localCost;
-
-                            List<InventorySearch> search = uPlayer.Inventory.search(p.Id, true, true);
-                            if (search.Count >= p.Amount)
-                            {
-                                for (int i = 0; i < p.Amount; i++)
-                                {
-                                    uPlayer.Inventory.removeItem(search[i].page, uPlayer.Inventory.getIndex(search[i].page, search[i].jar.x, search[i].jar.y));
-                                }
-                                economyProvider.Deposit(uPlayer.CSteamID, cost, comp.PaymentMethod);
-                                soldProducts.Add(p);
-                                successSold += p.Amount;
-                            }
-                        }
-
-                        foreach (var p in soldProducts)
-                            if (comp.products.Any(x=> x.Id == p.Id && p.isVehicle == x.isVehicle))
-                                comp.products.Remove(p);
-                        
-                        economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                        UnturnedHelper.SendChatMessage(uPlayer.SteamPlayer(), Localize(true, "success_sell", successSold));
-                        UIManager.UpdatePaymentPage(uPlayer);
-                        UIManager.UpdateTotalPay(uPlayer);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("Error in Button click():");
-                    Logger.LogError(ex);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cont_cart_prev"))
-            {
-                if (comp.cart_page - 1 >= 0)
-                {
-                    comp.cart_page -= 1;
-                    UIManager.UpdatePaymentPage(uPlayer);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cont_cart_next"))
-            {
-                if (comp.cart_page + 1 <= comp.products.Count / 6)
-                {
-                    comp.cart_page += 1;
-                    UIManager.UpdatePaymentPage(uPlayer);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cont_vehicles_prev"))
-            {
-                if (comp.vehicle_page - 1 >= 0)
-                {
-                    comp.vehicle_page -= 1;
-                    UIManager.UpdateVehiclessPage(uPlayer);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cont_vehicles_next"))
-            {
-                List<ShopItem> products = Database.GetItems().FindAll(x => !comp.products.Any(y => y.Id == x.Id && y.isVehicle));
-
-                if (comp.vehicle_page + 1 <= products.Count / 8)
-                {
-                    comp.vehicle_page += 1;
-                    UIManager.UpdateVehiclessPage(uPlayer);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cont_items_prev"))
-            {
-                if (comp.item_page - 1 >= 0)
-                {
-                    comp.item_page -= 1;
-                    UIManager.UpdateItemsPage(uPlayer);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_cont_items_next"))
-            {
-                List<ShopItem> products = Database.GetItems().FindAll(x => !comp.products.Any(y => y.Id == x.Id && !y.isVehicle));
-
-                if (comp.item_page + 1 <= products.Count / 8)
-                {
-                    comp.item_page += 1;
-                    UIManager.UpdateItemsPage(uPlayer);
-                }
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_menu#logout"))
-            {
-                player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, false);
-                EffectManager.sendUIEffectVisibility((short)Config.EffectID, uPlayer.SteamPlayer().transportConnection, true, "Panel_Shop", false);
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_menu#items"))
-            {
-                UIManager.UpdateItemsPage(uPlayer);
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_menu#vehicles"))
-            {
-                UIManager.UpdateVehiclessPage(uPlayer);
-            }
-            else if (button.EqualsIgnoreCase("bt_shop_menu#cart"))
-            {
-                UIManager.UpdateTotalPay(uPlayer);
-                UIManager.UpdatePaymentPage(uPlayer);
-            }
-            else if (button.ContainsIgnoreCase("bt_shop_item#") && button.ContainsIgnoreCase("_addcart"))
-            {
-                int index = 8 * comp.cart_page + Convert.ToInt32(button.Replace("bt_shop_item#", "").Replace("_addcart", "")) - 1;
-                List<ShopItem> items = Database.GetItems().FindAll(x => !comp.products.Any(y => y.Id == x.Id && !y.isVehicle));
-
-                if (items.IsValidIndex(index))
-                {
-                    comp.products.Add(new Product(items[index].Id, 1, false));
-                    UIManager.UpdateItemsPage(uPlayer);
-                }
-            }
-            else if (button.ContainsIgnoreCase("bt_shop_vehicles#") && button.ContainsIgnoreCase("_addcart"))
-            {
-                int index = 8 * comp.vehicle_page + Convert.ToInt32(button.Replace("bt_shop_vehicles#", "").Replace("_addcart", "")) - 1;
-                List<ShopItem> items = Database.GetVehicles().FindAll(x => !comp.products.Any(y => y.Id == x.Id && y.isVehicle));
-
-                if (items.IsValidIndex(index))
-                {
-                    comp.products.Add(new Product(items[index].Id, 1, true));
-                    UIManager.UpdateVehiclessPage(uPlayer);
                 }
             }
         }

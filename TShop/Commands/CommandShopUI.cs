@@ -27,8 +27,8 @@ namespace Tavstal.TShop
 
             p.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, true);
             EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, p.SteamPlayer().transportConnection, true, "Panel_Shop", true);
-            UIManager.UpdateItemsPage(p);
-            UIManager.UpdateVehiclessPage(p);
+            HUDManager.UpdateItemsPage(p);
+            HUDManager.UpdateVehiclessPage(p);
         }
     }
 }
