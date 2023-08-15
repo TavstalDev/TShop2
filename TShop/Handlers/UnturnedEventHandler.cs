@@ -42,7 +42,7 @@ namespace Tavstal.TShop.Handlers
 
         private static void Event_OnPlayerJoin(UnturnedPlayer player)
         {
-            //EffectManager.sendUIEffect(Config.EffectID, (short)Config.EffectID, player.SteamPlayer().transportConnection, true);
+            HUDManager.Init(player);
         }
 
         private static void Event_OnInputFieldEdit(Player player, string button, string text)
