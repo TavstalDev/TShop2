@@ -23,12 +23,8 @@ namespace Tavstal.TShop
         public void Execute(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer p = (UnturnedPlayer)caller;
-            TShopComponent cp = p.GetComponent<TShopComponent>();
-
-            p.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, true);
-            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, p.SteamPlayer().transportConnection, true, "Panel_Shop", true);
-            HUDManager.UpdateItemsPage(p);
-            HUDManager.UpdateVehiclessPage(p);
+            HUDManager.Show(p);
+            HUDManager.UpdateProductPage(p);
         }
     }
 }
