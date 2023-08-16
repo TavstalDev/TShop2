@@ -25,6 +25,8 @@ namespace Tavstal.TShop.Compability
         [SqlMember(columnType: "decimal(3, 1)")]
         public decimal discountPercent { get; set; }
 
+        public ShopItem() { }
+
         public ShopItem(ushort id, decimal buycost, decimal sellcost, string perm)
         {
             Id = id;

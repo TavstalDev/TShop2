@@ -57,7 +57,7 @@ namespace Tavstal.TShop
 
                 if (asset == null)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_item_not_exists", args[0]);
+                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_item_not_found", args[0]);
                     return;
                 }
                 id = asset.id;
