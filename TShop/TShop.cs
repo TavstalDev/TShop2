@@ -133,40 +133,52 @@ namespace Tavstal.TShop
 
         private void Update()
         {
-            if (MySqlExtensions.IsConnectionAuthFailed)
-                return;
-
-            if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
-                return;
-
-            List<ShopItem> items = Database.GetItems();
-            List<ShopItem> vehs = Database.GetVehicles();
-
-            foreach (ShopItem item in items.FindAll(x => x.isDiscounted))
-                Database.UpdateItem(item.Id, false, 0);
-
-            foreach (ShopItem item in vehs.FindAll(x => x.isDiscounted))
-                Database.UpdateItem(item.Id, false, 0);
-
-            if (items.Count > 2)
-                items.Shuffle();
-            if (items.Count > 2)
-                vehs.Shuffle();
-
-            for (int i = 0; i < Config.ItemCountToDiscount; i++)
+            try
             {
-                if (items.IsValidIndex(i))
-                    Database.UpdateItem(items[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
-            }
+                if (MySqlExtensions.IsConnectionAuthFailed)
+                    return;
 
-            for (int i = 0; i < Config.VehicleCountToDiscount; i++)
-            {
-                if (vehs.IsValidIndex(i))
-                    Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
-            }
+                if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
+                    return;
 
-            _nextUpdate = DateTime.Now.AddSeconds(Config.DiscountInterval);
+                List<ShopItem> items = Database.GetItems();
+                List<ShopItem> vehs = Database.GetVehicles();
+
+                foreach (ShopItem item in items.FindAll(x => x.isDiscounted))
+                    Database.UpdateItem(item.Id, false, 0);
+
+                foreach (ShopItem item in vehs.FindAll(x => x.isDiscounted))
+                    Database.UpdateItem(item.Id, false, 0);
+
+                if (items.Count > 2)
+                    items.Shuffle();
+                if (items.Count > 2)
+                    vehs.Shuffle();
+
+                for (int i = 0; i < Config.ItemCountToDiscount; i++)
+                {
+                    if (items.IsValidIndex(i))
+                        Database.UpdateItem(items[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                }
+
+                for (int i = 0; i < Config.VehicleCountToDiscount; i++)
+                {
+                    if (vehs.IsValidIndex(i))
+                        Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                }
+
+                _nextUpdate = DateTime.Now.AddSeconds(Config.DiscountInterval);
+            }
+            catch (NullReferenceException nex)
+            { 
+                // Not logging because this error has a 99% chance caused by load error
+            }
         }
+
+        public override Dictionary<string, string> LanguagePacks => new Dictionary<string, string>()
+        {
+            { "hu", "https://pastebin.com/raw/kkUaw1LQ" },
+        };
 
         public override Dictionary<string, string> DefaultLocalization =>
             new Dictionary<string, string>

@@ -143,6 +143,7 @@
     <Compile Include="Compatibility\Classes\DatabaseData.cs" />
     <Compile Include="Compatibility\Classes\ShopItem.cs" />
     <Compile Include="Compatibility\Classes\Product.cs" />
+    <Compile Include="Compatibility\Enums\EMenuPage.cs" />
     <Compile Include="Compatibility\Format\TextFormat.cs" />
     <Compile Include="Compatibility\Format\ConsoleFormat.cs" />
     <Compile Include="Compatibility\Hooks\Hook_TEconomy.cs" />
