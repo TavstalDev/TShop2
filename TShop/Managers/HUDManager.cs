@@ -151,6 +151,11 @@ namespace Tavstal.TShop.Managers
                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tb_tshop_products#empty", validCount == 0);
                 #endregion
 
+                // TODO:
+                // Check Prev and Next page buttons,
+                // Check 1... 6 7 8 9 
+                // Check 1 2 3 4 ... 9
+
                 #region Pagination
                 if (page == 1)
                 {
