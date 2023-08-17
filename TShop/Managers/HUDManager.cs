@@ -70,14 +70,16 @@ namespace Tavstal.TShop.Managers
                 if (page < 1)
                     page = 1;
 
+                int itemPerPage = 8;
+
                 ITransportConnection playerTC = player.SteamPlayer().transportConnection;
                 List<ShopItem> products = comp.IsVehiclePage ? TShop.Database.GetVehicles() : TShop.Database.GetItems();
-                int maxPage = 1 + products.Count / 8;
+                int maxPage = 1 + products.Count / itemPerPage;
                 #region Body
                 int validCount = 0;
                 for (int i = 0; i < 8; i++)
                 {
-                    int index = i + (page - 1) * 8;
+                    int index = i + (page - 1) * itemPerPage;
                     int uiIndex = i + 1;
                     if (!products.IsValidIndex(index))
                     {
@@ -140,8 +142,8 @@ namespace Tavstal.TShop.Managers
                         EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_product#{uiIndex}#name", item.itemName);
                     }
 
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_product#{uiIndex}#buycost", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}#buycost", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}", true);
                     validCount++;
                 }
@@ -179,7 +181,10 @@ namespace Tavstal.TShop.Managers
                         }
                         else
                         {
-                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#{uiIndex}", (index + 1).ToString());
+                            if (page == index + 1)
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#{uiIndex}", $"<color=#6C757D>{index + 1}");
+                            else
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#{uiIndex}", (index + 1).ToString());
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#{uiIndex}", true);
                             comp.PageIndexes[arrayIndex][i] = index;
                         }
@@ -191,14 +196,14 @@ namespace Tavstal.TShop.Managers
                     // First Page Button
                     if (page == 1)
                     {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#1", "1");
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#1", $"<color=#6C757D>1");
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#1", true);
                         // Disable button
                         comp.PageIndexes[arrayIndex][0] = -1;
                     }
                     else
                     {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#1", "1");
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#1", "1");
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#1", true);
                         comp.PageIndexes[arrayIndex][0] = 1;
                     }
@@ -206,14 +211,14 @@ namespace Tavstal.TShop.Managers
                     // Button After First Page 
                     if (page - 2 == 1 || page == 1)
                     {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", "2");
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", "2");
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#left", false);
                         comp.PageIndexes[arrayIndex][1] = 2;
                     }
                     else if (page - 1 == 1)
                     {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", "2");
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", "2");
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#left", false);
                         comp.PageIndexes[arrayIndex][1] = -1;
@@ -229,15 +234,15 @@ namespace Tavstal.TShop.Managers
                     {
                         if (page - 3 >= 1 && page + 3 <= maxPage)
                         {
-                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", (page - 1).ToString());
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (page - 1).ToString());
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                             comp.PageIndexes[arrayIndex][1] = page - 1;
 
-                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", page.ToString());
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", $"<color=#6C757D>{page}");
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                             comp.PageIndexes[arrayIndex][2] = -1;
 
-                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", (page + 1).ToString());
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4", (page + 1).ToString());
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
                             comp.PageIndexes[arrayIndex][3] = page + 1;
                         }
@@ -247,28 +252,28 @@ namespace Tavstal.TShop.Managers
                             {
                                 if (page == 3)
                                 {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", "3");
+                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", $"<color=#6C757D>3");
                                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                                     // Disable button
                                     comp.PageIndexes[arrayIndex][1] = -1;
                                 }
                                 else
                                 {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", "3");
+                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", "3");
                                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                                     comp.PageIndexes[arrayIndex][1] = 3;
                                 }
 
                                 if (page == 4)
                                 {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", "4");
+                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", $"<color=#6C757D>4");
                                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                                     // Disable button
                                     comp.PageIndexes[arrayIndex][2] = -1;
                                 }
                                 else
                                 {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", "4");
+                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", "4");
                                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                                     comp.PageIndexes[arrayIndex][2] = 4;
                                 }
@@ -280,28 +285,28 @@ namespace Tavstal.TShop.Managers
                             {
                                 if (page == maxPage - 3)
                                 {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", (maxPage - 3).ToString());
+                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (maxPage - 3).ToString());
                                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                                     // Disable button
                                     comp.PageIndexes[arrayIndex][1] = -1;
                                 }
                                 else
                                 {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", (maxPage - 3).ToString());
+                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (maxPage - 3).ToString());
                                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                                     comp.PageIndexes[arrayIndex][1] = maxPage - 3;
                                 }
 
                                 if (page == maxPage - 2)
                                 {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", (maxPage - 2).ToString());
+                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", (maxPage - 2).ToString());
                                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                                     // Disable button
                                     comp.PageIndexes[arrayIndex][2] = -1;
                                 }
                                 else
                                 {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", (maxPage - 2).ToString());
+                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", (maxPage - 2).ToString());
                                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                                     comp.PageIndexes[arrayIndex][2] = maxPage - 2;
                                 }
@@ -314,25 +319,25 @@ namespace Tavstal.TShop.Managers
                         {
                             if (page == 3)
                             {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", "3");
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", $"<color=#6C757D>3");
                                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                                 // Disable button
                             }
                             else
                             {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", "3");
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", "3");
                                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                             }
 
                             if (page == 4)
                             {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", "4");
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", $"<color=#6C757D>4");
                                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                                 // Disable button
                             }
                             else
                             {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", "4");
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", "4");
                                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                             }
 
@@ -342,28 +347,28 @@ namespace Tavstal.TShop.Managers
                         {
                             if (page == maxPage - 3)
                             {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", (maxPage - 3).ToString());
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (maxPage - 3).ToString());
                                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                                 // Disable button
                                 comp.PageIndexes[arrayIndex][1] = -1;
                             }
                             else
                             {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", (maxPage - 3).ToString());
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (maxPage - 3).ToString());
                                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
                                 comp.PageIndexes[arrayIndex][1] = maxPage - 3;
                             }
 
                             if (page == maxPage - 2)
                             {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", (maxPage - 2).ToString());
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", (maxPage - 2).ToString());
                                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                                 // Disable button
                                 comp.PageIndexes[arrayIndex][2] = -1;
                             }
                             else
                             {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", (maxPage - 2).ToString());
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", (maxPage - 2).ToString());
                                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
                                 comp.PageIndexes[arrayIndex][2] = maxPage - 2;
                             }
@@ -373,14 +378,14 @@ namespace Tavstal.TShop.Managers
                     // Button before Last Page
                     if (page + 2 == maxPage || page == maxPage)
                     {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", (maxPage - 1).ToString());
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4", (maxPage - 1).ToString());
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#right", false);
                         comp.PageIndexes[arrayIndex][3] = maxPage - 1;
                     }
                     else if (page + 1 == maxPage)
                     {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", (page).ToString());
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4",  (page).ToString());
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#right", false);
                         comp.PageIndexes[arrayIndex][3] = -1;
@@ -393,14 +398,14 @@ namespace Tavstal.TShop.Managers
                     // Last Page Button 
                     if (page == maxPage)
                     {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#5", maxPage.ToString());
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#5", $"<color=#6C757D>{maxPage}");
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#5", true);
                         // Disable button
                         comp.PageIndexes[arrayIndex][4] = -1;
                     }
                     else
                     {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#5", maxPage.ToString());
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#5", maxPage.ToString());
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#5", true);
                         comp.PageIndexes[arrayIndex][4] = maxPage;
                     }
