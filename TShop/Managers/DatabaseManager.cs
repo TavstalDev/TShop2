@@ -19,6 +19,8 @@ using Tavstal.TLibrary.Helpers;
 using Tavstal.TLibrary.Compatibility.Database;
 using Tavstal.TLibrary.Extensions;
 using Rocket.Core.Logging;
+using Tavstal.TShop.Compatibility.Enums;
+using System.Web.Caching;
 
 namespace Tavstal.TShop
 {
@@ -107,6 +109,139 @@ namespace Tavstal.TShop
             MySqlConnection MySQLConnection = CreateConnection();
             return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, whereClause: string.Empty, null);
         }
+
+        public List<ShopItem> GetItems(EItemFilter? filter)
+        {
+            List<ShopItem> items = GetItems();
+            if (filter == null)
+                return items;
+            List<ShopItem> local = new List<ShopItem>();
+            foreach (var item in items)
+            {
+                ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, item.Id);
+                if (asset == null)
+                    continue;
+
+                switch (asset.type)
+                {
+                    case EItemType.HAT:
+                    case EItemType.BACKPACK:
+                    case EItemType.GLASSES:
+                    case EItemType.MASK:
+                    case EItemType.PANTS:
+                    case EItemType.SHIRT:
+                    case EItemType.VEST:
+                        {
+                            if (filter == EItemFilter.Clothing)
+                                local.Add(item);
+
+                            break;
+                        }
+                    case EItemType.FOOD:
+                        {
+                            if (filter == EItemFilter.Food)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.MEDICAL:
+                        {
+                            if (filter == EItemFilter.Medical)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.TOOL:
+                    case EItemType.COMPASS:
+                    case EItemType.FISHER:
+                    case EItemType.KEY:
+                    case EItemType.OPTIC:
+                    case EItemType.MAP:
+                        {
+                            if (filter == EItemFilter.Tools)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.BARRICADE:
+                    case EItemType.BOX:
+                    case EItemType.CLOUD:
+                    case EItemType.FARM:
+                    case EItemType.STORAGE:
+                    case EItemType.LIBRARY:
+                    case EItemType.GROWER:
+                        {
+                            if (filter == EItemFilter.Barricades)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.STRUCTURE:
+                        {
+                            if (filter == EItemFilter.Structures)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.SENTRY:
+                    case EItemType.GENERATOR:
+                    case EItemType.BEACON:
+                        {
+                            if (filter == EItemFilter.Electronic)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.VEHICLE_REPAIR_TOOL:
+                    case EItemType.TIRE:
+                        {
+                            if (filter == EItemFilter.Vehicles)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.FUEL:
+                    case EItemType.REFILL:
+                    case EItemType.WATER:
+                    case EItemType.OIL_PUMP:
+                        {
+                            if (filter == EItemFilter.Fuel)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.MELEE:
+                        {
+                            if (filter == EItemFilter.Melees)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.GUN:
+                    case EItemType.THROWABLE:
+                        {
+                            if (filter == EItemFilter.Guns)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.BARREL:
+                    case EItemType.GRIP:
+                    case EItemType.MAGAZINE:
+                    case EItemType.SIGHT:
+                    case EItemType.TACTICAL:
+                        {
+                            if (filter == EItemFilter.Attachments)
+                                local.Add(item);
+                            break;
+                        }
+                    case EItemType.ARREST_END:
+                    case EItemType.ARREST_START:
+                    case EItemType.CHARGE:
+                    case EItemType.DETONATOR:
+                    case EItemType.FILTER:
+                    case EItemType.SUPPLY:
+                    case EItemType.TANK:
+                    case EItemType.TRAP:
+                        {
+                            if (filter == EItemFilter.Misc)
+                                local.Add(item);
+                            break;
+                        }
+                }
+            }
+            return local;
+        }
         public ShopItem FindItem(ushort itemId)
         {
             MySqlConnection MySQLConnection = CreateConnection();
@@ -151,6 +286,24 @@ namespace Tavstal.TShop
         {
             MySqlConnection MySQLConnection = CreateConnection();
             return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, whereClause: string.Empty, null);
+        }
+
+        public List<ShopItem> GetVehicles(EEngine? engine)
+        {
+            List<ShopItem> vehicles = GetVehicles();
+            if (engine == null)
+                return vehicles;
+            List<ShopItem> local = new List<ShopItem>();
+            foreach (var vehicle in vehicles)
+            {
+                VehicleAsset asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, vehicle.Id);
+                if (asset == null)
+                    continue;
+
+                if (asset.engine == engine)
+                    local.Add(vehicle);
+            }
+            return local;
         }
         public ShopItem FindVehicle(ushort vehicleId)
         {

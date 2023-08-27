@@ -122,6 +122,81 @@ namespace Tavstal.TShop.Handlers
                         HUDManager.UpdateProductPage(uPlayer);
                         return;
                     }
+                case "bt_product#category#item#all":
+                case "bt_product#category#item#cloth":
+                case "bt_product#category#item#food":
+                case "bt_product#category#item#medical":
+                case "bt_product#category#item#tool":
+                case "bt_product#category#item#barricade":
+                case "bt_product#category#item#structure":
+                case "bt_product#category#item#electronic":
+                case "bt_product#category#item#vehicle":
+                case "bt_product#category#item#fuel":
+                case "bt_product#category#item#melee":
+                case "bt_product#category#item#gun":
+                case "bt_product#category#item#attachment":
+                case "bt_product#category#item#misc":
+                    {
+                        if (button.EndsWith("all"))
+                            comp.ItemFilter = null;
+                        else if (button.EndsWith("cloth"))
+                            comp.ItemFilter = EItemFilter.Clothing;
+                        else if (button.EndsWith("food"))
+                            comp.ItemFilter = EItemFilter.Food;
+                        else if (button.EndsWith("medical"))
+                            comp.ItemFilter = EItemFilter.Medical;
+                        else if (button.EndsWith("tool"))
+                            comp.ItemFilter = EItemFilter.Tools;
+                        else if (button.EndsWith("barricade"))
+                            comp.ItemFilter = EItemFilter.Barricades;
+                        else if (button.EndsWith("structure"))
+                            comp.ItemFilter = EItemFilter.Structures;
+                        else if (button.EndsWith("electronic"))
+                            comp.ItemFilter = EItemFilter.Electronic;
+                        else if (button.EndsWith("vehicle"))
+                            comp.ItemFilter = EItemFilter.Vehicles;
+                        else if (button.EndsWith("fuel"))
+                            comp.ItemFilter = EItemFilter.Fuel;
+                        else if (button.EndsWith("melee"))
+                            comp.ItemFilter = EItemFilter.Melees;
+                        else if (button.EndsWith("gun"))
+                            comp.ItemFilter = EItemFilter.Guns;
+                        else if (button.EndsWith("attachment"))
+                            comp.ItemFilter = EItemFilter.Attachments;
+                        else if (button.EndsWith("misc"))
+                            comp.ItemFilter = EItemFilter.Misc;
+
+                        comp.PageItem = 1;
+                        HUDManager.UpdateProductPage(uPlayer);
+                        return;
+                    }
+                case "bt_product#category#vehicle#all":
+                case "bt_product#category#vehicle#car":
+                case "bt_product#category#vehicle#plane":
+                case "bt_product#category#vehicle#heli":
+                case "bt_product#category#vehicle#blimp":
+                case "bt_product#category#vehicle#boat":
+                case "bt_product#category#vehicle#train":
+                    {
+                        if (button.EndsWith("all"))
+                            comp.VehicleFilter = null;
+                        else if (button.EndsWith("car"))
+                            comp.VehicleFilter = EEngine.CAR;
+                        else if (button.EndsWith("plane"))
+                            comp.VehicleFilter = EEngine.PLANE;
+                        else if (button.EndsWith("heli"))
+                            comp.VehicleFilter = EEngine.HELICOPTER;
+                        else if (button.EndsWith("blimp"))
+                            comp.VehicleFilter = EEngine.BLIMP;
+                        else if (button.EndsWith("boat"))
+                            comp.VehicleFilter = EEngine.BOAT;
+                        else if (button.EndsWith("train"))
+                            comp.VehicleFilter = EEngine.TRAIN;
+
+                        comp.PageVehicle = 1;
+                        HUDManager.UpdateProductPage(uPlayer);
+                        return;
+                    }
             }
 
             if (button.StartsWith("bt_tshop_products#page#"))
