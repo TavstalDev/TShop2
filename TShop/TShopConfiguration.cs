@@ -10,8 +10,8 @@ namespace Tavstal.TShop
     {
         [YamlMember(Order = 3, Description = "Database related settings")]
         public DatabaseData Database { get; set; }
-        /*[YamlMember(Order = 4)]
-        public bool UseQuality { get; set; }*/
+        [YamlMember(Order = 4, Description = "How often can a player click on an ui button. ")]
+        public float UIButtonDelay { get; set; }
         [YamlMember(Order = 5, Description = "Enabling this will mean the plugin will use your experience as balance instead of economy plugin.\nWARNING: Don't enable it if you use UconomyExp or any economy plugin that has exp mode.")]
         public bool ExpMode { get; set; }
         [YamlMember(Order = 6, Description = "Enables the discount system for items and vehicles in the shop.")]
@@ -42,8 +42,8 @@ namespace Tavstal.TShop
             Locale = "en";
             DownloadLocalePacks = true;
             Database = new DatabaseData();
-            Database.DatabaseTable_Items = "tshop_items";
-            Database.DatabaseTable_Vehicles = "tshop_vehicles";
+            Database.DatabaseTable_Products = "tshop_products";
+            UIButtonDelay = 0.3f;
             //UseQuality = true;
             ExpMode = false;
             EnableDiscounts = true;

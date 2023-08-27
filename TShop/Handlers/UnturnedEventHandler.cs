@@ -60,6 +60,11 @@ namespace Tavstal.TShop.Handlers
             TShopComponent comp = player.GetComponent<TShopComponent>();
             var playerTC = uPlayer.SteamPlayer().transportConnection;
 
+            if (comp.LastButtonClick > DateTime.Now)
+                return;
+
+            comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UIButtonDelay);
+
             switch (button.ToLower())
             {
                 case "bt_nav_tshop_items":
@@ -217,6 +222,24 @@ namespace Tavstal.TShop.Handlers
                 }
 
                 return;
+            }
+            else if (button.StartsWith("bt_tshop_product#"))
+            {
+                int index = Convert.ToInt32(button.Replace("bt_tshop_product#", "")) - 1 + 10 * ((comp.IsVehiclePage ? comp.PageVehicle : comp.PageItem) - 1);
+                List<ShopItem> products = comp.IsVehiclePage ? TShop.Database.GetVehicles(comp.VehicleFilter) : TShop.Database.GetItems(comp.ItemFilter);
+
+                if (!products.IsValidIndex(index))
+                    return;
+
+                ShopItem item = products[index];
+                if (comp.Basket.Any(x => x.UnturnedId == item.UnturnedId && x.IsVehicle == item.IsVehicle))
+                {
+                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_contains_product_already", item.GetName()));
+                    return;
+                }
+
+                comp.Basket.Add(item);
+                comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_product_added", item.GetName()));
             }
         }
     }
