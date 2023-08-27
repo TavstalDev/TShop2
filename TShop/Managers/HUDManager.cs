@@ -73,11 +73,11 @@ namespace Tavstal.TShop.Managers
                 int itemPerPage = 10;
 
                 ITransportConnection playerTC = player.SteamPlayer().transportConnection;
-                List<ShopItem> products = comp.IsVehiclePage ? TShop.Database.GetVehicles() : TShop.Database.GetItems();
+                List<ShopItem> products = comp.IsVehiclePage ? TShop.Database.GetVehicles(comp.VehicleFilter) : TShop.Database.GetItems(comp.ItemFilter);
                 int maxPage = 1 + products.Count / itemPerPage;
                 #region Body
                 int validCount = 0;
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < itemPerPage; i++)
                 {
                     int index = i + (page - 1) * itemPerPage;
                     int uiIndex = i + 1;
@@ -150,10 +150,6 @@ namespace Tavstal.TShop.Managers
 
                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tb_tshop_products#empty", validCount == 0);
                 #endregion
-
-                // TODO:
-                // Check 1... 6 7 8 9 
-                // Check 1 2 3 4 ... 9
 
                 #region Pagination
                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "bt_tshop_products#page#prev", page != 1);
