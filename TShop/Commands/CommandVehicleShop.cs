@@ -96,7 +96,7 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (TShop.Database.AddVehicle(asset.id, buycost, sellcost, permission != null, permission))
+                    if (TShop.Database.AddProduct(asset.id, true, buycost, sellcost, permission != null, permission))
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_vehicle_added", asset.vehicleName, asset.id);
                     else
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_added", asset.vehicleName);
@@ -135,7 +135,7 @@ namespace Tavstal.TShop
                         return;
                     }
 
-                    if (TShop.Database.RemoveVehicle(id))
+                    if (TShop.Database.RemoveProduct(id, true))
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_vehicle_removed", asset.vehicleName);
                     else
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_removed", asset.vehicleName);
@@ -196,7 +196,7 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (TShop.Database.UpdateVehicle(id, buycost, sellcost, permission != null, permission))
+                    if (TShop.Database.UpdateProduct(id, true, buycost, sellcost, permission != null, permission))
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_vehicle_updated", asset.vehicleName, asset.id);
                     else
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_updated", asset.vehicleName);

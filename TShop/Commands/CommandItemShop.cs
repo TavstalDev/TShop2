@@ -95,7 +95,7 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (TShop.Database.AddItem(asset.id, buycost, sellcost, permission != null, permission))
+                    if (TShop.Database.AddProduct(asset.id, false, buycost, sellcost, permission != null, permission))
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_item_added", asset.itemName, asset.id);
                     else
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_item_added", asset.itemName);
@@ -133,7 +133,7 @@ namespace Tavstal.TShop
                         return;
                     }
 
-                    if (TShop.Database.RemoveItem(id))
+                    if (TShop.Database.RemoveProduct(id, false))
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_item_removed", asset.itemName);
                     else
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_item_removed", asset.itemName);
@@ -193,7 +193,7 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (TShop.Database.UpdateItem(id, buycost, sellcost, permission != null, permission))
+                    if (TShop.Database.UpdateProduct(id, false, buycost, sellcost, permission != null, permission))
                     UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_item_updated", asset.itemName, asset.id);
                     else
                         UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_item_updated", asset.itemName);

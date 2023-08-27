@@ -34,12 +34,12 @@ namespace Tavstal.TShop
 
                     foreach (ShopItem item in items)
                     {
-                        TShop.Database.AddItem(item.Id, item.GetBuyCost(), item.GetSellCost(), false, "");
+                        TShop.Database.AddProduct(item.UnturnedId, false, item.GetBuyCost(), item.GetSellCost(), false, "");
                     }
 
                     foreach (ShopItem item in vehs)
                     {
-                        TShop.Database.AddVehicle(item.Id, item.GetBuyCost(), item.GetSellCost(), false, "");
+                        TShop.Database.AddProduct(item.UnturnedId, true, item.GetBuyCost(), item.GetSellCost(), false, "");
                     }
                     UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_migrate");
                 }
