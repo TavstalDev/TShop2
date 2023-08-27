@@ -90,15 +90,15 @@ namespace Tavstal.TShop.Managers
                     ShopItem product = products.ElementAt(index);
                     if (comp.IsVehiclePage)
                     {
-                        VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.Id);
+                        VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
                         if (vehicle == null)
                         {
-                            Logger.LogWarning($"# Failed to get the vehicle asset with {product.Id} ID.");
+                            Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}", false);
                             continue;
                         }
 
-                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.Id) : UnturnedHelper.GetItemIcon(product.Id));
+                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", true);
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", false);
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", false);
@@ -108,7 +108,7 @@ namespace Tavstal.TShop.Managers
                     }
                     else
                     {
-                        ItemAsset item = UAssetHelper.FindItemAsset(product.Id);
+                        ItemAsset item = UAssetHelper.FindItemAsset(product.UnturnedId);
                         if (item == null)
                         {
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}", false);
@@ -118,21 +118,21 @@ namespace Tavstal.TShop.Managers
                         #region Update Icon
                         if (item.size_x == item.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.Id) : UnturnedHelper.GetItemIcon(product.Id));
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", true);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", false);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", false);
                         }
                         else if (item.size_x > item.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.Id) : UnturnedHelper.GetItemIcon(product.Id));
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", false);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", false);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", true);
                         }
                         else
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.Id) : UnturnedHelper.GetItemIcon(product.Id));
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", false);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", true);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", false);
@@ -169,20 +169,19 @@ namespace Tavstal.TShop.Managers
                     for (int i = 0; i < 5; i++)
                     {
                         int uiIndex = i + 1;
-                        int index = i + (page - 1) * 5;
-                        if (!products.IsValidIndex(index))
+                        if (uiIndex > maxPage)
                         {
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#{uiIndex}", false);
                             comp.PageIndexes[arrayIndex][i] = -1;
                         }
                         else
                         {
-                            if (page == index + 1)
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#{uiIndex}", $"<color=#6C757D>{index + 1}");
+                            if (page == uiIndex)
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#{uiIndex}", $"<color=#6C757D>{uiIndex}");
                             else
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#{uiIndex}", (index + 1).ToString());
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#{uiIndex}", (uiIndex).ToString());
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#{uiIndex}", true);
-                            comp.PageIndexes[arrayIndex][i] = index;
+                            comp.PageIndexes[arrayIndex][i] = uiIndex;
                         }
                     }
                 }

@@ -52,17 +52,11 @@ namespace Tavstal.TShop
                 }
 
                 //Item Shop
-                if (MySQLConnection.DoesTableExist<ShopItem>(pluginConfig.Database.DatabaseTable_Items))
-                    MySQLConnection.CheckTable<ShopItem>(pluginConfig.Database.DatabaseTable_Items);
+                if (MySQLConnection.DoesTableExist<ShopItem>(pluginConfig.Database.DatabaseTable_Products))
+                    MySQLConnection.CheckTable<ShopItem>(pluginConfig.Database.DatabaseTable_Products);
                 else
-                    MySQLConnection.CreateTable<ShopItem>(pluginConfig.Database.DatabaseTable_Items);
+                    MySQLConnection.CreateTable<ShopItem>(pluginConfig.Database.DatabaseTable_Products);
 
-
-                //Vehicle Shop
-                if (MySQLConnection.DoesTableExist<ShopItem>(pluginConfig.Database.DatabaseTable_Vehicles))
-                    MySQLConnection.CheckTable<ShopItem>(pluginConfig.Database.DatabaseTable_Vehicles);
-                else
-                    MySQLConnection.CreateTable<ShopItem>(pluginConfig.Database.DatabaseTable_Vehicles);
 
                 MySQLConnection.Close();
             }
@@ -72,42 +66,48 @@ namespace Tavstal.TShop
             }
         }
 
-        #region Items
-        public bool AddItem(ushort itemId, decimal buycost, decimal sellcost, bool enableperm, string permission)
+        public bool AddProduct(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool enableperm, string permission)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.AddTableRow(tableName: pluginConfig.Database.DatabaseTable_Items, new ShopItem(itemId, buycost, sellcost, enableperm, permission, false, 0));
-        }  
-        
-        public bool RemoveItem(ushort itemId)
-        {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.RemoveTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, $"Id='{itemId}'", null);
+            return MySQLConnection.AddTableRow(tableName: pluginConfig.Database.DatabaseTable_Products, new ShopItem(id, isVehicle, buycost, sellcost, enableperm, permission, false, 0));
         }
-        public bool UpdateItem(ushort itemId, decimal buycost, decimal sellcost, bool enablepermission, string permission)
+
+        public bool RemoveProduct(ushort id, bool isVehicle)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, $"Id='{itemId}'", new List<SqlParameter>
+            return MySQLConnection.RemoveTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", null);
+        }
+
+        public bool UpdateProduct(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool enablepermission, string permission)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
             {
                 SqlParameter.Get<ShopItem>(x => x.BuyCost, buycost),
                 SqlParameter.Get<ShopItem>(x => x.SellCost, sellcost),
-                SqlParameter.Get<ShopItem>(x => x.hasPermission, enablepermission),
+                SqlParameter.Get<ShopItem>(x => x.HasPermission, enablepermission),
                 SqlParameter.Get<ShopItem>(x => x.Permission, permission)
             });
         }
-        public bool UpdateItem(ushort itemId, bool isdiscounted, decimal percent)
+        public bool UpdateProduct(ushort id, bool isVehicle, bool isdiscounted, decimal percent)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, $"Id='{itemId}'", new List<SqlParameter>
+            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
             {
-                SqlParameter.Get<ShopItem>(x => x.isDiscounted, isdiscounted),
-                SqlParameter.Get<ShopItem>(x => x.discountPercent, percent)
+                SqlParameter.Get<ShopItem>(x => x.IsDiscounted, isdiscounted),
+                SqlParameter.Get<ShopItem>(x => x.DiscountPercent, percent)
             });
         }
+        public List<ShopItem> GetProducts()
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: string.Empty, null);
+        }
+
         public List<ShopItem> GetItems()
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, whereClause: string.Empty, null);
+            return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{false}'", null);
         }
 
         public List<ShopItem> GetItems(EItemFilter? filter)
@@ -118,7 +118,7 @@ namespace Tavstal.TShop
             List<ShopItem> local = new List<ShopItem>();
             foreach (var item in items)
             {
-                ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, item.Id);
+                ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, item.UnturnedId);
                 if (asset == null)
                     continue;
 
@@ -138,6 +138,7 @@ namespace Tavstal.TShop
                             break;
                         }
                     case EItemType.FOOD:
+                    case EItemType.WATER:
                         {
                             if (filter == EItemFilter.Food)
                                 local.Add(item);
@@ -195,7 +196,6 @@ namespace Tavstal.TShop
                         }
                     case EItemType.FUEL:
                     case EItemType.REFILL:
-                    case EItemType.WATER:
                     case EItemType.OIL_PUMP:
                         {
                             if (filter == EItemFilter.Fuel)
@@ -242,50 +242,11 @@ namespace Tavstal.TShop
             }
             return local;
         }
-        public ShopItem FindItem(ushort itemId)
-        {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.GetTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Items, whereClause: $"Id='{itemId}'", null);
-        }
-        #endregion
-
-        #region Vehicles
-        public bool AddVehicle(ushort vehicleId, decimal buycost, decimal sellcost, bool enableperm, string permission)
-        {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.AddTableRow(tableName: pluginConfig.Database.DatabaseTable_Vehicles, new ShopItem(vehicleId, buycost, sellcost, enableperm, permission, false, 0));
-        }
-        public bool RemoveVehicle(ushort vehicleId)
-        {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.RemoveTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, $"Id='{vehicleId}'", null);
-        }
-        public bool UpdateVehicle(ushort vehicleId, decimal buycost, decimal sellcost, bool enablepermission, string permission)
-        {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, $"Id='{vehicleId}'", new List<SqlParameter>
-            {
-                SqlParameter.Get<ShopItem>(x => x.BuyCost, buycost),
-                SqlParameter.Get<ShopItem>(x => x.SellCost, sellcost),
-                SqlParameter.Get<ShopItem>(x => x.hasPermission, enablepermission),
-                SqlParameter.Get<ShopItem>(x => x.Permission, permission)
-            });
-        }
-
-        public bool UpdateVehicle(ushort vehicleId, bool isdiscounted, decimal percent)
-        {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.UpdateTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, $"Id='{vehicleId}'", new List<SqlParameter>
-            {
-                SqlParameter.Get<ShopItem>(x => x.isDiscounted, isdiscounted),
-                SqlParameter.Get<ShopItem>(x => x.discountPercent, percent)
-            });
-        }
 
         public List<ShopItem> GetVehicles()
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, whereClause: string.Empty, null);
+            return MySQLConnection.GetTableRows<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{true}'", null);
         }
 
         public List<ShopItem> GetVehicles(EEngine? engine)
@@ -296,7 +257,7 @@ namespace Tavstal.TShop
             List<ShopItem> local = new List<ShopItem>();
             foreach (var vehicle in vehicles)
             {
-                VehicleAsset asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, vehicle.Id);
+                VehicleAsset asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, vehicle.UnturnedId);
                 if (asset == null)
                     continue;
 
@@ -305,12 +266,17 @@ namespace Tavstal.TShop
             }
             return local;
         }
-        public ShopItem FindVehicle(ushort vehicleId)
+        public ShopItem FindItem(ushort id)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return MySQLConnection.GetTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Vehicles, whereClause: $"Id='{vehicleId}'", null);
+            return MySQLConnection.GetTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{false}'", null);
         }
-        #endregion
+
+        public ShopItem FindVehicle(ushort id)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return MySQLConnection.GetTableRow<ShopItem>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{true}'", null);
+        }
 
         #region Zaup
         public MySqlConnection CreateZaupConnection()
@@ -350,7 +316,7 @@ namespace Tavstal.TShop
                 MySQLCommand.CommandText = "SELECT * FROM " + tablename;
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
                 while (Reader.Read())
-                    i.Add(new ShopItem(Reader.GetUInt16("id"), Reader.GetDecimal("cost"), Reader.GetDecimal("buyback")));
+                    i.Add(new ShopItem(Reader.GetUInt16("id"), false, Reader.GetDecimal("cost"), Reader.GetDecimal("buyback")));
                 MySQLConnection.Close();
             }
             catch (Exception ex)
@@ -372,7 +338,7 @@ namespace Tavstal.TShop
                 MySQLCommand.CommandText = "SELECT * FROM " + tablename;
                 MySqlDataReader Reader = MySQLCommand.ExecuteReader();
                 while (Reader.Read())
-                    i.Add(new ShopItem(Reader.GetUInt16("id"), Reader.GetDecimal("cost"), 0));
+                    i.Add(new ShopItem(Reader.GetUInt16("id"), false, Reader.GetDecimal("cost"), 0));
                 MySQLConnection.Close();
             }
             catch (Exception ex)
