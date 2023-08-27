@@ -141,44 +141,38 @@ namespace Tavstal.TShop
                 if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
                     return;
 
-                List<ShopItem> items = Database.GetItems();
-                List<ShopItem> vehs = Database.GetVehicles();
+                List<ShopItem> products = Database.GetProducts();
 
-                foreach (ShopItem item in items.FindAll(x => x.isDiscounted))
-                    Database.UpdateItem(item.Id, false, 0);
+                foreach (ShopItem item in products.FindAll(x => x.IsDiscounted))
+                    Database.UpdateProduct(item.UnturnedId, item.IsVehicle, false, 0);
 
-                foreach (ShopItem item in vehs.FindAll(x => x.isDiscounted))
-                    Database.UpdateItem(item.Id, false, 0);
+                if (products.Count > 2)
+                    products.Shuffle();
 
-                if (items.Count > 2)
-                    items.Shuffle();
-                if (items.Count > 2)
-                    vehs.Shuffle();
+                List<ShopItem> items = products.FindAll(x => !x.IsVehicle);
+                List<ShopItem> vehs = products.FindAll(x => x.IsVehicle);
 
                 for (int i = 0; i < Config.ItemCountToDiscount; i++)
                 {
                     if (items.IsValidIndex(i))
-                        Database.UpdateItem(items[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                        Database.UpdateProduct(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
                 }
 
                 for (int i = 0; i < Config.VehicleCountToDiscount; i++)
                 {
                     if (vehs.IsValidIndex(i))
-                        Database.UpdateVehicle(vehs[i].Id, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                        Database.UpdateProduct(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
                 }
 
                 _nextUpdate = DateTime.Now.AddSeconds(Config.DiscountInterval);
             }
             catch (NullReferenceException nex)
             { 
-                // Not logging because this error has a 99% chance caused by load error
+                // Not logging because this error has a 99% chance is caused by load error
             }
         }
 
-        public override Dictionary<string, string> LanguagePacks => new Dictionary<string, string>()
-        {
-            { "hu", "https://pastebin.com/raw/kkUaw1LQ" },
-        };
+        public override Dictionary<string, string> LanguagePacks => new Dictionary<string, string>();
 
         public override Dictionary<string, string> DefaultLocalization =>
             new Dictionary<string, string>
@@ -247,7 +241,9 @@ namespace Tavstal.TShop
                 { "ui_total_buy", "BUY SUBTOTAL: {1}{0}" },
                 { "ui_total_sell", "SELL SUBTOTAL: {1}{0}" },
                 { "ui_discount", "<color=red><size=8><i>{2}{0}</i></size></color> {2}{1}" },
-                { "ui_shopname", "TShop" }
+                { "ui_shopname", "TShop" },
+                { "ui_basket_contains_product_already", "<color=black>The basket contains the '{0}' product already." },
+                { "ui_basket_product_added", "<color=black>The '{0}' product has been successfully added to your basket." }
             };
     }
 }
