@@ -43,7 +43,7 @@ namespace Tavstal.TShop
             DownloadLocalePacks = true;
             Database = new DatabaseData();
             Database.DatabaseTable_Products = "tshop_products";
-            UIButtonDelay = 0.3f;
+            UIButtonDelay = 0.45f;
             //UseQuality = true;
             ExpMode = false;
             EnableDiscounts = true;
