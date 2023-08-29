@@ -23,11 +23,11 @@ namespace Tavstal.TShop
         public EItemFilter? ItemFilter { get; set; }
         public EEngine? VehicleFilter { get; set; }
         public EPaymentMethod PaymentMethod { get; set; } = EPaymentMethod.WALLET;
-        public int PageItem { get; set; } = 0;
-        public int PageVehicle { get; set; } = 0;
+        public int PageItem { get; set; } = 1;
+        public int PageVehicle { get; set; } = 1;
         public bool IsVehiclePage { get; set; }
-        public int PageBasket { get; set; } = 0;
-        public int[][] PageIndexes = new int[2][];
+        public int PageBasket { get; set; } = 1;
+        public int[][] PageIndexes = new int[3][];
         public Dictionary<ShopItem, int> Basket = new Dictionary<ShopItem, int>();
         public bool HasActiveNotify { get; set; }
         public List<string> NotifiesOnQueue = new List<string>();
@@ -36,6 +36,7 @@ namespace Tavstal.TShop
         {
             PageIndexes[0] = new int[5];
             PageIndexes[1] = new int[5];
+            PageIndexes[2] = new int[5];
         }
 
         public void AddNotifyToQueue(string message)
