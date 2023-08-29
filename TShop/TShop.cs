@@ -242,8 +242,8 @@ namespace Tavstal.TShop
                 { "ui_total_sell", "SELL SUBTOTAL: {1}{0}" },
                 { "ui_discount", "<color=red><size=8><i>{2}{0}</i></size></color> {2}{1}" },
                 { "ui_shopname", "TShop" },
-                { "ui_basket_contains_product_already", "<color=black>The basket contains the '{0}' product already." },
-                { "ui_basket_product_added", "<color=black>The '{0}' product has been successfully added to your basket." }
+                { "ui_basket_contains_product_already", "The basket contains the '{0}' product already." },
+                { "ui_basket_product_added", "The '{0}' product has been successfully added to your basket." }
             };
     }
 }
