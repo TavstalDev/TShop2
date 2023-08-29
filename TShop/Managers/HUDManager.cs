@@ -24,6 +24,7 @@ using SDG.NetTransport;
 using Tavstal.TLibrary.Helpers;
 using System.Reflection;
 using System.Numerics;
+using System.Web.UI;
 
 namespace Tavstal.TShop.Managers
 {
@@ -151,272 +152,7 @@ namespace Tavstal.TShop.Managers
                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tb_tshop_products#empty", validCount == 0);
                 #endregion
 
-                #region Pagination
-                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "bt_tshop_products#page#prev", page != 1);
-
-                if (page == maxPage)
-                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "bt_tshop_products#page#next", false);
-                else
-                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "bt_tshop_products#page#next", maxPage > 1);
-
-                // Pages between 1 and 5
-                if (maxPage <= 5)
-                {
-                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "bt_tshop_products#page#dots#left", false);
-                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "bt_tshop_products#page#dots#centerleft", false);
-                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "bt_tshop_products#page#dots#centerright", false);
-                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "bt_tshop_products#page#dots#right", false);
-                    for (int i = 0; i < 5; i++)
-                    {
-                        int uiIndex = i + 1;
-                        if (uiIndex > maxPage)
-                        {
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#{uiIndex}", false);
-                            comp.PageIndexes[arrayIndex][i] = -1;
-                        }
-                        else
-                        {
-                            if (page == uiIndex)
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#{uiIndex}", $"<color=#6C757D>{uiIndex}");
-                            else
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#{uiIndex}", (uiIndex).ToString());
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#{uiIndex}", true);
-                            comp.PageIndexes[arrayIndex][i] = uiIndex;
-                        }
-                    }
-                }
-                // Pages after 5
-                else
-                {
-                    // First Page Button
-                    if (page == 1)
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#1", $"<color=#6C757D>1");
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#1", true);
-                        // Disable button
-                        comp.PageIndexes[arrayIndex][0] = -1;
-                    }
-                    else
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#1", "1");
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#1", true);
-                        comp.PageIndexes[arrayIndex][0] = 1;
-                    }
-
-                    // Button After First Page 
-                    if (page - 2 == 1 || page == 1)
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", "2");
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#left", false);
-                        comp.PageIndexes[arrayIndex][1] = 2;
-                    }
-                    else if (page - 1 == 1)
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", "<color=#6C757D>2");
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#left", false);
-                        comp.PageIndexes[arrayIndex][1] = -1;
-                        // Disable button
-                    }
-                    else
-                    {
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#left", true);
-                    }
-
-                    // Center 
-                    if (maxPage > 6)
-                    {
-                        if (page - 3 >= 1 && page + 3 <= maxPage)
-                        {
-                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (page - 1).ToString());
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                            comp.PageIndexes[arrayIndex][1] = page - 1;
-
-                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", $"<color=#6C757D>{page}");
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                            comp.PageIndexes[arrayIndex][2] = -1;
-
-                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4", (page + 1).ToString());
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
-                            comp.PageIndexes[arrayIndex][3] = page + 1;
-                        }
-                        else
-                        {
-                            if (page <= 4)
-                            {
-                                if (page == 3)
-                                {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", $"<color=#6C757D>3");
-                                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                                    // Disable button
-                                    comp.PageIndexes[arrayIndex][2] = -1;
-                                }
-                                else
-                                {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", "3");
-                                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                                    comp.PageIndexes[arrayIndex][2] = 3;
-                                }
-
-                                if (page == 4)
-                                {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4", $"<color=#6C757D>4");
-                                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
-                                    // Disable button
-                                    comp.PageIndexes[arrayIndex][3] = -1;
-                                }
-                                else
-                                {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4", "4");
-                                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
-                                    comp.PageIndexes[arrayIndex][3] = 4;
-                                }
-
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#5", false);
-                                comp.PageIndexes[arrayIndex][4] = -1;
-                            }
-                            else
-                            {
-                                if (page == maxPage - 3)
-                                {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", $"<color=#6C757D>{maxPage - 3}");
-                                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                                    // Disable button
-                                    comp.PageIndexes[arrayIndex][1] = -1;
-                                }
-                                else
-                                {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (maxPage - 3).ToString());
-                                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                                    comp.PageIndexes[arrayIndex][1] = maxPage - 3;
-                                }
-
-                                if (page == maxPage - 2)
-                                {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", $"<color=#6C757D>{maxPage - 2}");
-                                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                                    // Disable button
-                                    comp.PageIndexes[arrayIndex][2] = -1;
-                                }
-                                else
-                                {
-                                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", (maxPage - 2).ToString());
-                                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                                    comp.PageIndexes[arrayIndex][2] = maxPage - 2;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (page <= 4)
-                        {
-                            if (page == 3)
-                            {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", $"<color=#6C757D>3");
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                                // Disable button
-                                comp.PageIndexes[arrayIndex][1] = -1;
-                            }
-                            else
-                            {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", "3");
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                                comp.PageIndexes[arrayIndex][1] = 3;
-                            }
-
-                            if (page == 4)
-                            {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", $"<color=#6C757D>4");
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                                // Disable button
-                                comp.PageIndexes[arrayIndex][2] = -1;
-                            }
-                            else
-                            {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", "4");
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                                comp.PageIndexes[arrayIndex][2] = 4;
-                            }
-
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
-                        }
-                        else
-                        {
-                            if (page == maxPage - 3)
-                            {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (maxPage - 3).ToString());
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                                // Disable button
-                                comp.PageIndexes[arrayIndex][1] = -1;
-                            }
-                            else
-                            {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#2", (maxPage - 3).ToString());
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#2", true);
-                                comp.PageIndexes[arrayIndex][1] = maxPage - 3;
-                            }
-
-                            if (page == maxPage - 2)
-                            {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", (maxPage - 2).ToString());
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                                // Disable button
-                                comp.PageIndexes[arrayIndex][2] = -1;
-                            }
-                            else
-                            {
-                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#3", (maxPage - 2).ToString());
-                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#3", true);
-                                comp.PageIndexes[arrayIndex][2] = maxPage - 2;
-                            }
-                        }
-                    }
-
-                    // Button before Last Page
-                    if (page + 2 == maxPage || page == maxPage)
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4", (maxPage - 1).ToString());
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#right", false);
-                        comp.PageIndexes[arrayIndex][3] = maxPage - 1;
-                    }
-                    else if (page + 1 == maxPage)
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4", $"<color=#6C757D>{page}");
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#right", false);
-                        comp.PageIndexes[arrayIndex][3] = -1;
-                    }
-                    else if (page - 3 <= 0)
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#4", "4");
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#4", true);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#right", true);
-                        comp.PageIndexes[arrayIndex][3] = 4;
-                    }
-                    else
-                    {
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#dots#right", true);
-                    }
-
-                    // Last Page Button 
-                    if (page == maxPage)
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#5", $"<color=#6C757D>{maxPage}");
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#5", true);
-                        // Disable button
-                        comp.PageIndexes[arrayIndex][4] = -1;
-                    }
-                    else
-                    {
-                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_tshop_products#page#5", maxPage.ToString());
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_tshop_products#page#5", true);
-                        comp.PageIndexes[arrayIndex][4] = maxPage;
-                    }
-                }
-                #endregion
+                UpdatePagination(player, "tshop_products", page, maxPage);
             }
             catch (Exception ex)
             {
@@ -428,6 +164,391 @@ namespace Tavstal.TShop.Managers
         public static void UpdateBasketPage(UnturnedPlayer player)
         {
             TShopComponent comp = player.GetComponent<TShopComponent>();
+
+            try
+            {
+                int page = comp.PageBasket;
+
+                if (page < 1)
+                    page = 1;
+
+                int itemPerPage = 12;
+
+                ITransportConnection playerTC = player.SteamPlayer().transportConnection;
+                int maxPage = 1 + comp.Basket.Count / itemPerPage;
+
+                #region LeftBox
+                #region Body
+                int validCount = 0;
+                for (int i = 0; i < itemPerPage; i++)
+                {
+                    int index = i + (page - 1) * itemPerPage;
+                    int uiIndex = i + 1;
+                    if (!comp.Basket.IsValidIndex(index))
+                    {
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", false);
+                        continue;
+                    }
+
+                    ShopItem product = comp.Basket.Keys.ElementAt(index);
+                    int amount = comp.Basket.Values.ElementAt(uiIndex);
+                    if (product.IsVehicle)
+                    {
+                        VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
+                        if (vehicle == null)
+                        {
+                            Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", false);
+                            continue;
+                        }
+
+                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", true);
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
+
+                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#product#{uiIndex}#name", vehicle.vehicleName);
+
+                    }
+                    else
+                    {
+                        ItemAsset item = UAssetHelper.FindItemAsset(product.UnturnedId);
+                        if (item == null)
+                        {
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", false);
+                            continue;
+                        }
+
+                        #region Update Icon
+                        if (item.size_x == item.size_y)
+                        {
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", true);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
+                        }
+                        else if (item.size_x > item.size_y)
+                        {
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", true);
+                        }
+                        else
+                        {
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", true);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
+                        }
+                        #endregion
+
+                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#product#{uiIndex}#name", item.itemName);
+                    }
+
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}#price", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"inputf_tshop_basket#product#1#amt", amount.ToString());
+                    //EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", true);
+                    validCount++;
+                }
+
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#empty", validCount == 0);
+                #endregion
+
+                UpdatePagination(player, "tshop_basket", page, maxPage);
+                #endregion
+
+                UpdateBasketPayment(player);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException("Error in HUDManager: ");
+                Logger.LogError(ex);
+            }
+        }
+
+        public static void UpdateBasketPayment(UnturnedPlayer player)
+        {
+
+        } 
+
+        private static void UpdatePagination(UnturnedPlayer player, string uiName, int page, int maxPage)
+        {
+            TShopComponent comp = player.GetComponent<TShopComponent>();
+            int arrayIndex = 0;
+            if (comp.IsVehiclePage)
+            {
+                page = comp.PageVehicle;
+                arrayIndex = 1;
+            }
+            else
+                page = comp.PageItem;
+
+            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#prev", page != 1);
+
+            if (page == maxPage)
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#next", false);
+            else
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#next", maxPage > 1);
+
+            // Pages between 1 and 5
+            if (maxPage <= 5)
+            {
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#left", false);
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#centerleft", false);
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#centerright", false);
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#right", false);
+                for (int i = 0; i < 5; i++)
+                {
+                    int uiIndex = i + 1;
+                    if (uiIndex > maxPage)
+                    {
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#{uiIndex}", false);
+                        comp.PageIndexes[arrayIndex][i] = -1;
+                    }
+                    else
+                    {
+                        if (page == uiIndex)
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#{uiIndex}", $"<color=#6C757D>{uiIndex}");
+                        else
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#{uiIndex}", (uiIndex).ToString());
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#{uiIndex}", true);
+                        comp.PageIndexes[arrayIndex][i] = uiIndex;
+                    }
+                }
+            }
+            // Pages after 5
+            else
+            {
+                // First Page Button
+                if (page == 1)
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#1", $"<color=#6C757D>1");
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#1", true);
+                    // Disable button
+                    comp.PageIndexes[arrayIndex][0] = -1;
+                }
+                else
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#1", "1");
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#1", true);
+                    comp.PageIndexes[arrayIndex][0] = 1;
+                }
+
+                // Button After First Page 
+                if (page - 2 == 1 || page == 1)
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", "2");
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#left", false);
+                    comp.PageIndexes[arrayIndex][1] = 2;
+                }
+                else if (page - 1 == 1)
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", "<color=#6C757D>2");
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#left", false);
+                    comp.PageIndexes[arrayIndex][1] = -1;
+                    // Disable button
+                }
+                else
+                {
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#left", true);
+                }
+
+                // Center 
+                if (maxPage > 6)
+                {
+                    if (page - 3 >= 1 && page + 3 <= maxPage)
+                    {
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", (page - 1).ToString());
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                        comp.PageIndexes[arrayIndex][1] = page - 1;
+
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", $"<color=#6C757D>{page}");
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                        comp.PageIndexes[arrayIndex][2] = -1;
+
+                        EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#4", (page + 1).ToString());
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#4", true);
+                        comp.PageIndexes[arrayIndex][3] = page + 1;
+                    }
+                    else
+                    {
+                        if (page <= 4)
+                        {
+                            if (page == 3)
+                            {
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", $"<color=#6C757D>3");
+                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                                // Disable button
+                                comp.PageIndexes[arrayIndex][2] = -1;
+                            }
+                            else
+                            {
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", "3");
+                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                                comp.PageIndexes[arrayIndex][2] = 3;
+                            }
+
+                            if (page == 4)
+                            {
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#4", $"<color=#6C757D>4");
+                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#4", true);
+                                // Disable button
+                                comp.PageIndexes[arrayIndex][3] = -1;
+                            }
+                            else
+                            {
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#4", "4");
+                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#4", true);
+                                comp.PageIndexes[arrayIndex][3] = 4;
+                            }
+
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#5", false);
+                            comp.PageIndexes[arrayIndex][4] = -1;
+                        }
+                        else
+                        {
+                            if (page == maxPage - 3)
+                            {
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", $"<color=#6C757D>{maxPage - 3}");
+                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                                // Disable button
+                                comp.PageIndexes[arrayIndex][1] = -1;
+                            }
+                            else
+                            {
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", (maxPage - 3).ToString());
+                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                                comp.PageIndexes[arrayIndex][1] = maxPage - 3;
+                            }
+
+                            if (page == maxPage - 2)
+                            {
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", $"<color=#6C757D>{maxPage - 2}");
+                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                                // Disable button
+                                comp.PageIndexes[arrayIndex][2] = -1;
+                            }
+                            else
+                            {
+                                EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", (maxPage - 2).ToString());
+                                EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                                comp.PageIndexes[arrayIndex][2] = maxPage - 2;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (page <= 4)
+                    {
+                        if (page == 3)
+                        {
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", $"<color=#6C757D>3");
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                            // Disable button
+                            comp.PageIndexes[arrayIndex][1] = -1;
+                        }
+                        else
+                        {
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", "3");
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                            comp.PageIndexes[arrayIndex][1] = 3;
+                        }
+
+                        if (page == 4)
+                        {
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", $"<color=#6C757D>4");
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                            // Disable button
+                            comp.PageIndexes[arrayIndex][2] = -1;
+                        }
+                        else
+                        {
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", "4");
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                            comp.PageIndexes[arrayIndex][2] = 4;
+                        }
+
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#4", true);
+                    }
+                    else
+                    {
+                        if (page == maxPage - 3)
+                        {
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", (maxPage - 3).ToString());
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                            // Disable button
+                            comp.PageIndexes[arrayIndex][1] = -1;
+                        }
+                        else
+                        {
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#2", (maxPage - 3).ToString());
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#2", true);
+                            comp.PageIndexes[arrayIndex][1] = maxPage - 3;
+                        }
+
+                        if (page == maxPage - 2)
+                        {
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", (maxPage - 2).ToString());
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                            // Disable button
+                            comp.PageIndexes[arrayIndex][2] = -1;
+                        }
+                        else
+                        {
+                            EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#3", (maxPage - 2).ToString());
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#3", true);
+                            comp.PageIndexes[arrayIndex][2] = maxPage - 2;
+                        }
+                    }
+                }
+
+                // Button before Last Page
+                if (page + 2 == maxPage || page == maxPage)
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#4", (maxPage - 1).ToString());
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#4", true);
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#right", false);
+                    comp.PageIndexes[arrayIndex][3] = maxPage - 1;
+                }
+                else if (page + 1 == maxPage)
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#4", $"<color=#6C757D>{page}");
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#4", true);
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#right", false);
+                    comp.PageIndexes[arrayIndex][3] = -1;
+                }
+                else if (page - 3 <= 0)
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#4", "4");
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#4", true);
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#right", true);
+                    comp.PageIndexes[arrayIndex][3] = 4;
+                }
+                else
+                {
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#dots#right", true);
+                }
+
+                // Last Page Button 
+                if (page == maxPage)
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#5", $"<color=#6C757D>{maxPage}");
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#5", true);
+                    // Disable button
+                    comp.PageIndexes[arrayIndex][4] = -1;
+                }
+                else
+                {
+                    EffectManager.sendUIEffectText((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"tb_{uiName}#page#5", maxPage.ToString());
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#5", true);
+                    comp.PageIndexes[arrayIndex][4] = maxPage;
+                }
+            }
         }
     }
 }
