@@ -152,7 +152,7 @@ namespace Tavstal.TShop.Managers
                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tb_tshop_products#empty", validCount == 0);
                 #endregion
 
-                UpdatePagination(player, "tshop_products", page, maxPage);
+                UpdatePagination(player, "tshop_products", arrayIndex, page, maxPage);
             }
             catch (Exception ex)
             {
@@ -191,7 +191,7 @@ namespace Tavstal.TShop.Managers
                     }
 
                     ShopItem product = comp.Basket.Keys.ElementAt(index);
-                    int amount = comp.Basket.Values.ElementAt(uiIndex);
+                    int amount = comp.Basket.Values.ElementAt(index);
                     if (product.IsVehicle)
                     {
                         VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
@@ -246,8 +246,8 @@ namespace Tavstal.TShop.Managers
                         EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#product#{uiIndex}#name", item.itemName);
                     }
 
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}#price", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"inputf_tshop_basket#product#1#amt", amount.ToString());
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#product#{uiIndex}#price", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"inputf_tshop_basket#product#{uiIndex}#amt", amount.ToString());
                     //EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", true);
                     validCount++;
@@ -256,7 +256,7 @@ namespace Tavstal.TShop.Managers
                 EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#empty", validCount == 0);
                 #endregion
 
-                UpdatePagination(player, "tshop_basket", page, maxPage);
+                UpdatePagination(player, "tshop_basket", 2, page, maxPage);
                 #endregion
 
                 UpdateBasketPayment(player);
@@ -273,17 +273,9 @@ namespace Tavstal.TShop.Managers
 
         } 
 
-        private static void UpdatePagination(UnturnedPlayer player, string uiName, int page, int maxPage)
+        private static void UpdatePagination(UnturnedPlayer player, string uiName, int arrayIndex, int page, int maxPage)
         {
             TShopComponent comp = player.GetComponent<TShopComponent>();
-            int arrayIndex = 0;
-            if (comp.IsVehiclePage)
-            {
-                page = comp.PageVehicle;
-                arrayIndex = 1;
-            }
-            else
-                page = comp.PageItem;
 
             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, $"bt_{uiName}#page#prev", page != 1);
 
