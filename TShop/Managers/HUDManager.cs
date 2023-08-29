@@ -270,6 +270,33 @@ namespace Tavstal.TShop.Managers
 
         public static void UpdateBasketPayment(UnturnedPlayer player)
         {
+            TShopComponent comp = player.GetComponent<TShopComponent>();
+            ITransportConnection playerTC = player.SteamPlayer().transportConnection;
+            decimal subtotalBuyPrice = 0;
+            decimal discountBuyPrice = 0;
+            decimal totalBuyPrice = 0;
+            decimal subtotalSellPrice = 0;
+
+            foreach (var elem in comp.Basket)
+            {
+                subtotalBuyPrice += elem.Key.BuyCost * elem.Value;
+                subtotalSellPrice += elem.Key.SellCost * elem.Value;
+                if (elem.Key.IsDiscounted)
+                {
+                    decimal discountedPrice = elem.Key.BuyCost - elem.Key.BuyCost * (elem.Key.DiscountPercent / 100);
+                    discountBuyPrice += elem.Key.BuyCost - discountedPrice;
+                    totalBuyPrice += elem.Value * discountedPrice;
+                }
+                else
+                    totalBuyPrice += elem.Value * elem.Key.BuyCost;
+            }
+
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#buy#subtotal", TShop.Instance.Localize("ui_product_buycost", subtotalBuyPrice));
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#buy#discount", TShop.Instance.Localize("ui_product_discount", discountBuyPrice));
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#buy#total", TShop.Instance.Localize("ui_product_buycost", totalBuyPrice));
+
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#sell#subtotal", TShop.Instance.Localize("ui_product_sellcost", subtotalSellPrice));
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#sell#total", TShop.Instance.Localize("ui_product_sellcost", subtotalSellPrice));
 
         } 
 

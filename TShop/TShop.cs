@@ -237,6 +237,7 @@ namespace Tavstal.TShop
                 { "ui_product_free", "Free" },
                 { "ui_product_notavailable", "N/A" },
                 { "ui_product_buycost", "${0}" },
+                { "ui_product_discount", "${0}" },
                 { "ui_product_sellcost", "${0}" },
                 { "ui_total_buy", "BUY SUBTOTAL: {1}{0}" },
                 { "ui_total_sell", "SELL SUBTOTAL: {1}{0}" },
