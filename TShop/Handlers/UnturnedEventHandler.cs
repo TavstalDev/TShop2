@@ -51,7 +51,25 @@ namespace Tavstal.TShop.Handlers
             UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
             TShopComponent comp = player.GetComponent<TShopComponent>();
 
-            
+            if (button.StartsWith("inputf_tshop_basket#product#"))
+            {
+                int buttonIndex = Convert.ToInt32(button.Replace("inputf_tshop_basket#product#", "").Replace("#amt", "")) - 1;
+
+                int elementIndex = (comp.PageBasket - 1) * 12 + buttonIndex;
+                if (!comp.Basket.IsValidIndex(elementIndex))
+                    return;
+
+                if (int.TryParse(text, out int v))
+                {
+                    if (v > 100 || v < 0)
+                        return;
+
+                    var key = comp.Basket.Keys.ElementAt(elementIndex);
+                    comp.Basket[key] = v;
+
+                    HUDManager.UpdateBasketPayment(uPlayer);
+                }
+            }
         }
 
         private static void Event_OnButtonClick(Player player, string button)
@@ -232,13 +250,13 @@ namespace Tavstal.TShop.Handlers
                     return;
 
                 ShopItem item = products[index];
-                if (comp.Basket.Any(x => x.UnturnedId == item.UnturnedId && x.IsVehicle == item.IsVehicle))
+                if (comp.Basket.Any(x => x.Key.UnturnedId == item.UnturnedId && x.Key.IsVehicle == item.IsVehicle))
                 {
                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_contains_product_already", item.GetName()));
                     return;
                 }
 
-                comp.Basket.Add(item);
+                comp.Basket.Add(item, 1);
                 comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_product_added", item.GetName()));
             }
         }

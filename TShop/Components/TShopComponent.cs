@@ -28,7 +28,7 @@ namespace Tavstal.TShop
         public bool IsVehiclePage { get; set; }
         public int PageBasket { get; set; } = 0;
         public int[][] PageIndexes = new int[2][];
-        public List<ShopItem> Basket = new List<ShopItem>();
+        public Dictionary<ShopItem, int> Basket = new Dictionary<ShopItem, int>();
         public bool HasActiveNotify { get; set; }
         public List<string> NotifiesOnQueue = new List<string>();
 
