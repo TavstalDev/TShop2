@@ -13,6 +13,7 @@ using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
 using Tavstal.TShop.Compatibility.Enums;
 using Tavstal.TShop.Helpers;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Tavstal.TShop.Handlers
 {
@@ -66,7 +67,14 @@ namespace Tavstal.TShop.Handlers
                         return;
 
                     var key = comp.Basket.Keys.ElementAt(elementIndex);
-                    comp.Basket[key] = v;
+                    if (key.IsVehicle)
+                    {
+                        comp.Basket[key] = 1;
+                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_vehicle_quantity_change_prevent"));
+                        EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, uPlayer.SteamPlayer().transportConnection, true, button, "1");
+                    }
+                    else
+                        comp.Basket[key] = v;
 
                     HUDManager.UpdateBasketPayment(uPlayer);
                 }
@@ -238,6 +246,142 @@ namespace Tavstal.TShop.Handlers
                             HUDManager.UpdateProductPage(uPlayer);
                             return;
                         }
+                    case "bt_tshop_basket#buy":
+                        {
+                            foreach (var prod in comp.Basket)
+                            {
+                                decimal cost = prod.Key.GetBuyCost(prod.Value);
+                                if (prod.Key.IsVehicle)
+                                {
+                                    VehicleAsset asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, prod.Key.UnturnedId);
+                                    if (asset == null)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_exists", prod.Key.UnturnedId));
+                                        continue;
+                                    }
+
+                                    if (TShop.economyProvider.GetBalance(uPlayer) < cost)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough"));
+                                        continue;
+                                    }
+
+                                    if (cost == 0)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_buy_error"));
+                                        continue;
+                                    }
+
+                                    TShop.economyProvider.Withdraw(uPlayer, cost);
+                                    VehicleManager.spawnLockedVehicleForPlayerV2(asset.id, uPlayer.Position + new UnityEngine.Vector3(0, 0, 5), uPlayer.Player.transform.rotation, uPlayer.Player);
+                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_buy", asset.vehicleName, prod.Value, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
+                                }
+                                else
+                                {
+                                    ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, prod.Key.UnturnedId);
+                                    if (asset == null)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_found", prod.Key.UnturnedId));
+                                        continue;
+                                    }
+
+                                    if (TShop.economyProvider.GetBalance(uPlayer) < cost)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough"));
+                                        continue;
+                                    }
+
+                                    if (cost == 0)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_buy_error"));
+                                        continue;
+                                    }
+
+                                    TShop.economyProvider.Withdraw(uPlayer, cost);
+                                    for (int i = 0; i < prod.Value; i++)
+                                    {
+                                        if (!uPlayer.Inventory.tryAddItem(new Item(asset.id, true), false))
+                                            ItemManager.dropItem(new Item(asset.id, true), uPlayer.Position, true, true, false);
+                                    }
+                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_buy", asset.itemName, prod.Value, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
+                                }
+                            }
+                            break;
+                        }
+                    case "bt_tshop_basket#sell":
+                        {
+                            foreach (var prod in comp.Basket)
+                            {
+                                if (prod.Key.SellCost <= 0)
+                                    continue;
+
+                                decimal cost = prod.Key.GetSellCost(prod.Value);
+                                if (prod.Key.IsVehicle)
+                                {
+                                    VehicleAsset asset = null;
+                                    InteractableVehicle vehicle = uPlayer.CurrentVehicle;
+                                    if (vehicle == null)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_sell_null"));
+                                        continue;
+                                    }
+                                    else if (vehicle.lockedOwner != uPlayer.CSteamID || !vehicle.isLocked || vehicle.isDead)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_sell_owner"));
+                                        continue;
+                                    }
+                                    else if (vehicle.id != prod.Key.UnturnedId)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_found"));
+                                        continue;
+                                    }
+
+                                    TShop.economyProvider.Deposit(uPlayer, cost);
+                                    foreach (Passenger pas in vehicle.passengers)
+                                    {
+                                        VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
+                                    }
+                                    VehicleManager.askVehicleDestroy(vehicle);
+                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_sell", asset.vehicleName, 1, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
+                                }
+                                else
+                                {
+                                    ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, prod.Key.UnturnedId);
+
+                                    if (asset == null)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_found", prod.Key.UnturnedId));
+                                        continue;
+                                    }
+
+                                    List<InventorySearch> search = uPlayer.Inventory.search(asset.id, true, true);
+                                    if (search.Count < prod.Value)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_enough"));
+                                        continue;
+                                    }
+
+                                    if (cost == 0)
+                                    {
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_sell_error"));
+                                        continue;
+                                    }
+
+                                    TShop.economyProvider.Deposit(uPlayer, cost);
+                                    for (int i = 0; i < prod.Value; i++)
+                                    {
+                                        uPlayer.Inventory.removeItem(search[i].page, uPlayer.Inventory.getIndex(search[i].page, search[i].jar.x, search[i].jar.y));
+                                    }
+                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_sell", asset.itemName, prod.Value, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
+                                }
+                                comp.Basket.Remove(prod.Key);
+                            }
+                            break;
+                        }
                 }
 
                 if (button.StartsWith("bt_tshop_products#page#"))
@@ -288,8 +432,30 @@ namespace Tavstal.TShop.Handlers
                         return;
                     }
 
+                    if (item.IsVehicle && comp.Basket.Any(x => x.Key.IsVehicle))
+                    {
+                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_contains_vehicle_already", item.GetName()));
+                        return;
+                    }
+
                     comp.Basket.Add(item, 1);
                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_product_added", item.GetName()));
+                }
+                else if (button.StartsWith("bt_tshop_basket#product#"))
+                {
+                    if (button.EndsWith("#delete"))
+                    {
+                        int buttonIndex = Convert.ToInt32(button.Replace("bt_tshop_basket#product#", "").Replace("#delete", "")) - 1;
+
+                        int elementIndex = (comp.PageBasket - 1) * 12 + buttonIndex;
+                        if (!comp.Basket.IsValidIndex(elementIndex))
+                            return;
+
+                        var key = comp.Basket.Keys.ElementAt(elementIndex);
+                        comp.Basket.Remove(key);
+
+                        HUDManager.UpdateBasketPage(uPlayer);
+                    }
                 }
             }
             catch (Exception ex)
