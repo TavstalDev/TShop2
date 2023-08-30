@@ -53,7 +53,7 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                decimal cost = item.GetBuyCost(amount);
+                decimal cost = item.GetSellCost(amount);
                 if (cost == 0)
                 {
                     UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_sell_error");
