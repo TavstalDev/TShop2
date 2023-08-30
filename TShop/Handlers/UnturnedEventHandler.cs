@@ -248,6 +248,7 @@ namespace Tavstal.TShop.Handlers
                         }
                     case "bt_tshop_basket#buy":
                         {
+                            List<KeyValuePair<ShopItem, int>> toRemove = new List<KeyValuePair<ShopItem, int>>();
                             foreach (var prod in comp.Basket)
                             {
                                 decimal cost = prod.Key.GetBuyCost(prod.Value);
@@ -306,12 +307,22 @@ namespace Tavstal.TShop.Handlers
                                     }
                                     TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_buy", asset.itemName, prod.Value, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
+                                    toRemove.Add(prod);
                                 }
+                            }
+
+                            if (toRemove.Count > 0)
+                            {
+                                foreach (var elem in toRemove)
+                                    comp.Basket.Remove(elem.Key);
+                                HUDManager.UpdateBasketPage(uPlayer);
                             }
                             break;
                         }
                     case "bt_tshop_basket#sell":
                         {
+                            List<KeyValuePair<ShopItem, int>> toRemove = new List<KeyValuePair<ShopItem, int>>();
+
                             foreach (var prod in comp.Basket)
                             {
                                 if (prod.Key.SellCost <= 0)
@@ -377,8 +388,15 @@ namespace Tavstal.TShop.Handlers
                                     }
                                     TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_sell", asset.itemName, prod.Value, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
+                                    toRemove.Add(prod);
                                 }
-                                comp.Basket.Remove(prod.Key);
+                            }
+
+                            if (toRemove.Count > 0)
+                            {
+                                foreach (var elem in toRemove)
+                                    comp.Basket.Remove(elem.Key);
+                                HUDManager.UpdateBasketPage(uPlayer);
                             }
                             break;
                         }

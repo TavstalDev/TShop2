@@ -255,7 +255,6 @@ namespace Tavstal.TShop
                 { "ui_error_item_not_found", "Failed to get the item asset with '{0}' id." },
                 { "ui_error_item_not_enough", "You don't have enough items to sell." },
                 { "ui_error_item_sell_error", "You can't sell this item." },
-                { "ui_error_item_not_found", "You must have the items in your inventory that you want to sell." },
                 { "ui_error_item_buy_error", "You can't buy this item." },
                 { "ui_error_balance_not_enough", "You don't have enough money. You need {0} to be able to buy." },
                 { "ui_success_item_buy", "You have successfully bought {1}x {0} for {3}{2}" },
