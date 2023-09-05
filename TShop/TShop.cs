@@ -37,6 +37,7 @@ namespace Tavstal.TShop
         public new static TShop Instance { get; private set; }
         public static DatabaseManager Database { get; private set; }
         public static IEconomyProvider economyProvider { get; private set; }
+        public static bool IsConnectionAuthFailed { get; set; }
         internal DateTime _nextUpdate { get; set; }
 
         public override void OnLoad()
@@ -70,7 +71,7 @@ namespace Tavstal.TShop
                 else
                     Event_OnPluginsLoaded(0);
 
-                if (MySqlExtensions.IsConnectionAuthFailed)
+                if (IsConnectionAuthFailed)
                     return;
 
                 Logger.Log("# TShop has been loaded.");
@@ -92,10 +93,10 @@ namespace Tavstal.TShop
 
         private void Event_OnPluginsLoaded(int i)
         {
-            if (MySqlExtensions.IsConnectionAuthFailed)
+            if (IsConnectionAuthFailed)
             {
                 Logger.LogWarning($"# Unloading {PluginName} due to database authentication error.");
-                UnloadPlugin();
+                this?.UnloadPlugin();
                 return;
             }
 
@@ -135,7 +136,7 @@ namespace Tavstal.TShop
         {
             try
             {
-                if (MySqlExtensions.IsConnectionAuthFailed)
+                if (IsConnectionAuthFailed)
                     return;
 
                 if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)

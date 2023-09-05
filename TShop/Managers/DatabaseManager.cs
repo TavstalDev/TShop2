@@ -38,33 +38,25 @@ namespace Tavstal.TShop
             {
                 using (var connection = CreateConnection())
                 {
-                    connection.OpenSafe();
+                    if (!connection.OpenSafe())
+                        TShop.IsConnectionAuthFailed = true;
                     if (connection.State != System.Data.ConnectionState.Open)
-                    {
                         throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
-                    }
+
+                    //Item Shop
+                    if (connection.DoesTableExist<ShopItem>(pluginConfig.Database.DatabaseTable_Products))
+                        connection.CheckTable<ShopItem>(pluginConfig.Database.DatabaseTable_Products);
                     else
+                        connection.CreateTable<ShopItem>(pluginConfig.Database.DatabaseTable_Products);
+
+                    if (connection.State != System.Data.ConnectionState.Closed)
                         connection.Close();
                 }
-
-                MySqlConnection MySQLConnection = CreateConnection();
-                if (MySQLConnection == null)
-                {
-                    throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
-                }
-
-                //Item Shop
-                if (MySQLConnection.DoesTableExist<ShopItem>(pluginConfig.Database.DatabaseTable_Products))
-                    MySQLConnection.CheckTable<ShopItem>(pluginConfig.Database.DatabaseTable_Products);
-                else
-                    MySQLConnection.CreateTable<ShopItem>(pluginConfig.Database.DatabaseTable_Products);
-
-                if (MySQLConnection.State != System.Data.ConnectionState.Closed)
-                    MySQLConnection.Close();
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException("Error in checkSchema:");
+                Logger.LogError(ex);
             }
         }
 
