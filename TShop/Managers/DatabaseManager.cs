@@ -32,7 +32,7 @@ namespace Tavstal.TShop
         {
         }
 
-        public override void CheckSchema()
+        protected override void CheckSchema()
         {
             try
             {
@@ -43,6 +43,8 @@ namespace Tavstal.TShop
                     {
                         throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
                     }
+                    else
+                        connection.Close();
                 }
 
                 MySqlConnection MySQLConnection = CreateConnection();
@@ -57,8 +59,8 @@ namespace Tavstal.TShop
                 else
                     MySQLConnection.CreateTable<ShopItem>(pluginConfig.Database.DatabaseTable_Products);
 
-
-                MySQLConnection.Close();
+                if (MySQLConnection.State != System.Data.ConnectionState.Closed)
+                    MySQLConnection.Close();
             }
             catch (Exception ex)
             {
