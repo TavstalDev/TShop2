@@ -124,9 +124,6 @@
       <HintPath>..\Libraries\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="YamlDotNet">
-      <HintPath>..\Libraries\YamlDotNet.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CommandShopFill.cs" />
