@@ -32,15 +32,12 @@ namespace Tavstal.TShop
             new SubCommand("add", "Adds an item to the shop.", "add [item name | id] [buycost] [sellcost] <permission>", new List<string>(), new List<string>() { "tshop.itemshop.add" }, 
                 (IRocketPlayer caller, string[] args) =>
                 {
-                    UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-                    TShopComponent comp = callerPlayer.GetComponent<TShopComponent>();
-
                     ushort id = 0;
                     ItemAsset asset = null;
 
                     if (args.Length < 3 || args.Length > 4)
                     {
-                        ExecuteHelp(caller, "add", args);
+                        ExecuteHelp(caller, true, "add", args);
                         return;
                     }
 
@@ -50,6 +47,7 @@ namespace Tavstal.TShop
                     }
                     catch { }
 
+
                     if (id > 0)
                         asset = UAssetHelper.FindItemAsset(id);
                     else
@@ -57,7 +55,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, callerPlayer,  "error_item_not_found", args[0]);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_not_found", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -65,7 +63,7 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindItem(id);
                     if (item != null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, callerPlayer,  "error_item_already_added", asset.itemName, asset.id);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_already_added", asset.itemName, asset.id);
                         return;
                     }
 
@@ -92,22 +90,19 @@ namespace Tavstal.TShop
                         permission = null;
 
                     if (TShop.Database.AddProduct(asset.id, false, buycost, sellcost, permission != null, permission))
-                        UChatHelper.SendCommandReply(TShop.Instance, callerPlayer,  "success_item_added", asset.itemName, asset.id);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_item_added", asset.itemName, asset.id);
                     else
-                        UChatHelper.SendCommandReply(TShop.Instance, callerPlayer,  "error_item_added", asset.itemName);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_added", asset.itemName);
                 }),
             new SubCommand("remove", "Removes an item from the shop", "remove [item name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.itemshop.remove" },
                 (IRocketPlayer caller, string[] args) =>
                 {
-                    UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-                    TShopComponent comp = callerPlayer.GetComponent<TShopComponent>();
-
                     ushort id = 0;
                     ItemAsset asset = null;
 
                     if (args.Length != 1)
                     {
-                        this.ExecuteHelp(caller, "remove", args);
+                        this.ExecuteHelp(caller,  true, "remove", args);
                         return;
                     }
 
@@ -124,7 +119,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, callerPlayer,  "error_item_not_found", args[0]);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_not_found", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -132,65 +127,41 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindItem(id);
                     if (item == null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, callerPlayer, "error_item_not_added", args[0]);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_not_added", args[0]);
                         return;
                     }
 
                     if (TShop.Database.RemoveProduct(id, false))
-                        UChatHelper.SendCommandReply(TShop.Instance, callerPlayer, "success_item_removed", asset.itemName);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "success_item_removed", asset.itemName);
                     else
-                        UChatHelper.SendCommandReply(TShop.Instance, callerPlayer, "error_item_removed", asset.itemName);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_removed", asset.itemName);
                 }),
             new SubCommand("update", "Updates an item in the shop.", "update [item name | id] [buycost] [sellcost] <permission>", new List<string> { "change" }, new List<string>() { "tshop.itemshop.update" },
                 (IRocketPlayer caller, string[] args) =>
                 {
+                    ushort id = 0;
+                    ItemAsset asset = null;
 
-                })
-        };
-
-        public override bool ExecutionRequested(IRocketPlayer caller, string[] args)
-        {
-            UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-            TShopComponent comp = callerPlayer.GetComponent<TShopComponent>();
-
-            if (args.Length == 0)
-                return false;
-            else
-            {
-                ushort id = 0;
-                ItemAsset asset = null;
-
-
-                if (args[0].EqualsIgnoreCase("add"))
-                {
-                    return true;
-                }
-                else if (args[0].EqualsIgnoreCase("remove"))
-                {
-                    
-                }
-                else if (args[0].EqualsIgnoreCase("update"))
-                {
-                    if (args.Length < 4 || args.Length > 5)
+                    if (args.Length < 3 || args.Length > 4)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_itemshop_update_args", asset.itemName);
+                        ExecuteHelp(caller, true, "update", args);
                         return;
                     }
 
                     try
                     {
-                        ushort.TryParse(args[1], out id);
+                        ushort.TryParse(args[0], out id);
                     }
                     catch { }
 
                     if (id > 0)
-                        asset = (ItemAsset)Assets.find(EAssetType.ITEM, id);
+                        asset = UAssetHelper.FindItemAsset(id);
                     else
-                        asset = UAssetHelper.FindItemAsset(args[1]);
+                        asset = UAssetHelper.FindItemAsset(args[0]);
 
                     if (asset == null)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_found", args[0]);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_not_found", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -198,7 +169,7 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindItem(id);
                     if (item == null)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_added", asset.itemName);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_not_added", asset.itemName);
                         return;
                     }
 
@@ -208,30 +179,32 @@ namespace Tavstal.TShop
 
                     try
                     {
-                        decimal.TryParse(args[2], out buycost);
+                        decimal.TryParse(args[1], out buycost);
                     }
                     catch { }
 
                     try
                     {
-                        decimal.TryParse(args[3], out sellcost);
+                        decimal.TryParse(args[2], out sellcost);
                     }
                     catch { }
 
-                    if (args.Length == 5)
-                        permission = args[4];
+                    if (args.Length == 4)
+                        permission = args[3];
 
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
                     if (TShop.Database.UpdateProduct(id, false, buycost, sellcost, permission != null, permission))
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_updated", asset.itemName, asset.id);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_item_updated", asset.itemName, asset.id);
                     else
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_updated", asset.itemName);
-                }
-                else
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_itemshop_args");
-            }
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_updated", asset.itemName);
+                })
+        };
+
+        public override bool ExecutionRequested(IRocketPlayer caller, string[] args)
+        {
+            return false;
         }
     }
 }
