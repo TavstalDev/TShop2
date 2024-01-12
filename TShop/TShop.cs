@@ -1,34 +1,15 @@
-﻿using Rocket.API;
-using Rocket.Core.Plugins;
+﻿using SDG.Unturned;
 using System;
-using Rocket.API.Collections;
-using UnityEngine;
-using Rocket.Unturned.Chat;
-using SDG.Unturned;
-using System.Linq;
-using Rocket.Unturned.Player;
-using Rocket.Unturned.Events;
-using Rocket.Unturned;
 using System.Collections.Generic;
-using System.IO;
-using Math = System.Math;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Tavstal.TShop.Compability;
-using Tavstal.TShop.Managers;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
-using Tavstal.TShop.Compability.Hooks;
-using PlayerGesture =  Rocket.Unturned.Events.UnturnedPlayerEvents.PlayerGesture;
-using SDG.Framework.Utilities;
-using System.Reflection;
-using Tavstal.TShop.Helpers;
+using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers;
 using Tavstal.TLibrary.Managers;
-using Tavstal.TLibrary.Compatibility.Economy;
-using Tavstal.TLibrary.Compatibility;
-using Tavstal.TLibrary;
+using Tavstal.TShop.Compability;
+using Tavstal.TShop.Compability.Hooks;
 using Tavstal.TShop.Handlers;
+using Math = System.Math;
 
 namespace Tavstal.TShop
 {
@@ -95,14 +76,14 @@ namespace Tavstal.TShop
         {
             if (IsConnectionAuthFailed)
             {
-                Logger.LogWarning($"# Unloading {PluginName} due to database authentication error.");
+                Logger.LogWarning($"# Unloading {GetPluginName()} due to database authentication error.");
                 this?.UnloadPlugin();
                 return;
             }
 
             Logger.LogLateInit();
             Logger.LogWarning("# Searching for economy plugin...");
-            HookManager = new HookManager();
+            HookManager = new HookManager(this);
             HookManager.LoadAll(Assembly);
 
             if (Config.ExpMode)
@@ -193,7 +174,7 @@ namespace Tavstal.TShop
                 { "error_command_vehicleshop_args", "&6Usage: /vshop add [vehicle name | id] [buycost] [sellcost] <permission> | remove  [vehicle name | id] | update [vehicle name | id] [buycost] [sellcost] <permission>" },
                 { "error_command_vehicleshop_add_args", "&6Usage: /vshop add [vehicle name | id] [buycost] [sellcost] <permission>" },
                 { "error_command_vehicleshop_update_args", "&6Usage: /vshop update [vehicle name | id] [buycost] [sellcost] <permission>" },
-                { "success_command_page", "((color=orange))Next page: /shoplist {0} {1}." },
+                { "success_command_page", "&6Next page: /shoplist {0} {1}." },
                 { "error_command_page", "&6That page doesn't exist." },
                 { "success_command_page_end", "&aYou have reached the end of the {0} shop list." },
                 { "success_command_page_info", "- {0} (ID: {1}, buy price: {2}, sell price: {3} and Permission: {4})" },

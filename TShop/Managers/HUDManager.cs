@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
+
 using Tavstal.TShop.Compability.Hooks;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Extensions;
@@ -25,6 +25,7 @@ using Tavstal.TLibrary.Helpers;
 using System.Reflection;
 using System.Numerics;
 using System.Web.UI;
+using Tavstal.TShop.Helpers;
 
 namespace Tavstal.TShop.Managers
 {
@@ -94,7 +95,7 @@ namespace Tavstal.TShop.Managers
                         VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
                         if (vehicle == null)
                         {
-                            Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
+                            TShop.Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}", false);
                             continue;
                         }
@@ -156,8 +157,8 @@ namespace Tavstal.TShop.Managers
             }
             catch (Exception ex)
             {
-                Logger.LogException("Error in HUDManager: ");
-                Logger.LogError(ex);
+                TShop.Logger.LogException("Error in HUDManager: ");
+                TShop.Logger.LogError(ex);
             }
         }
 
@@ -197,7 +198,7 @@ namespace Tavstal.TShop.Managers
                         VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
                         if (vehicle == null)
                         {
-                            Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
+                            TShop.Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", false);
                             continue;
                         }
@@ -263,8 +264,8 @@ namespace Tavstal.TShop.Managers
             }
             catch (Exception ex)
             {
-                Logger.LogException("Error in HUDManager: ");
-                Logger.LogError(ex);
+                TShop.Logger.LogException("Error in HUDManager: ");
+                TShop.Logger.LogError(ex);
             }
         }
 

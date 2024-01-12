@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Rocket.Unturned.Chat;
 using Rocket.API;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
+
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
+using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -41,16 +42,16 @@ namespace Tavstal.TShop
                     {
                         TShop.Database.AddProduct(item.UnturnedId, true, item.GetBuyCost(), item.GetSellCost(), false, "");
                     }
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_migrate");
+                    UChatHelper.SendChatMessage(TShop.Instance, callerPlayer.SteamPlayer(),  "success_migrate");
                 }
                 catch (Exception ex)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_migrate_console");
-                    Logger.LogError("Migration error: " + ex);
+                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_migrate_console");
+                    TShop.Logger.LogError("Migration error: " + ex);
                 }
             }
             else
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_migrate_args");
+                UChatHelper.SendChatMessage(TShop.Instance, callerPlayer.SteamPlayer(),  "error_command_migrate_args");
         }
     }
 }

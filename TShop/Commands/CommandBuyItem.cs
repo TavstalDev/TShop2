@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Rocket.Unturned.Chat;
 using Rocket.API;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
 using Tavstal.TLibrary.Compatibility;
@@ -57,7 +56,7 @@ namespace Tavstal.TShop
 
                 if (asset == null)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_item_not_found", args[0]);
+                    UChatHelper.SendChatMessage(TShop.Instance, callerPlayer.SteamPlayer(),  "error_item_not_found", args[0]);
                     return;
                 }
                 id = asset.id;
@@ -65,7 +64,7 @@ namespace Tavstal.TShop
                 ShopItem item = TShop.Database.FindItem(id);
                 if (item == null)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_item_not_added", args[0]);
+                    UChatHelper.SendChatMessage(TShop.Instance, callerPlayer.SteamPlayer(),  "error_item_not_added", args[0]);
                     return;
                 }
 
@@ -73,13 +72,13 @@ namespace Tavstal.TShop
 
                 if (TShop.economyProvider.GetBalance(callerPlayer) < cost)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_balance_not_enough");
+                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_balance_not_enough");
                     return;
                 }
 
                 if (cost == 0)
                 {
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_item_buy_error");
+                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_buy_error");
                     return;
                 }
 
@@ -90,10 +89,10 @@ namespace Tavstal.TShop
                         ItemManager.dropItem(new Item(asset.id, true), callerPlayer.Position, true, true, false);
                 }
                 TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_item_buy", asset.itemName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
+                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_buy", asset.itemName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_buyitem_args");
+                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_buyitem_args");
         }
     }
 }

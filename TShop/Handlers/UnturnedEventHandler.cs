@@ -478,8 +478,8 @@ namespace Tavstal.TShop.Handlers
             }
             catch (Exception ex)
             {
-                LoggerHelper.LogException("Error in UEventHandler:");
-                LoggerHelper.LogError(ex);
+                TShop.Logger.LogException("Error in UEventHandler:");
+                TShop.Logger.LogError(ex);
             }
         }
     }

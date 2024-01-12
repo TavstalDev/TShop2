@@ -10,7 +10,7 @@ using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using UnityEngine;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
+
 using Tavstal.TShop.Managers;
 using Tavstal.TShop.Compability;
 using SDG.Unturned;
@@ -63,7 +63,7 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
-                Logger.Log("Loading Uconomy hook...");
+                TShop.Logger.Log("Loading Uconomy hook...");
 
                 var uconomyPlugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("uconomy"));
                 var uconomyType = uconomyPlugin.GetType().Assembly.GetType("fr34kyn01535.Uconomy.Uconomy");
@@ -83,14 +83,14 @@ namespace Tavstal.TShop.Compability.Hooks
 
                 _getTranslation = _pluginInstance.GetType().GetMethod("Translate", new[] { typeof(string), typeof(object[]) });
 
-                Logger.LogException("Currency Name >> " + GetCurrencyName());
-                Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance").ToString());
-                Logger.Log("Uconomy hook loaded.");
+                TShop.Logger.LogException("Currency Name >> " + GetCurrencyName());
+                TShop.Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance").ToString());
+                TShop.Logger.Log("Uconomy hook loaded.");
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed to load Uconomy hook");
-                Logger.LogError(e.ToString());
+                TShop.Logger.LogError("Failed to load Uconomy hook");
+                TShop.Logger.LogError(e.ToString());
             }
         }
 
@@ -115,7 +115,7 @@ namespace Tavstal.TShop.Compability.Hooks
                 }
                 catch
                 {
-                    Logger.LogError($"Failed to get '{VariableName}' variable!");
+                    TShop.Logger.LogError($"Failed to get '{VariableName}' variable!");
                     return default;
                 }
             }
@@ -129,7 +129,7 @@ namespace Tavstal.TShop.Compability.Hooks
             }
             catch
             {
-                Logger.LogError($"Failed to get config jobj.");
+                TShop.Logger.LogError($"Failed to get config jobj.");
                 return null;
             }
         }

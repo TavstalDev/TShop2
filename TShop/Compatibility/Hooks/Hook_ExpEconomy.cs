@@ -10,7 +10,7 @@ using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using UnityEngine;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
+
 using Tavstal.TShop.Managers;
 using Tavstal.TShop.Compability;
 using SDG.Unturned;
@@ -56,16 +56,16 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
-                Logger.Log("Loading ExpEconomy hook...");
+                TShop.Logger.Log("Loading ExpEconomy hook...");
 
-                Logger.LogException("Currency Name >> " + GetCurrencyName());
-                Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance").ToString());
-                Logger.Log("ExpEconomy hook loaded.");
+                TShop.Logger.LogException("Currency Name >> " + GetCurrencyName());
+                TShop.Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance").ToString());
+                TShop.Logger.Log("ExpEconomy hook loaded.");
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed to load ExpEconomy hook");
-                Logger.LogError(e.ToString());
+                TShop.Logger.LogError("Failed to load ExpEconomy hook");
+                TShop.Logger.LogError(e.ToString());
             }
         }
 
@@ -90,7 +90,7 @@ namespace Tavstal.TShop.Compability.Hooks
                 }
                 catch
                 {
-                    Logger.LogError($"Failed to get '{VariableName}' variable!");
+                    TShop.Logger.LogError($"Failed to get '{VariableName}' variable!");
                     return default;
                 }
             }
@@ -104,7 +104,7 @@ namespace Tavstal.TShop.Compability.Hooks
             }
             catch
             {
-                Logger.LogError($"Failed to get config jobj.");
+                TShop.Logger.LogError($"Failed to get config jobj.");
                 return null;
             }
         }

@@ -11,7 +11,6 @@ using System.Reflection;
 using Rocket.API;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
 using static SDG.Provider.SteamGetInventoryResponse;
 using Tavstal.TLibrary.Managers;
 using Tavstal.TLibrary.Compatibility;
@@ -28,7 +27,7 @@ namespace Tavstal.TShop
     {
         private static TShopConfiguration pluginConfig => TShop.Instance.Config;
 
-        public DatabaseManager(IConfigurationBase configuration) : base(configuration)
+        public DatabaseManager(IConfigurationBase configuration) : base(TShop.Instance, configuration)
         {
         }
 
@@ -55,8 +54,8 @@ namespace Tavstal.TShop
             }
             catch (Exception ex)
             {
-                Logger.LogException("Error in checkSchema:");
-                Logger.LogError(ex);
+                TShop.Logger.LogException("Error in checkSchema:");
+                TShop.Logger.LogError(ex);
             }
         }
 
@@ -293,7 +292,7 @@ namespace Tavstal.TShop
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                TShop.Logger.LogException(exception);
             }
             return mySqlConnection;
         }
@@ -315,7 +314,7 @@ namespace Tavstal.TShop
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                TShop.Logger.LogException(ex);
             }
             return i;
         }
@@ -337,7 +336,7 @@ namespace Tavstal.TShop
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                TShop.Logger.LogException(ex);
             }
             return i;
         }

@@ -53,7 +53,7 @@ namespace Tavstal.TShop
             }
             catch (Exception ex)
             {
-                LoggerHelper.LogError(ex);
+                TShop.Logger.LogError(ex);
             }
         }
 
@@ -85,8 +85,8 @@ namespace Tavstal.TShop
             }
             catch (Exception ex)
             {
-                LoggerHelper.LogException("Error in Component SendNotify():");
-                LoggerHelper.LogError(ex);
+                TShop.Logger.LogException("Error in Component SendNotify():");
+                TShop.Logger.LogError(ex);
             }
         }
     }

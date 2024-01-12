@@ -150,7 +150,6 @@
     <Compile Include="Compatibility\Hooks\Hook_ExpEconomy.cs" />
     <Compile Include="Compatibility\Hooks\Hook_Uconomy.cs" />
     <Compile Include="Handlers\UnturnedEventHandler.cs" />
-    <Compile Include="Helpers\LoggerHelper.cs" />
     <Compile Include="Managers\DatabaseManager.cs" />
     <Compile Include="Helpers\UnturnedHelper.cs" />
     <Compile Include="Managers\HUDManager.cs" />

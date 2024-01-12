@@ -29,50 +29,18 @@ using Newtonsoft.Json.Linq;
 using System.Reflection;
 using Random = System.Random;
 using Tavstal.TShop.Compability;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
+
 using static SDG.Unturned.ItemCurrencyAsset;
 using Tavstal.TShop.Helpers;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers;
 
-namespace Tavstal.TShop.Managers
+namespace Tavstal.TShop.Helpers
 {
     public class UnturnedHelper
     {
         private static TShop pluginMain => TShop.Instance;
         private static TShopConfiguration pluginConfig => TShop.Instance.Config;
-
-        private static string Translate(bool addPrefix, string key, params object[] args) => TShop.Instance.Localize(addPrefix, key, args);
-
-        public static void ServerSendChatMessage(string text, string icon = null, SteamPlayer fromPlayer = null, SteamPlayer toPlayer = null, EChatMode mode = EChatMode.GLOBAL)
-        => ChatManager.serverSendMessage(text, Color.white, fromPlayer, toPlayer, mode, icon, true);
-
-        public static void SendCommandReply(object toPlayer, string translation, params object[] args)
-        {
-            string icon = "";
-            if (toPlayer is SteamPlayer steamPlayer)
-                ServerSendChatMessage(FormatHelper.FormatTextV2(Translate(true, translation, args)), icon, null, steamPlayer, EChatMode.GLOBAL);
-            else
-                Logger.LogRichCommand(Translate(false, translation, args));
-        }
-
-        public static void SendChatMessage(SteamPlayer toPlayer, string translation, params object[] args)
-        {
-            string icon = "";
-            ServerSendChatMessage(FormatHelper.FormatTextV2(Translate(true, translation, args)), icon, null, toPlayer, EChatMode.GLOBAL);
-        }
-
-        public static void SendChatMessage(string translation, params object[] args)
-        {
-            string icon = "";
-            ServerSendChatMessage(Translate(true, translation, args), icon, null, null, EChatMode.GLOBAL);
-        }
-
-        public static void SendChatMessageUntranslated(SteamPlayer toPlayer, string text)
-        {
-            string icon = "";
-            ServerSendChatMessage(text, icon, null, toPlayer, EChatMode.GLOBAL);
-        }
 
         public static string GetItemIcon(ushort id)
         {
@@ -88,8 +56,8 @@ namespace Tavstal.TShop.Managers
             }
             catch (Exception e)
             {
-                Logger.Log("Error in " + voidName + "(): ");
-                Logger.Log(e);
+                TShop.Logger.Log("Error in " + voidName + "(): ");
+                TShop.Logger.Log(e);
             }
             return pluginConfig.DefaultProductIconUrl;
         }
@@ -108,8 +76,8 @@ namespace Tavstal.TShop.Managers
             }
             catch (Exception e)
             {
-                Logger.Log("Error in " + voidName + "(): ");
-                Logger.Log(e);
+                TShop.Logger.Log("Error in " + voidName + "(): ");
+                TShop.Logger.Log(e);
             }
             return pluginConfig.DefaultProductIconUrl;
         }

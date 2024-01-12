@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Rocket.Unturned.Chat;
 using Rocket.API;
-using Logger = Tavstal.TShop.Helpers.LoggerHelper;
+
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Managers;
 using Tavstal.TLibrary.Compatibility;
@@ -31,7 +31,7 @@ namespace Tavstal.TShop
 
             if (args.Length == 0)
             {
-                UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_vehicleshop_args");
+                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_args");
                 return;
             }
             else
@@ -44,7 +44,7 @@ namespace Tavstal.TShop
                 {
                     if (args.Length < 4 || args.Length > 5)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_vehicleshop_add_args");
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_add_args");
                         return;
                     }
 
@@ -62,7 +62,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -70,7 +70,7 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindVehicle(id);
                     if (item != null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_already_added", asset.vehicleName, asset.id);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_already_added", asset.vehicleName, asset.id);
                         return;
                     }
 
@@ -97,15 +97,15 @@ namespace Tavstal.TShop
                         permission = null;
 
                     if (TShop.Database.AddProduct(asset.id, true, buycost, sellcost, permission != null, permission))
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_vehicle_added", asset.vehicleName, asset.id);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_added", asset.vehicleName, asset.id);
                     else
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_added", asset.vehicleName);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_added", asset.vehicleName);
                 }
                 else if (args[0].EqualsIgnoreCase("remove"))
                 {
                     if (args.Length != 2)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_vehicleshop_remove_args", asset.vehicleName);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_remove_args", asset.vehicleName);
                         return;
                     }
 
@@ -123,7 +123,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -131,20 +131,20 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindVehicle(id);
                     if (item == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
                         return;
                     }
 
                     if (TShop.Database.RemoveProduct(id, true))
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_vehicle_removed", asset.vehicleName);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_removed", asset.vehicleName);
                     else
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_removed", asset.vehicleName);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_removed", asset.vehicleName);
                 }
                 else if (args[0].EqualsIgnoreCase("update"))
                 {
                     if (args.Length < 4 || args.Length > 5)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_vehicleshop_update_args", asset.vehicleName);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_update_args", asset.vehicleName);
                         return;
                     }
 
@@ -162,7 +162,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -170,7 +170,7 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindVehicle(id);
                     if (item == null)
                     {
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_not_added", asset.vehicleName);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", asset.vehicleName);
                         return;
                     }
 
@@ -197,12 +197,12 @@ namespace Tavstal.TShop
                         permission = null;
 
                     if (TShop.Database.UpdateProduct(id, true, buycost, sellcost, permission != null, permission))
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "success_vehicle_updated", asset.vehicleName, asset.id);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_updated", asset.vehicleName, asset.id);
                     else
-                        UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_vehicle_updated", asset.vehicleName);
+                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_updated", asset.vehicleName);
                 }
                 else
-                    UnturnedHelper.SendChatMessage(callerPlayer.SteamPlayer(),  "error_command_vehicleshop_args");
+                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_args");
             }
 
         }
