@@ -15,14 +15,14 @@ using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
-    public class CommandVehicleShop : IRocketCommand
+    public class CommandVehicleShop : CommandBase
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Player;
-        public string Name => "vehicleshop";
-        public string Help => "Manages the vehicle shop.";
-        public string Syntax => "add [vehicle name | id] <buycost> <sellcost> <permission> | remove  [vehicle name | id] | update [vehicle name | id] <buycost> <sellcost> <permission>";
-        public List<string> Aliases => new List<string> { "vshop" };
-        public List<string> Permissions => new List<string> { "tshop.admin.vehicleshop" };
+        public override AllowedCaller AllowedCaller => AllowedCaller.Player;
+        public override string Name => "vehicleshop";
+        public override string Help => "Manages the vehicle shop.";
+        public override string Syntax => "add [vehicle name | id] <buycost> <sellcost> <permission> | remove  [vehicle name | id] | update [vehicle name | id] <buycost> <sellcost> <permission>";
+        public override List<string> Aliases => new List<string> { "vshop" };
+        public override List<string> Permissions => new List<string> { "tshop.admin.vehicleshop" };
 
         public void Execute(IRocketPlayer caller, string[] args)
         {

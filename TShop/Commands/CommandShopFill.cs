@@ -15,7 +15,7 @@ namespace Tavstal.TShop
     {
         public AllowedCaller AllowedCaller => AllowedCaller.Player;
         public string Name => "shopfill";
-        public string Help => "Opens the shop UI.";
+        public string Help => "Fills the shop with items. Used for debug";
         public string Syntax => "";
         public List<string> Aliases => new List<string> { "shfill" };
         public List<string> Permissions => new List<string> { "tshop.shopfill" };
