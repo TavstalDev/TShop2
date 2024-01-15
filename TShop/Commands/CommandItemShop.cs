@@ -29,7 +29,7 @@ namespace Tavstal.TShop
         public override IPlugin Plugin => TShop.Instance;
         public override List<SubCommand> SubCommands => new List<SubCommand>()
         {
-            new SubCommand("add", "Adds an item to the shop.", "add [item name | id] [buycost] [sellcost] <permission>", new List<string>(), new List<string>() { "tshop.itemshop.add" }, 
+            new SubCommand("add", "Adds an item to the shop.", "add [item name | id] [buycost] [sellcost] <permission>", new List<string>() { "insert", "create" }, new List<string>() { "tshop.itemshop.add" }, 
                 (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;

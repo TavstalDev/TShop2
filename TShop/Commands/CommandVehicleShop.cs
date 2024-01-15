@@ -12,57 +12,51 @@ using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers;
+using Tavstal.TLibrary.Compatibility.Interfaces;
+using Rocket.Core.Assets;
 
 namespace Tavstal.TShop
 {
     public class CommandVehicleShop : CommandBase
     {
-        public override AllowedCaller AllowedCaller => AllowedCaller.Player;
+        public override AllowedCaller AllowedCaller => AllowedCaller.Both;
         public override string Name => "vehicleshop";
         public override string Help => "Manages the vehicle shop.";
-        public override string Syntax => "add [vehicle name | id] <buycost> <sellcost> <permission> | remove  [vehicle name | id] | update [vehicle name | id] <buycost> <sellcost> <permission>";
+        public override string Syntax => "add | remove | update";
         public override List<string> Aliases => new List<string> { "vshop" };
-        public override List<string> Permissions => new List<string> { "tshop.admin.vehicleshop" };
+        public override List<string> Permissions => new List<string> { "tshop.vehicleshop" };
 
-        public void Execute(IRocketPlayer caller, string[] args)
+        public override IPlugin Plugin => TShop.Instance;
+
+        public override List<SubCommand> SubCommands => new List<SubCommand>()
         {
-            UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-            TShopComponent comp = callerPlayer.GetComponent<TShopComponent>();
-
-            if (args.Length == 0)
-            {
-                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_args");
-                return;
-            }
-            else
-            {
-                ushort id = 0;
-                VehicleAsset asset = null;
-
-
-                if (args[0].EqualsIgnoreCase("add"))
+            new SubCommand("add", "Adds vehicle to the shop.", "add [vehicle name | id] <buycost> <sellcost> <permission>", new List<string>() { "insert", "create" }, new List<string>() { "tshop.vehicleshop.add" },
+                (IRocketPlayer caller, string[] args) =>
                 {
-                    if (args.Length < 4 || args.Length > 5)
+                    ushort id = 0;
+                    VehicleAsset asset = null;
+
+                    if (args.Length < 3 || args.Length > 4)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_add_args");
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_command_vehicleshop_add_args");
                         return;
                     }
 
                     try
                     {
-                        ushort.TryParse(args[1], out id);
+                        ushort.TryParse(args[0], out id);
                     }
                     catch { }
 
                     if (id > 0)
-                        asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
+                        asset = UAssetHelper.FindVehicleAsset(id);
                     else
-                        asset = UAssetHelper.FindVehicleAsset(args[1]);
+                        asset = UAssetHelper.FindVehicleAsset(args[0]);
 
 
                     if (asset == null)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_exists", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -70,7 +64,7 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindVehicle(id);
                     if (item != null)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_already_added", asset.vehicleName, asset.id);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_already_added", asset.vehicleName, asset.id);
                         return;
                     }
 
@@ -80,50 +74,54 @@ namespace Tavstal.TShop
 
                     try
                     {
-                        decimal.TryParse(args[2], out buycost);
+                        decimal.TryParse(args[1], out buycost);
                     }
                     catch { }
 
                     try
                     {
-                        decimal.TryParse(args[3], out sellcost);
+                        decimal.TryParse(args[2], out sellcost);
                     }
                     catch { }
 
-                    if (args.Length == 5)
-                        permission = args[4];
+                    if (args.Length == 4)
+                        permission = args[3];
 
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
                     if (TShop.Database.AddProduct(asset.id, true, buycost, sellcost, permission != null, permission))
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_added", asset.vehicleName, asset.id);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "success_vehicle_added", asset.vehicleName, asset.id);
                     else
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_added", asset.vehicleName);
-                }
-                else if (args[0].EqualsIgnoreCase("remove"))
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_added", asset.vehicleName);
+                }),
+            new SubCommand("remove", "Removes a vehicle from the shop.", "remove [vehicle name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.vehicleshop.remove" },
+                (IRocketPlayer caller, string[] args) =>
                 {
-                    if (args.Length != 2)
+                    ushort id = 0;
+                    VehicleAsset asset = null;
+
+                    if (args.Length != 1)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_remove_args", asset.vehicleName);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_command_vehicleshop_remove_args", asset.vehicleName);
                         return;
                     }
 
                     try
                     {
-                        ushort.TryParse(args[1], out id);
+                        ushort.TryParse(args[0], out id);
                     }
                     catch { }
 
                     if (id > 0)
-                        asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
+                        asset = UAssetHelper.FindVehicleAsset(id);
                     else
-                        asset = UAssetHelper.FindVehicleAsset(args[1]);
+                        asset = UAssetHelper.FindVehicleAsset(args[0]);
 
 
                     if (asset == null)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_exists", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -131,38 +129,42 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindVehicle(id);
                     if (item == null)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_added", args[0]);
                         return;
                     }
 
                     if (TShop.Database.RemoveProduct(id, true))
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_removed", asset.vehicleName);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "success_vehicle_removed", asset.vehicleName);
                     else
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_removed", asset.vehicleName);
-                }
-                else if (args[0].EqualsIgnoreCase("update"))
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_removed", asset.vehicleName);
+                }),
+            new SubCommand("update", "Updates a vehicle in the shop.", "update [vehicle name | id] <buycost> <sellcost> <permission>", new List<string>() { "change" }, new List<string>() { "tshop.vehicleshop.update" },
+                (IRocketPlayer caller, string[] args) =>
                 {
-                    if (args.Length < 4 || args.Length > 5)
+                    ushort id = 0;
+                    VehicleAsset asset = null;
+
+                    if (args.Length < 3|| args.Length > 4)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_update_args", asset.vehicleName);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_command_vehicleshop_update_args", asset.vehicleName);
                         return;
                     }
 
                     try
                     {
-                        ushort.TryParse(args[1], out id);
+                        ushort.TryParse(args[0], out id);
                     }
                     catch { }
 
                     if (id > 0)
-                        asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
+                        asset = UAssetHelper.FindVehicleAsset(id);
                     else
-                        asset = UAssetHelper.FindVehicleAsset(args[1]);
+                        asset = UAssetHelper.FindVehicleAsset(args[0]);
 
 
                     if (asset == null)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_exists", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -170,7 +172,7 @@ namespace Tavstal.TShop
                     ShopItem item = TShop.Database.FindVehicle(id);
                     if (item == null)
                     {
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", asset.vehicleName);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_not_added", asset.vehicleName);
                         return;
                     }
 
@@ -180,31 +182,33 @@ namespace Tavstal.TShop
 
                     try
                     {
-                        decimal.TryParse(args[2], out buycost);
+                        decimal.TryParse(args[1], out buycost);
                     }
                     catch { }
 
                     try
                     {
-                        decimal.TryParse(args[3], out sellcost);
+                        decimal.TryParse(args[2], out sellcost);
                     }
                     catch { }
 
-                    if (args.Length == 5)
-                        permission = args[4];
+                    if (args.Length == 4)
+                        permission = args[3];
 
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
                     if (TShop.Database.UpdateProduct(id, true, buycost, sellcost, permission != null, permission))
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_updated", asset.vehicleName, asset.id);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_vehicle_updated", asset.vehicleName, asset.id);
                     else
-                        UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_updated", asset.vehicleName);
-                }
-                else
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_vehicleshop_args");
-            }
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_updated", asset.vehicleName);
+                })
 
+        };
+
+        public override bool ExecutionRequested(IRocketPlayer caller, string[] args)
+        {
+            return false;
         }
     }
 }
