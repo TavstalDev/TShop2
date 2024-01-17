@@ -111,22 +111,22 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public bool HasBuiltInTransactionSystem() { return false; }
         public bool HasBuiltInBankCardSystem() { return false; }
-        public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return player.Experience -= (uint)amount;
         }
 
-        public decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return player.Experience += (uint)amount;
         }
 
-        public decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return player.Experience;
         }
 
-        public bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return (GetBalance(player) - amount) >= 0;
         }
@@ -136,22 +136,22 @@ namespace Tavstal.TShop.Compability.Hooks
             
         }
 
-        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return Withdraw(UnturnedPlayer.FromCSteamID(player), amount, method);
         }
 
-        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return Deposit(UnturnedPlayer.FromCSteamID(player), amount, method);
         }
 
-        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return GetBalance(UnturnedPlayer.FromCSteamID(player), method);
         }
 
-        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return Has(UnturnedPlayer.FromCSteamID(player), amount, method);
         }

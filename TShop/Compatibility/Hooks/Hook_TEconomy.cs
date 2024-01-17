@@ -140,22 +140,22 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public bool HasBuiltInBankCardSystem() { return true; }
 
-        public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return Withdraw(player.CSteamID, amount, method);
         }
 
-        public decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return Deposit(player.CSteamID, amount, method);
         }
 
-        public decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return GetBalance(player.CSteamID, method);
         }
 
-        public bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return Has(player.CSteamID, amount, method);
         }
@@ -165,11 +165,11 @@ namespace Tavstal.TShop.Compability.Hooks
             AddTransaction(player.CSteamID, transaction);
         }
 
-        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             switch (method)
             {
-                case EPaymentMethod.BANK:
+                case EPaymentMethod.BANK_ACCOUNT:
                     {
                         return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, -amount });
@@ -192,11 +192,11 @@ namespace Tavstal.TShop.Compability.Hooks
             }
         }
 
-        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             switch (method)
             {
-                case EPaymentMethod.BANK:
+                case EPaymentMethod.BANK_ACCOUNT:
                     {
                         return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, amount });
@@ -219,11 +219,11 @@ namespace Tavstal.TShop.Compability.Hooks
             }
         }
 
-        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK)
+        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             switch (method)
             {
-                case EPaymentMethod.BANK:
+                case EPaymentMethod.BANK_ACCOUNT:
                     {
                         return (decimal)_getBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player});
@@ -246,7 +246,7 @@ namespace Tavstal.TShop.Compability.Hooks
             }
         }
 
-        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK)
+        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return (GetBalance(player, method) - amount) >= 0;
         }
