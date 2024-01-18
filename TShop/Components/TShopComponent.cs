@@ -1,17 +1,13 @@
 ﻿using Rocket.Unturned.Player;
-using Tavstal.TShop.Compability;
-using System.Collections;
-using System.Collections.Generic;
-using Tavstal.TLibrary.Compatibility.Economy;
-using Tavstal.TShop.Compatibility.Enums;
-using SDG.Unturned;
-using Tavstal.TShop.Compatibility;
 using SDG.NetTransport;
-using System.Linq;
+using SDG.Unturned;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
-using System.Runtime.CompilerServices;
-using Tavstal.TShop.Helpers;
+using Tavstal.TShop.Compability;
+using Tavstal.TShop.Compatibility.Enums;
 
 namespace Tavstal.TShop
 {
@@ -22,7 +18,7 @@ namespace Tavstal.TShop
         public EMenuCategory MenuCategory { get; set; }
         public EItemFilter? ItemFilter { get; set; }
         public EEngine? VehicleFilter { get; set; }
-        public EPaymentMethod PaymentMethod { get; set; } = EPaymentMethod.WALLET;
+        public EPaymentMethod PaymentMethod { get; set; } = EPaymentMethod.CASH;
         public int PageItem { get; set; } = 1;
         public int PageVehicle { get; set; } = 1;
         public bool IsVehiclePage { get; set; }

@@ -4,16 +4,12 @@ using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Helpers;
+using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Compability;
-using Tavstal.TShop.Managers;
 using Tavstal.TShop.Compatibility.Enums;
-using Tavstal.TShop.Helpers;
-using static System.Net.Mime.MediaTypeNames;
+using Tavstal.TShop.Managers;
 
 namespace Tavstal.TShop.Handlers
 {
@@ -275,12 +271,12 @@ namespace Tavstal.TShop.Handlers
 
                                     TShop.economyProvider.Withdraw(uPlayer, cost);
                                     VehicleManager.spawnLockedVehicleForPlayerV2(asset.id, uPlayer.Position + new UnityEngine.Vector3(0, 0, 5), uPlayer.Player.transform.rotation, uPlayer.Player);
-                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_buy", asset.vehicleName, prod.Value, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
                                 }
                                 else
                                 {
-                                    ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, prod.Key.UnturnedId);
+                                    ItemAsset asset = UAssetHelper.FindItemAsset(prod.Key.UnturnedId);
                                     if (asset == null)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_found", prod.Key.UnturnedId));
@@ -305,7 +301,7 @@ namespace Tavstal.TShop.Handlers
                                         if (!uPlayer.Inventory.tryAddItem(new Item(asset.id, true), false))
                                             ItemManager.dropItem(new Item(asset.id, true), uPlayer.Position, true, true, false);
                                     }
-                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_buy", asset.itemName, prod.Value, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
                                     toRemove.Add(prod);
                                 }
@@ -355,12 +351,12 @@ namespace Tavstal.TShop.Handlers
                                         VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
                                     }
                                     VehicleManager.askVehicleDestroy(vehicle);
-                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_sell", asset.vehicleName, 1, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
                                 }
                                 else
                                 {
-                                    ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, prod.Key.UnturnedId);
+                                    ItemAsset asset = UAssetHelper.FindItemAsset(prod.Key.UnturnedId);
 
                                     if (asset == null)
                                     {
@@ -386,7 +382,7 @@ namespace Tavstal.TShop.Handlers
                                     {
                                         uPlayer.Inventory.removeItem(search[i].page, uPlayer.Inventory.getIndex(search[i].page, search[i].jar.x, search[i].jar.y));
                                     }
-                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                                    TShop.economyProvider.AddTransaction(uPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_sell", asset.itemName, prod.Value, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol")));
                                     toRemove.Add(prod);
                                 }

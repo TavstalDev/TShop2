@@ -1,40 +1,15 @@
-﻿#region References
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Rocket.Core;
+using Rocket.Unturned.Player;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rocket.API;
-using Rocket.Core;
-using Rocket.Unturned;
-using Rocket.API.Collections;
-using Rocket.Core.Plugins;
-using Rocket.Unturned.Chat;
-using Rocket.Unturned.Player;
-using UnityEngine;
-
-using Tavstal.TShop.Managers;
-using Tavstal.TShop.Compability;
-using SDG.Unturned;
-using Steamworks;
-using System.Collections;
-using Rocket.Core.Permissions;
-using Rocket.API.Serialisation;
-using Rocket.Core.Commands;
-using System.Text.RegularExpressions;
-using Rocket.Unturned.Events;
-using System.IO;
-using UnityEngine.Networking;
-using System.Net;
-using Newtonsoft.Json;
-using System.Globalization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
 using System.Reflection;
-using Newtonsoft.Json.Linq;
+using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Compatibility.Database;
-using Tavstal.TLibrary.Compatibility;
-#endregion
 
 namespace Tavstal.TShop.Compability.Hooks
 {
@@ -174,12 +149,12 @@ namespace Tavstal.TShop.Compability.Hooks
                         return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, -amount });
                     }
-                case EPaymentMethod.CRYPTO:
+                case EPaymentMethod.CRYPTO_WALLET:
                     {
                         return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, -amount });
                     }
-                case EPaymentMethod.WALLET:
+                case EPaymentMethod.CASH:
                     {
                         return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, -amount });
@@ -201,12 +176,12 @@ namespace Tavstal.TShop.Compability.Hooks
                         return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, amount });
                     }
-                case EPaymentMethod.CRYPTO:
+                case EPaymentMethod.CRYPTO_WALLET:
                     {
                         return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, amount });
                     }
-                case EPaymentMethod.WALLET:
+                case EPaymentMethod.CASH:
                     {
                         return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player, amount });
@@ -228,12 +203,12 @@ namespace Tavstal.TShop.Compability.Hooks
                         return (decimal)_getBankBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player});
                     }
-                case EPaymentMethod.CRYPTO:
+                case EPaymentMethod.CRYPTO_WALLET:
                     {
                         return (decimal)_getCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player});
                     }
-                case EPaymentMethod.WALLET:
+                case EPaymentMethod.CASH:
                     {
                         return (decimal)_getCashBalanceMethod.Invoke(_databaseInstance, new object[] {
                             player});
@@ -276,7 +251,7 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public void AddPlayerCard(CSteamID steamID, BankCard newCard)
         {
-            newCard.CardID = Convert.ToString(_generateCardId.Invoke(helperType, null));
+            newCard.Id = Convert.ToString(_generateCardId.Invoke(helperType, null));
             _addBankCard.Invoke(_databaseInstance, new object[] { steamID, JObject.FromObject(newCard).ToString(Formatting.None) });
         }
 
@@ -307,7 +282,7 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public BankCard GetPlayerCard(CSteamID steamID, string id)
         {
-            return GetPlayerCards(steamID).Find(x => x.CardID == id);
+            return GetPlayerCards(steamID).Find(x => x.Id == id);
         }
 
         private JObject GetPlayerAccount(CSteamID steamID)

@@ -1,25 +1,15 @@
-﻿using Rocket.Unturned.Player;
-using Rocket.Unturned.Chat;
+﻿using MySql.Data.MySqlClient;
 using SDG.Unturned;
-using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
-using Steamworks;
-using System.Reflection;
-using Rocket.API;
-using Tavstal.TShop.Compability;
-using Tavstal.TShop.Managers;
-using static SDG.Provider.SteamGetInventoryResponse;
-using Tavstal.TLibrary.Managers;
 using Tavstal.TLibrary.Compatibility;
-using Tavstal.TLibrary.Helpers;
 using Tavstal.TLibrary.Compatibility.Database;
 using Tavstal.TLibrary.Extensions;
-using Rocket.Core.Logging;
+using Tavstal.TLibrary.Helpers.General;
+using Tavstal.TLibrary.Helpers.Unturned;
+using Tavstal.TLibrary.Managers;
+using Tavstal.TShop.Compability;
 using Tavstal.TShop.Compatibility.Enums;
-using System.Web.Caching;
 
 namespace Tavstal.TShop
 {
@@ -111,7 +101,7 @@ namespace Tavstal.TShop
             List<ShopItem> local = new List<ShopItem>();
             foreach (var item in items)
             {
-                ItemAsset asset = (ItemAsset)Assets.find(EAssetType.ITEM, item.UnturnedId);
+                ItemAsset asset = UAssetHelper.FindItemAsset(item.UnturnedId);
                 if (asset == null)
                     continue;
 

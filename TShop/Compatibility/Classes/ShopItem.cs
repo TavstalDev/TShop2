@@ -1,9 +1,5 @@
 ﻿using SDG.Unturned;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility.Database;
 
 namespace Tavstal.TShop.Compability
@@ -91,6 +87,16 @@ namespace Tavstal.TShop.Compability
                 return (SellCost - SellCost * (DiscountPercent / 100)) * amount;
             else
                 return  SellCost * amount;
+        }
+
+        public decimal GetSellCostByQuality(byte quality = 100)
+        {
+            decimal cost = TShop.Instance.Config.UseQuality ? (SellCost / 100 * quality) : SellCost;
+
+            if (IsDiscounted)
+                return (cost - cost * (DiscountPercent / 100));
+            else
+                return cost;
         }
 
         public string GetBuyCostFormatted(int amount = 1)

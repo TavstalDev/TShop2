@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using Rocket.API;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TShop.Compability;
-using Newtonsoft.Json;
 
 namespace Tavstal.TShop
 {
@@ -13,24 +12,26 @@ namespace Tavstal.TShop
         [JsonProperty(Order = 4)]
         public float UIButtonDelay { get; set; }
         [JsonProperty(Order = 5)]
-        public bool ExpMode { get; set; }
+        public bool UseQuality { get; set; }
         [JsonProperty(Order = 6)]
-        public bool EnableDiscounts { get; set; }
+        public bool ExpMode { get; set; }
         [JsonProperty(Order = 7)]
-        public float minDiscount { get; set; }
+        public bool EnableDiscounts { get; set; }
         [JsonProperty(Order = 8)]
-        public float maxDiscount{ get; set; }
+        public float minDiscount { get; set; }
         [JsonProperty(Order = 9)]
-        public int ItemCountToDiscount { get; set; }
+        public float maxDiscount{ get; set; }
         [JsonProperty(Order = 10)]
-        public int VehicleCountToDiscount { get; set; }
+        public int ItemCountToDiscount { get; set; }
         [JsonProperty(Order = 11)]
-        public int DiscountInterval { get; set; }
+        public int VehicleCountToDiscount { get; set; }
         [JsonProperty(Order = 12)]
-        public string DefaultProductIconUrl { get; set; }
+        public int DiscountInterval { get; set; }
         [JsonProperty(Order = 13)]
-        public List<GithubFolders> GithubItemFolders = new List<GithubFolders>();
+        public string DefaultProductIconUrl { get; set; }
         [JsonProperty(Order = 14)]
+        public List<GithubFolders> GithubItemFolders = new List<GithubFolders>();
+        [JsonProperty(Order = 15)]
         public List<GithubFolders> GithubVehicleFolders = new List<GithubFolders>();
         [JsonIgnore]
         public readonly string MessageIcon = "https://raw.githubusercontent.com/TavstalDev/Icons/master/Plugins/icon_plugin_tshop.png";
@@ -44,7 +45,7 @@ namespace Tavstal.TShop
             Database = new DatabaseData();
             Database.DatabaseTable_Products = "tshop_products";
             UIButtonDelay = 0.45f;
-            //UseQuality = true;
+            UseQuality = true;
             ExpMode = false;
             EnableDiscounts = true;
             minDiscount = 5;

@@ -1,16 +1,11 @@
-﻿using Rocket.Unturned.Player;
+﻿using Rocket.API;
+using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Rocket.Unturned.Chat;
-using Rocket.API;
-using Tavstal.TShop.Compability;
-using Tavstal.TShop.Managers;
-using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
-using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Helpers;
+using Tavstal.TLibrary.Helpers.Unturned;
+using Tavstal.TShop.Compability;
 
 namespace Tavstal.TShop
 {
@@ -36,26 +31,26 @@ namespace Tavstal.TShop
                 InteractableVehicle vehicle = callerPlayer.CurrentVehicle;
                 if (vehicle == null)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_null");
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_null");
                     return;
                 }
                 else if (vehicle.lockedOwner != callerPlayer.CSteamID || !vehicle.isLocked ||vehicle.isDead)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_owner");
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_owner");
                     return;
                 }
 
                 ShopItem item = TShop.Database.FindVehicle(vehicle.id);
                 if (item == null)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
                     return;
                 }
 
                 decimal cost = item.GetSellCost(amount);
                 if (cost == 0)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_error");
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_error");
                     return;
                 }
 
@@ -65,11 +60,11 @@ namespace Tavstal.TShop
                     VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
                 }
                 VehicleManager.askVehicleDestroy(vehicle);
-                TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod.ToCurrency(), TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
+                TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
-                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_sellvehicle_args");
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_sellvehicle_args");
         }
     }
 }

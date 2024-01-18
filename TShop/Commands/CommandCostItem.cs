@@ -1,17 +1,9 @@
-﻿using Rocket.Unturned.Player;
+﻿using Rocket.API;
+using Rocket.Unturned.Player;
 using SDG.Unturned;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Rocket.Unturned.Chat;
-using Rocket.API;
-
+using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Compability;
-using Tavstal.TShop.Managers;
-using Tavstal.TLibrary.Compatibility;
-using Tavstal.TLibrary.Compatibility.Economy;
-using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -41,13 +33,13 @@ namespace Tavstal.TShop
                 ItemAsset asset = null;
 
                 if (id > 0)
-                    asset = (ItemAsset)Assets.find(EAssetType.ITEM, id);
+                    asset = UAssetHelper.FindItemAsset(id);
                 else
                     asset = UAssetHelper.FindItemAsset(args[0]);
 
                 if (asset == null)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_found", args[0]);
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_found", args[0]);
                     return;
                 }
                 id = asset.id;
@@ -55,14 +47,14 @@ namespace Tavstal.TShop
                 ShopItem item = TShop.Database.FindItem(id);
                 if (item == null)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_added", args[0]);
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_added", args[0]);
                     return;
                 }
 
-                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_cost", asset.itemName, item.GetBuyCost(), item.GetSellCost(), TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_cost", asset.itemName, item.GetBuyCost(), item.GetSellCost(), TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
-                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_costitem_args");
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_costitem_args");
         }
     }
 }

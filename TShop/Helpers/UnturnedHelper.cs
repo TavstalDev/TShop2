@@ -1,39 +1,9 @@
-﻿using System;
-using Rocket.API.Collections;
-using Rocket.Core.Plugins;
-using Rocket.Unturned;
-using Rocket.Unturned.Player;
-using Steamworks;
-using System.Collections.Generic;
-using System.Linq;
-using Rocket.API;
-using Rocket.Core;
-using Rocket.Unturned.Chat;
-using UnityEngine;
-using SDG.Unturned;
-using System.Collections;
-using Rocket.Core.Permissions;
-using Rocket.API.Serialisation;
-using Rocket.Core.Commands;
-using System.Text.RegularExpressions;
-using Rocket.Unturned.Events;
-using System.IO;
-using UnityEngine.Networking;
-using System.Net;
-using Newtonsoft.Json;
-using System.Globalization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Reflection;
-using Random = System.Random;
+using SDG.Unturned;
+using System;
+using System.Linq;
 using Tavstal.TShop.Compability;
-
-using static SDG.Unturned.ItemCurrencyAsset;
-using Tavstal.TShop.Helpers;
-using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop.Helpers
 {

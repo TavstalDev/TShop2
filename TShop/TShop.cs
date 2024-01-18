@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Helpers;
+using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Managers;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Compability.Hooks;

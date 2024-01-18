@@ -1,39 +1,14 @@
-﻿#region References
+﻿using Newtonsoft.Json.Linq;
+using Rocket.Core;
+using Rocket.Unturned.Player;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rocket.API;
-using Rocket.Core;
-using Rocket.Unturned;
-using Rocket.API.Collections;
-using Rocket.Core.Plugins;
-using Rocket.Unturned.Chat;
-using Rocket.Unturned.Player;
-using UnityEngine;
-
-using Tavstal.TShop.Managers;
-using Tavstal.TShop.Compability;
-using SDG.Unturned;
-using Steamworks;
-using System.Collections;
-using Rocket.Core.Permissions;
-using Rocket.API.Serialisation;
-using Rocket.Core.Commands;
-using System.Text.RegularExpressions;
-using Rocket.Unturned.Events;
-using System.IO;
-using UnityEngine.Networking;
-using System.Net;
-using Newtonsoft.Json;
-using System.Globalization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
 using System.Reflection;
-using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
-using Newtonsoft.Json.Linq;
-#endregion
 
 namespace Tavstal.TShop.Compability.Hooks
 {

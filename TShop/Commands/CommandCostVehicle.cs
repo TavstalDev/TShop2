@@ -1,17 +1,9 @@
-﻿using Rocket.Unturned.Player;
+﻿using Rocket.API;
+using Rocket.Unturned.Player;
 using SDG.Unturned;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Rocket.Unturned.Chat;
-using Rocket.API;
-
+using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Compability;
-using Tavstal.TShop.Managers;
-using Tavstal.TLibrary.Compatibility;
-using Tavstal.TLibrary.Compatibility.Economy;
-using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Helpers;
 
 namespace Tavstal.TShop
 {
@@ -48,7 +40,7 @@ namespace Tavstal.TShop
 
                 if (asset == null)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
                     return;
                 }
                 id = asset.id;
@@ -56,14 +48,14 @@ namespace Tavstal.TShop
                 ShopItem item = TShop.Database.FindVehicle(id);
                 if (item == null)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
                     return;
                 }
 
-                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_cost", asset.vehicleName, amount, item.GetBuyCost(), item.GetSellCost(), TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_cost", asset.vehicleName, amount, item.GetBuyCost(), item.GetSellCost(), TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
-                UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_costvehicle_args");
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_costvehicle_args");
         }
     }
 }
