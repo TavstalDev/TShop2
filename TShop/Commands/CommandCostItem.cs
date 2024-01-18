@@ -51,7 +51,7 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_cost", asset.itemName, item.GetBuyCost(), item.GetSellCost(), TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_cost", asset.itemName, item.GetBuyCost(), item.GetSellCost(), TShop.EconomyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
                 UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_costitem_args");

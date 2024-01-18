@@ -52,7 +52,7 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_cost", asset.vehicleName, amount, item.GetBuyCost(), item.GetSellCost(), TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_cost", asset.vehicleName, amount, item.GetBuyCost(), item.GetSellCost(), TShop.EconomyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
                 UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_costvehicle_args");

@@ -77,13 +77,13 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                TShop.economyProvider.Deposit(callerPlayer, cost);
+                TShop.EconomyProvider.Deposit(callerPlayer, cost);
                 for (int i = 0; i < amount; i++)
                 {
                     callerPlayer.Inventory.removeItem(search[i].page, callerPlayer.Inventory.getIndex(search[i].page, search[i].jar.x, search[i].jar.y));
                 }
-                TShop.economyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_sell", asset.itemName, amount, cost, TShop.economyProvider.GetConfigValue<string>("MoneySymbol"));
+                TShop.EconomyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_sell", asset.itemName, amount, cost, TShop.EconomyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
                 UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_sellitem_args");

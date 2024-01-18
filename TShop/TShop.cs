@@ -17,7 +17,7 @@ namespace Tavstal.TShop
     {
         public new static TShop Instance { get; private set; }
         public static DatabaseManager Database { get; private set; }
-        public static IEconomyProvider economyProvider { get; private set; }
+        public static IEconomyProvider EconomyProvider { get; private set; }
         public static bool IsConnectionAuthFailed { get; set; }
         internal DateTime _nextUpdate { get; set; }
 
@@ -94,12 +94,12 @@ namespace Tavstal.TShop
                     this?.UnloadPlugin();
                     return;
                 }
-                economyProvider = HookManager.GetHook<ExpEconomyHook>();
+                EconomyProvider = HookManager.GetHook<ExpEconomyHook>();
             }
             else
             {
                 if (HookManager.IsHookLoadable<TEconomyHook>())
-                    economyProvider = HookManager.GetHook<TEconomyHook>();
+                    EconomyProvider = HookManager.GetHook<TEconomyHook>();
                 else
                 {
                     if (!HookManager.IsHookLoadable<UconomyHook>())
@@ -108,7 +108,7 @@ namespace Tavstal.TShop
                         this?.UnloadPlugin();
                         return;
                     }
-                    economyProvider = HookManager.GetHook<UconomyHook>();
+                    EconomyProvider = HookManager.GetHook<UconomyHook>();
                 }
             }
         }
