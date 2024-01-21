@@ -20,6 +20,7 @@ namespace Tavstal.TShop
         public static IEconomyProvider EconomyProvider { get; private set; }
         public static bool IsConnectionAuthFailed { get; set; }
         internal DateTime _nextUpdate { get; set; }
+        private bool _isLateInited { get; set; }
 
         public override void OnLoad()
         {
@@ -69,6 +70,7 @@ namespace Tavstal.TShop
         {
             UnturnedEventHandler.Unattach();
             Level.onPostLevelLoaded -= Event_OnPluginsLoaded;
+            _isLateInited = false;
             Logger.Log("# TShop has been successfully unloaded.");
         }
 
@@ -111,6 +113,8 @@ namespace Tavstal.TShop
                     EconomyProvider = HookManager.GetHook<UconomyHook>();
                 }
             }
+
+            _isLateInited = true;
         }
 
         private void Update()
@@ -118,6 +122,9 @@ namespace Tavstal.TShop
             try
             {
                 if (IsConnectionAuthFailed)
+                    return;
+
+                if (!_isLateInited)
                     return;
 
                 if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
