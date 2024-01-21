@@ -238,7 +238,7 @@ namespace Tavstal.TShop.Managers
                             continue;
                         }
 
-                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", UnturnedHelper.GetVehicleIcon(product.UnturnedId));
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", true);
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
                         EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
@@ -258,21 +258,21 @@ namespace Tavstal.TShop.Managers
                         #region Update Icon
                         if (item.size_x == item.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", UnturnedHelper.GetItemIcon(product.UnturnedId));
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", true);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
                         }
                         else if (item.size_x > item.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", UnturnedHelper.GetItemIcon(product.UnturnedId));
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", false);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", true);
                         }
                         else
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2",  UnturnedHelper.GetItemIcon(product.UnturnedId));
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", false);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", true);
                             EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);

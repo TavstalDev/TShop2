@@ -20,7 +20,6 @@ namespace Tavstal.TShop.Helpers
                 if (GithubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";
-                TShop.Logger.LogWarning($"{GithubElement.FolderLink + filename}");
                 return GithubElement.FolderLink + filename;
             }
             catch (Exception e)
