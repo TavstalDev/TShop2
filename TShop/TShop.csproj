@@ -111,7 +111,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="TLibrary">
       <HintPath>..\Libraries\TLibrary.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\Libraries\UnityEngine.dll</HintPath>
