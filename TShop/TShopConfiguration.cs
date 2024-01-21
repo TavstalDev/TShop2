@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TShop.Compability;
 
 namespace Tavstal.TShop
 {
+    [Serializable]
     public class TShopConfiguration : ConfigurationBase
     {
         [JsonProperty(Order = 3)]
@@ -29,10 +31,10 @@ namespace Tavstal.TShop
         public int DiscountInterval { get; set; }
         [JsonProperty(Order = 13)]
         public string DefaultProductIconUrl { get; set; }
-        [JsonProperty(Order = 14)]
-        public List<GithubFolders> GithubItemFolders = new List<GithubFolders>();
-        [JsonProperty(Order = 15)]
-        public List<GithubFolders> GithubVehicleFolders = new List<GithubFolders>();
+        [JsonProperty(PropertyName = "ItemFolders", Order = 14)]
+        public List<FileServerFolder> ItemFolders { get; set; }
+        [JsonProperty(PropertyName = "VehicleFolders", Order = 15)]
+        public List<FileServerFolder> VehicleFolders { get; set; }
         [JsonIgnore]
         public readonly string MessageIcon = "https://raw.githubusercontent.com/TavstalDev/Icons/master/Plugins/icon_plugin_tshop.png";
         [JsonIgnore]
@@ -54,14 +56,20 @@ namespace Tavstal.TShop
             VehicleCountToDiscount = 5;
             DiscountInterval = 1800;
             DefaultProductIconUrl = "https://raw.githubusercontent.com/TavstalDev/Icons/master/noimage.png";
-            GithubItemFolders = new List<GithubFolders>
+            ItemFolders = new List<FileServerFolder>
             {
-                new GithubFolders { FolderName = "0K-2K", FolderLink = "https://raw.githubusercontent.com/TavstalDev/Icons/master/Vanilla/", MinItemID = 0, MaxItemID = 2000 }
+                new FileServerFolder("0-2000", "https://raw.githubusercontent.com/TavstalDev/Icons/master/Vanilla/", 0, 2000),
+                new FileServerFolder("my-server", "https://api.myserver.com/items/", 0, 60000)
             };
-            GithubVehicleFolders = new List<GithubFolders>
+            VehicleFolders = new List<FileServerFolder>
             {
-                new GithubFolders { FolderName = "veh-0K-1K", FolderLink = "https://raw.githubusercontent.com/TavstalDev/Icons/master/Vanilla/Vehicles", MinItemID = 0, MaxItemID = 1000 },
+                new FileServerFolder("0-2000", "https://raw.githubusercontent.com/TavstalDev/Icons/master/Vanilla/Vehicles", 0, 1000),
+                new FileServerFolder("my-server", "https://api.myserver.com/vehicles/", 0, 60000),
             };
         }
+
+        public TShopConfiguration() { }
+
+        public TShopConfiguration(string fileName, string path) : base(fileName, path) { }
     }
 }

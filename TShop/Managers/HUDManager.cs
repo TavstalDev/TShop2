@@ -26,6 +26,8 @@ namespace Tavstal.TShop.Managers
         {
             var transportCon = player.SteamPlayer().transportConnection;
 
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_tshop_name", TShop.Instance.Localize("ui_shopname"));
+
             #region Navbar
             EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tshop_nav_title#market", TShop.Instance.Localize("ui_text_market"));
             EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_nav_tshop#items_name", TShop.Instance.Localize("ui_text_items"));
@@ -42,6 +44,8 @@ namespace Tavstal.TShop.Managers
             {
                 EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, $"tb_tshop_product#{i + 1}#add_to_basket", TShop.Instance.Localize("ui_text_add_to_basket"));
             }
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_product#category#item#all", TShop.Instance.Localize("ui_text_all"));
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_product#category#vehicle#all", TShop.Instance.Localize("ui_text_all"));
             #endregion
 
             #region Basket Content

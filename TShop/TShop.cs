@@ -274,7 +274,8 @@ namespace Tavstal.TShop
                 { "ui_text_total", "Total:" },
                 { "ui_text_buy_disabled", "Purchasing is disabled for this product." },
                 { "ui_text_sell_disabled", "Selling is disabled for this product." },
-                { "ui_text_complete_order", "Complete Order" }
+                { "ui_text_complete_order", "Complete Order" },
+                { "ui_text_all", "All" }
             };
     }
 }
