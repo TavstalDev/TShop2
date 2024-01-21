@@ -37,7 +37,7 @@ namespace Tavstal.TShop.Helpers
             string voidName = "GetIcon";
             try
             {
-                ItemAsset i = Assets.find(EAssetType.ITEM, id) as ItemAsset;
+                VehicleAsset i = Assets.find(EAssetType.VEHICLE, id) as VehicleAsset;
                 GithubFolders GithubElement = pluginConfig.GithubVehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
                 if (GithubElement == null)
                     return pluginConfig.DefaultProductIconUrl;
