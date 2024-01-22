@@ -11,7 +11,7 @@ namespace Tavstal.TShop
         public string Name => "Shop";
         public string Help => "Opens the shop UI.";
         public string Syntax => "";
-        public List<string> Aliases => new List<string> { "shui" };
+        public List<string> Aliases => new List<string> { "shui", "shopui" };
         public List<string> Permissions => new List<string> { "tshop.shop" };
 
         public void Execute(IRocketPlayer caller, string[] args)

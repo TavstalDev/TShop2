@@ -76,7 +76,8 @@ namespace Tavstal.TShop.Compability
             }
             catch
             {
-                TShop.Logger.LogWarning($"Failed to get the asset name. Please check if the mod is loaded. ID: {UnturnedId}");
+                string type = IsVehicle ? "Vehicle" : "Item";
+                TShop.Logger.LogWarning($"Failed to get the asset name. Please check if the mod is loaded. {type} Id: {UnturnedId}");
                 return "unknown_name";
             }
         }

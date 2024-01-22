@@ -17,7 +17,7 @@ namespace Tavstal.TShop.Managers
 
         public static void Init(UnturnedPlayer player)
         {
-            EffectManager.sendUIEffect(Config.EffectID, (short)Config.EffectID, true);
+            EffectManager.sendUIEffect(Config.EffectID, (short)Config.EffectID, player.SteamPlayer().transportConnection, true);
             Hide(player, false); // Just in case
             Translate(player);
         }

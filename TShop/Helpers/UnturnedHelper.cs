@@ -15,7 +15,6 @@ namespace Tavstal.TShop.Helpers
             string voidName = "GetIcon";
             try
             {
-                ItemAsset i = Assets.find(EAssetType.ITEM, id) as ItemAsset;
                 FileServerFolder GithubElement = TShop.Instance.Config.ItemFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
                 if (GithubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;
@@ -35,7 +34,6 @@ namespace Tavstal.TShop.Helpers
             string voidName = "GetIcon";
             try
             {
-                VehicleAsset i = Assets.find(EAssetType.VEHICLE, id) as VehicleAsset;
                 FileServerFolder GithubElement = TShop.Instance.Config.VehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
                 if (GithubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;

@@ -1,4 +1,5 @@
-﻿using SDG.Unturned;
+﻿using Rocket.Unturned.Player;
+using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Compatibility;
@@ -9,6 +10,7 @@ using Tavstal.TLibrary.Managers;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Compability.Hooks;
 using Tavstal.TShop.Handlers;
+using Tavstal.TShop.Managers;
 using Math = System.Math;
 
 namespace Tavstal.TShop
@@ -71,6 +73,11 @@ namespace Tavstal.TShop
             UnturnedEventHandler.Unattach();
             Level.onPostLevelLoaded -= Event_OnPluginsLoaded;
             _isLateInited = false;
+            foreach (SteamPlayer steamPlayer in Provider.clients)
+            {
+                HUDManager.Hide(UnturnedPlayer.FromSteamPlayer(steamPlayer));
+                EffectManager.askEffectClearByID(Config.EffectID, steamPlayer.transportConnection);
+            }
             Logger.Log("# TShop has been successfully unloaded.");
         }
 
@@ -155,7 +162,7 @@ namespace Tavstal.TShop
 
                 _nextUpdate = DateTime.Now.AddSeconds(Config.DiscountInterval);
             }
-            catch (NullReferenceException nex)
+            catch
             { 
                 // Not logging because this error has a 99% chance is caused by load error
             }
