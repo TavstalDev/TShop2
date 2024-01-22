@@ -7,7 +7,7 @@ namespace Tavstal.TShop
 {
     public class CommandShopFill : IRocketCommand
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Player;
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
         public string Name => "shopfill";
         public string Help => "Fills the shop with items. Used for debug";
         public string Syntax => "";

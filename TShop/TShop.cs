@@ -20,6 +20,7 @@ namespace Tavstal.TShop
         public static IEconomyProvider EconomyProvider { get; private set; }
         public static bool IsConnectionAuthFailed { get; set; }
         internal DateTime _nextUpdate { get; set; }
+        private bool _isLateInited { get; set; }
 
         public override void OnLoad()
         {
@@ -69,6 +70,7 @@ namespace Tavstal.TShop
         {
             UnturnedEventHandler.Unattach();
             Level.onPostLevelLoaded -= Event_OnPluginsLoaded;
+            _isLateInited = false;
             Logger.Log("# TShop has been successfully unloaded.");
         }
 
@@ -111,6 +113,8 @@ namespace Tavstal.TShop
                     EconomyProvider = HookManager.GetHook<UconomyHook>();
                 }
             }
+
+            _isLateInited = true;
         }
 
         private void Update()
@@ -118,6 +122,9 @@ namespace Tavstal.TShop
             try
             {
                 if (IsConnectionAuthFailed)
+                    return;
+
+                if (!_isLateInited)
                     return;
 
                 if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
@@ -242,7 +249,33 @@ namespace Tavstal.TShop
                 { "ui_success_item_buy", "You have successfully bought {1}x {0} for {3}{2}" },
                 { "ui_success_item_sell", "You have successfully sold {1}x {0} for {3}{2}." },
                 { "ui_success_vehicle_sell", "You have successfully sold your {0} for {2}{1}." },
-                { "ui_success_vehicle_buy", "You have successfully bought a {0} for {2}{1}" }
+                { "ui_success_vehicle_buy", "You have successfully bought a {0} for {2}{1}" },
+                { "ui_text_market", "MARKET" },
+                { "ui_text_items", "Items" },
+                { "ui_text_vehicles", "Vehicles" },
+                { "ui_text_basket", "Basket" },
+                { "ui_text_account", "ACCOUNT" },
+                { "ui_text_logout", "Logout" },
+                { "ui_text_products", "Products" },
+                { "ui_text_no_products", "No prudcts have been found." },
+                { "ui_text_add_to_basket", "Add to basket" },
+                { "ui_text_my_basket", "My Basket" },
+                { "ui_text_icon", "Icon" },
+                { "ui_text_product_name", "Product Name" },
+                { "ui_text_quantity", "Quantity" },
+                { "ui_text_price", "Price" },
+                { "ui_text_actions", "Actions" },
+                { "ui_text_basket_empty", "Your basket is empty." },
+                { "ui_text_range", "Range:  1-100" },
+                { "ui_text_buy_info", "Buy Information" },
+                { "ui_text_sell_info", "Sell Information" },
+                { "ui_text_subtotal", "Subtotal:" },
+                { "ui_text_discount", "Discount:" },
+                { "ui_text_total", "Total:" },
+                { "ui_text_buy_disabled", "Purchasing is disabled for this product." },
+                { "ui_text_sell_disabled", "Selling is disabled for this product." },
+                { "ui_text_complete_order", "Complete Order" },
+                { "ui_text_all", "All" }
             };
     }
 }

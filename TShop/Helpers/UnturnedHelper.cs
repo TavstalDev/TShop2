@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Rocket.Core.Logging;
 using SDG.Unturned;
 using System;
 using System.Linq;
@@ -9,18 +10,15 @@ namespace Tavstal.TShop.Helpers
 {
     public class UnturnedHelper
     {
-        private static TShop pluginMain => TShop.Instance;
-        private static TShopConfiguration pluginConfig => TShop.Instance.Config;
-
         public static string GetItemIcon(ushort id)
         {
             string voidName = "GetIcon";
             try
             {
                 ItemAsset i = Assets.find(EAssetType.ITEM, id) as ItemAsset;
-                GithubFolders GithubElement = pluginConfig.GithubItemFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
+                FileServerFolder GithubElement = TShop.Instance.Config.ItemFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
                 if (GithubElement == null)
-                    return pluginConfig.DefaultProductIconUrl;
+                    return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";
                 return GithubElement.FolderLink + filename;
             }
@@ -29,7 +27,7 @@ namespace Tavstal.TShop.Helpers
                 TShop.Logger.Log("Error in " + voidName + "(): ");
                 TShop.Logger.Log(e);
             }
-            return pluginConfig.DefaultProductIconUrl;
+            return TShop.Instance.Config.DefaultProductIconUrl;
         }
 
         public static string GetVehicleIcon(ushort id)
@@ -37,10 +35,10 @@ namespace Tavstal.TShop.Helpers
             string voidName = "GetIcon";
             try
             {
-                ItemAsset i = Assets.find(EAssetType.ITEM, id) as ItemAsset;
-                GithubFolders GithubElement = pluginConfig.GithubVehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
+                VehicleAsset i = Assets.find(EAssetType.VEHICLE, id) as VehicleAsset;
+                FileServerFolder GithubElement = TShop.Instance.Config.VehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
                 if (GithubElement == null)
-                    return pluginConfig.DefaultProductIconUrl;
+                    return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";
                 return GithubElement.FolderLink + filename;
             }
@@ -49,7 +47,7 @@ namespace Tavstal.TShop.Helpers
                 TShop.Logger.Log("Error in " + voidName + "(): ");
                 TShop.Logger.Log(e);
             }
-            return pluginConfig.DefaultProductIconUrl;
+            return TShop.Instance.Config.DefaultProductIconUrl;
         }
 
         public static string GetItemsInJson()

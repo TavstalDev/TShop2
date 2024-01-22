@@ -15,9 +15,9 @@ namespace Tavstal.TShop.Compability
         public string DisplayName { get; set; }
         [SqlMember]
         public bool IsVehicle { get; set; }
-        [SqlMember(columnType: "decimal(11, 1)")]
+        [SqlMember(columnType: "decimal(14, 1)")]
         public decimal BuyCost { get; set; }
-        [SqlMember(columnType: "decimal(11, 1)")]
+        [SqlMember(columnType: "decimal(14, 1)")]
         public decimal SellCost { get; set; }
         [SqlMember]
         public bool HasPermission { get; set; }
@@ -67,10 +67,18 @@ namespace Tavstal.TShop.Compability
 
         public string GetName()
         {
-            return (IsVehicle ? 
-                (Assets.find(EAssetType.VEHICLE, UnturnedId) as VehicleAsset).vehicleName 
-                : 
-                (Assets.find(EAssetType.ITEM, UnturnedId) as ItemAsset).itemName).Replace("'", "").Replace("`", "");
+            try
+            {
+                return (IsVehicle ?
+                    (Assets.find(EAssetType.VEHICLE, UnturnedId) as VehicleAsset).vehicleName
+                    :
+                    (Assets.find(EAssetType.ITEM, UnturnedId) as ItemAsset).itemName).Replace("'", "").Replace("`", "");
+            }
+            catch
+            {
+                TShop.Logger.LogWarning($"Failed to get the asset name. Please check if the mod is loaded. ID: {UnturnedId}");
+                return "unknown_name";
+            }
         }
 
         public decimal GetBuyCost(int amount = 1)

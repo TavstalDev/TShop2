@@ -111,7 +111,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="TLibrary">
       <HintPath>..\Libraries\TLibrary.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\Libraries\UnityEngine.dll</HintPath>
@@ -157,7 +157,7 @@
     <Compile Include="TShop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\TShopComponent.cs" />
-    <Compile Include="Compatibility\Classes\GithubFolders.cs" />
+    <Compile Include="Compatibility\Classes\FileServerFolder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
