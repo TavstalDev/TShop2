@@ -8,10 +8,11 @@ using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Compatibility.Enums;
+using Tavstal.TLibrary.Compatibility.Interfaces;
 
 namespace Tavstal.TShop
 {
-    public class TShopComponent : UnturnedPlayerComponent
+    public class TShopComponent : UnturnedPlayerComponent, IPlayerComponent
     {
         public DateTime LastButtonClick = DateTime.Now;
         public ITransportConnection TransportConnection => Player.SteamPlayer().transportConnection;
@@ -23,9 +24,10 @@ namespace Tavstal.TShop
         public int PageVehicle { get; set; } = 1;
         public bool IsVehiclePage { get; set; }
         public int PageBasket { get; set; } = 1;
-        public int[][] PageIndexes = new int[3][];
         public Dictionary<ShopItem, int> Basket = new Dictionary<ShopItem, int>();
         public bool HasActiveNotify { get; set; }
+        public int[][] PageIndexes { get; set; } = new int[3][];
+
         public List<string> NotifiesOnQueue = new List<string>();
 
         public TShopComponent()

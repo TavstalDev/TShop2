@@ -69,15 +69,34 @@ namespace Tavstal.TShop.Compability
         {
             try
             {
-                return (IsVehicle ?
-                    (Assets.find(EAssetType.VEHICLE, UnturnedId) as VehicleAsset).vehicleName
-                    :
-                    (Assets.find(EAssetType.ITEM, UnturnedId) as ItemAsset).itemName).Replace("'", "").Replace("`", "");
+                if (IsVehicle)
+                {
+                    Asset asset = Assets.find(EAssetType.VEHICLE, UnturnedId);
+                    if (asset == null)
+                        throw new NullReferenceException("Failed to get the unturned asset.");
+
+                    if (asset is VehicleAsset vehicleAsset)
+                        return vehicleAsset.vehicleName;
+                    else
+                        throw new Exception("The asset is not a vehicle asset. Please review your database.");
+                }
+                else
+                {
+                    Asset asset = Assets.find(EAssetType.ITEM, UnturnedId);
+                    if (asset == null)
+                        throw new NullReferenceException("Failed to get the unturned asset.");
+
+                    if (asset is ItemAsset itemAsset)
+                        return itemAsset.itemName;
+                    else
+                        throw new Exception("The asset is not an item asset. Please review your database.");
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                string type = IsVehicle ? "Vehicle" : "Item";
-                TShop.Logger.LogWarning($"Failed to get the asset name. Please check if the mod is loaded. {type} Id: {UnturnedId}");
+                string type = IsVehicle ? "vehicle" : "item";
+                TShop.Logger.LogWarning($"Failed to get the asset name for '{type}' with {UnturnedId} id. Exception:");
+                TShop.Logger.LogException(ex);
                 return "unknown_name";
             }
         }

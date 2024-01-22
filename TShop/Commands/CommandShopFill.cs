@@ -19,7 +19,7 @@ namespace Tavstal.TShop
             int count = 0;
             foreach (var a in Assets.find(EAssetType.ITEM).OrderBy(x => x.id))
             {
-                if (count == 100)
+                if (count == 300)
                     break;
 
                 ItemAsset asset = a as ItemAsset;
@@ -37,7 +37,7 @@ namespace Tavstal.TShop
             count = 0;
             foreach (var a in Assets.find(EAssetType.VEHICLE).OrderBy(x => x.id))
             {
-                if (count == 100)
+                if (count == 300)
                     break;
 
                 VehicleAsset asset = a as VehicleAsset;

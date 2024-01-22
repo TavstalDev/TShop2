@@ -127,6 +127,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CommandShopIdFix.cs" />
     <Compile Include="Commands\CommandShopFill.cs" />
     <Compile Include="Commands\CommandVersion.cs" />
     <Compile Include="Commands\CommandBuyVehicle.cs" />

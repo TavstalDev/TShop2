@@ -475,7 +475,7 @@ namespace Tavstal.TShop.Handlers
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogException("Error in UEventHandler:");
+                TShop.Logger.LogException($"Error in UEventHandler -> OnButtonClick({button}):");
                 TShop.Logger.LogError(ex);
             }
         }
