@@ -9,7 +9,7 @@ namespace Tavstal.TShop
 {
     public class CommandMigrateZaupDB : IRocketCommand
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Player;
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
         public string Name => "migratezaupdb";
         public string Help => "Migrates data from the database of the zaupshop plugin.";
         public string Syntax => "[itemtablename] [vehicletablename]";
@@ -18,9 +18,6 @@ namespace Tavstal.TShop
 
         public void Execute(IRocketPlayer caller, string[] args)
         {
-            UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-            TShopComponent comp = callerPlayer.GetComponent<TShopComponent>();
-
             if (args.Length == 2)
             {
                 try
@@ -37,16 +34,16 @@ namespace Tavstal.TShop
                     {
                         TShop.Database.AddProduct(item.UnturnedId, true, item.GetBuyCost(), item.GetSellCost(), false, "");
                     }
-                    UChatHelper.SendChatMessage(TShop.Instance, callerPlayer.SteamPlayer(),  "success_migrate");
+                    UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_migrate");
                 }
                 catch (Exception ex)
                 {
-                    UChatHelper.SendChatMessage(TShop.Instance,callerPlayer.SteamPlayer(),  "error_migrate_console");
+                    UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_migrate_console");
                     TShop.Logger.LogError("Migration error: " + ex);
                 }
             }
             else
-                UChatHelper.SendCommandReply(TShop.Instance, callerPlayer.SteamPlayer(),  "error_command_migrate_args");
+                UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_command_migrate_args");
         }
     }
 }
