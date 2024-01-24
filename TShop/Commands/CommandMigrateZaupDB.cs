@@ -1,9 +1,11 @@
 ﻿using Rocket.API;
 using Rocket.Unturned.Player;
+using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Compability;
+using Tavstal.TShop.Model.Classes;
 
 namespace Tavstal.TShop
 {
@@ -22,18 +24,41 @@ namespace Tavstal.TShop
             {
                 try
                 {
-                    List<ShopItem> items = TShop.Database.GetZaupItems(args[0]);
-                    List<ShopItem> vehs = TShop.Database.GetZaupVehicles(args[1]);
+                    TShop.Logger.LogRichWarning("Started migrating the zaup db...");
+                    List<ZaupProduct> products = TShop.Database.GetZaupProducts(args[0], args[1]);
 
-                    foreach (ShopItem item in items)
+                    TShop.Logger.LogRichWarning("Migrating items...");
+                    int successCount = 0;
+                    List<ZaupProduct> productsToCheck = products.FindAll(x => !x.IsVehicle);
+                    foreach (ZaupProduct product in productsToCheck)
                     {
-                        TShop.Database.AddProduct(item.UnturnedId, false, item.GetBuyCost(), item.GetSellCost(), false, "");
-                    }
+                        if (Assets.find(EAssetType.ITEM, product.UnturnedId) == null)
+                        {
+                            TShop.Logger.LogRichWarning($"&6Failed to get &citem &6asset with &e'{product.UnturnedId}' &6id.");
+                            continue;
+                        }
 
-                    foreach (ShopItem item in vehs)
-                    {
-                        TShop.Database.AddProduct(item.UnturnedId, true, item.GetBuyCost(), item.GetSellCost(), false, "");
+                        TShop.Database.AddProduct(product.UnturnedId, false, product.BuyCost, product.SellCost, false, "");
+                        successCount++;
                     }
+                    TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6items have been successfully migrated to TShop's table.");
+
+                    TShop.Logger.LogRichWarning("Migrating vehicles...");
+                    successCount = 0;
+                    productsToCheck = products.FindAll(x => x.IsVehicle);
+                    foreach (ZaupProduct product in productsToCheck)
+                    {
+                        if (Assets.find(EAssetType.VEHICLE, product.UnturnedId) == null)
+                        {
+                            TShop.Logger.LogRichWarning($"&6Failed to get &cvehicle &6asset with &e'{product.UnturnedId}' &6id.");
+                            continue;
+                        }
+
+                        TShop.Database.AddProduct(product.UnturnedId, true, product.BuyCost, product.SellCost, false, "");
+                        successCount++;
+                    }
+                    TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6vehicles have been successfully migrated to TShop's table.");
+                    TShop.Logger.LogRich("&bIf there are any items or vehicles that were not migrated then please check Zaup's database or the workshop mod on the server. The problem is not on TShop's side.");
                     UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_migrate");
                 }
                 catch (Exception ex)
