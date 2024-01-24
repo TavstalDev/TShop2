@@ -26,22 +26,22 @@ namespace Tavstal.TShop.Compability.Hooks
             return value;
         }
 
-        private MethodInfo _getBalanceMethod;
-        private MethodInfo _getCashBalanceMethod;
-        private MethodInfo _getBankBalanceMethod;
-        private MethodInfo _getCryptoBalanceMethod;
-        private MethodInfo _increaseBalanceMethod;
-        private MethodInfo _increaseCashBalanceMethod;
-        private MethodInfo _increaseCryptoBalanceMethod;
-        private MethodInfo _increaseBankBalanceMethod;
-        private MethodInfo _addTransactionMethod;
-        private MethodInfo _getPlayerTransactionMethod;
-        private MethodInfo _getBankCard;
-        private MethodInfo _addBankCard;
-        private MethodInfo _updateBankCard;
-        private MethodInfo _removeBankCard;
-        private MethodInfo _generateCardId;
-        private MethodInfo _getTranslation;
+        private MethodInfo _getBalanceMethod {  get; set; }
+        private MethodInfo _getCashBalanceMethod { get; set; }
+        private MethodInfo _getBankBalanceMethod { get; set; }
+        private MethodInfo _getCryptoBalanceMethod { get; set; }
+        private MethodInfo _increaseBalanceMethod { get; set; }
+        private MethodInfo _increaseCashBalanceMethod { get; set; }
+        private MethodInfo _increaseCryptoBalanceMethod { get; set; }
+        private MethodInfo _increaseBankBalanceMethod { get; set; }
+        private MethodInfo _addTransactionMethod { get; set; }
+        private MethodInfo _getPlayerTransactionMethod { get; set; }
+        //private MethodInfo _getBankCard { get; set; }
+        private MethodInfo _addBankCard { get; set; }
+        private MethodInfo _updateBankCard { get; set; }
+        private MethodInfo _removeBankCard { get; set; }
+        private MethodInfo _generateCardId { get; set; }
+        private MethodInfo _getTranslation { get; set; }
         private object _databaseInstance;
         private object _pluginInstance;
         private object teconomyConfig;

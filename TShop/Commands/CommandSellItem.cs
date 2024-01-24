@@ -56,7 +56,7 @@ namespace Tavstal.TShop
                 }
                 id = asset.id;
 
-                ShopItem item = TShop.Database.FindItem(id);
+                Product item = TShop.Database.FindItem(id);
                 if (item == null)
                 {
                     UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_added", args[0]);

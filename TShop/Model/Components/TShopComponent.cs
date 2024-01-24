@@ -7,7 +7,7 @@ using System.Linq;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TShop.Compability;
-using Tavstal.TShop.Compatibility.Enums;
+using Tavstal.TShop.Model.Enums;
 using Tavstal.TLibrary.Compatibility.Interfaces;
 
 namespace Tavstal.TShop
@@ -24,7 +24,7 @@ namespace Tavstal.TShop
         public int PageVehicle { get; set; } = 1;
         public bool IsVehiclePage { get; set; }
         public int PageBasket { get; set; } = 1;
-        public Dictionary<ShopItem, int> Basket = new Dictionary<ShopItem, int>();
+        public Dictionary<Product, int> Basket = new Dictionary<Product, int>();
         public bool HasActiveNotify { get; set; }
         public int[][] PageIndexes { get; set; } = new int[3][];
 

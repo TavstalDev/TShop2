@@ -1,4 +1,4 @@
-﻿namespace Tavstal.TShop.Compatibility.Enums
+﻿namespace Tavstal.TShop.Model.Enums
 {
     public enum EMenuCategory
     {

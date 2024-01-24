@@ -40,7 +40,7 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                ShopItem item = TShop.Database.FindVehicle(vehicle.id);
+                Product item = TShop.Database.FindVehicle(vehicle.id);
                 if (item == null)
                 {
                     UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
