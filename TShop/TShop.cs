@@ -137,16 +137,16 @@ namespace Tavstal.TShop
                 if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
                     return;
 
-                List<ShopItem> products = Database.GetProducts();
+                List<Product> products = Database.GetProducts();
 
-                foreach (ShopItem item in products.FindAll(x => x.IsDiscounted))
+                foreach (Product item in products.FindAll(x => x.IsDiscounted))
                     Database.UpdateProduct(item.UnturnedId, item.IsVehicle, false, 0);
 
                 if (products.Count > 2)
                     products.Shuffle();
 
-                List<ShopItem> items = products.FindAll(x => !x.IsVehicle);
-                List<ShopItem> vehs = products.FindAll(x => x.IsVehicle);
+                List<Product> items = products.FindAll(x => !x.IsVehicle);
+                List<Product> vehs = products.FindAll(x => x.IsVehicle);
 
                 for (int i = 0; i < Config.ItemCountToDiscount; i++)
                 {
@@ -227,7 +227,7 @@ namespace Tavstal.TShop
                 { "success_vehicle_added", "&aYou have successfully added {0} to the vehicle store." },
                 { "success_vehicle_removed", "&aYou have successfully removed {0} from the vehicle store." },
                 { "success_vehicle_update", "&aYou have successfully updated {0} in the vehicle store." },
-                { "success_migrate", "&aYou have successfully migrated the data of ZaupShop." },
+                { "success_migrate", "&aYou have successfully migrated the data of ZaupShop. Please check the console for detailed information." },
                 { "success_pruchase", "&aYou have successfully bought {0} item(s)." },
                 { "success_sell", "&aYou have successfully sold {0} item(s)." },
                 { "ui_product_free", "Free" },
