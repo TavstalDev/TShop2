@@ -195,7 +195,7 @@ namespace Tavstal.TShop
                 { "error_balance_not_enough", "&6You don't have enough money. You need {0} to be able to buy." },
                 { "error_item_already_added", "&6The {0} (ID: {1}) is already added to the shop." },
                 { "error_item_not_added", "&6This item isn't added to the shop. ({0})" },
-                { "error_item_not_found", "&aYou have to provide a valid item id or name. ({0})" },
+                { "error_item_not_found", "&6You have to provide a valid item id or name. ({0})" },
                 { "error_item_not_enough", "&6You don't have enough items to sell." },
                 { "error_shop_empty", "&6The shop is empty." },
                 { "error_item_buy_error", "&6You can't buy this item." },

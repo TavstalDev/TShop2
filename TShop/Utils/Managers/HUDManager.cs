@@ -114,7 +114,7 @@ namespace Tavstal.TShop.Managers
 
                 ITransportConnection playerTC = player.SteamPlayer().transportConnection;
                 List<Product> products = comp.IsVehiclePage ? TShop.Database.GetVehicles(comp.VehicleFilter) : TShop.Database.GetItems(comp.ItemFilter);
-                int maxPage = MathHelper.Clamp(products.Count / itemPerPage, 1, int.MaxValue);
+                int maxPage = products.Count / itemPerPage + (products.Count % itemPerPage > 0 ? 1 : 0);
                 #region Body
                 int validCount = 0;
                 for (int i = 0; i < itemPerPage; i++)
