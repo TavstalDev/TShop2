@@ -401,6 +401,9 @@ namespace Tavstal.TShop.Handlers
 
                 if (button.StartsWith("bt_tshop_products#page#"))
                 {
+                    if (button.Contains("dots"))
+                        return;
+
                     int btIndex = int.Parse(button.Replace("bt_tshop_products#page#", "")) - 1;
                     int arrayIndex = comp.IsVehiclePage ? 1 : 0;
 
@@ -420,6 +423,9 @@ namespace Tavstal.TShop.Handlers
                 }
                 else if (button.StartsWith("bt_tshop_basket#page#"))
                 {
+                    if (button.Contains("dots"))
+                        return;
+
                     int btIndex = int.Parse(button.Replace("bt_tshop_basket#page#", "")) - 1;
                     int page = comp.PageIndexes[2][btIndex];
 
