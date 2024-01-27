@@ -18,14 +18,14 @@ namespace Tavstal.TShop
         public List<string> Aliases => new List<string> { "mzdb" };
         public List<string> Permissions => new List<string> { "tshop.admin.migratezaupdb" };
 
-        public void Execute(IRocketPlayer caller, string[] args)
+        public async void Execute(IRocketPlayer caller, string[] args)
         {
             if (args.Length == 2)
             {
                 try
                 {
                     TShop.Logger.LogRichWarning("Started migrating the zaup db...");
-                    List<ZaupProduct> products = TShop.Database.GetZaupProducts(args[0], args[1]);
+                    List<ZaupProduct> products = await TShop.Database.GetZaupProducts(args[0], args[1]);
 
                     TShop.Logger.LogRichWarning("Migrating items...");
                     int successCount = 0;
@@ -38,7 +38,7 @@ namespace Tavstal.TShop
                             continue;
                         }
 
-                        TShop.Database.AddProduct(product.UnturnedId, false, product.BuyCost, product.SellCost, false, "");
+                        await TShop.Database.AddProduct(product.UnturnedId, false, product.BuyCost, product.SellCost, false, "");
                         successCount++;
                     }
                     TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6items have been successfully migrated to TShop's table.");
@@ -54,7 +54,7 @@ namespace Tavstal.TShop
                             continue;
                         }
 
-                        TShop.Database.AddProduct(product.UnturnedId, true, product.BuyCost, product.SellCost, false, "");
+                        await TShop.Database.AddProduct(product.UnturnedId, true, product.BuyCost, product.SellCost, false, "");
                         successCount++;
                     }
                     TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6vehicles have been successfully migrated to TShop's table.");

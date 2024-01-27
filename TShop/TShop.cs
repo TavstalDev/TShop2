@@ -1,7 +1,9 @@
 ﻿using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
@@ -11,6 +13,7 @@ using Tavstal.TShop.Compability;
 using Tavstal.TShop.Compability.Hooks;
 using Tavstal.TShop.Handlers;
 using Tavstal.TShop.Managers;
+using UnityEngine;
 using Math = System.Math;
 
 namespace Tavstal.TShop
@@ -21,7 +24,6 @@ namespace Tavstal.TShop
         public static DatabaseManager Database { get; private set; }
         public static IEconomyProvider EconomyProvider { get; private set; }
         public static bool IsConnectionAuthFailed { get; set; }
-        internal DateTime _nextUpdate { get; set; }
         private bool _isLateInited { get; set; }
 
         public override void OnLoad()
@@ -78,6 +80,8 @@ namespace Tavstal.TShop
                 HUDManager.Hide(UnturnedPlayer.FromSteamPlayer(steamPlayer));
                 EffectManager.askEffectClearByID(Config.EffectID, steamPlayer.transportConnection);
             }
+            if (Config.EnableDiscounts)
+                CancelInvoke(nameof(CheckDiscount));
             Logger.Log("# TShop has been successfully unloaded.");
         }
 
@@ -121,26 +125,22 @@ namespace Tavstal.TShop
                 }
             }
 
+            if (Config.EnableDiscounts)
+                InvokeRepeating(nameof(CheckDiscount), 1f, Config.DiscountInterval);
             _isLateInited = true;
         }
 
-        private void Update()
+        private async void CheckDiscount()
         {
             try
             {
-                if (IsConnectionAuthFailed)
+                if (IsConnectionAuthFailed || !_isLateInited)
                     return;
 
-                if (!_isLateInited)
-                    return;
-
-                if (_nextUpdate > DateTime.Now || !Config.EnableDiscounts)
-                    return;
-
-                List<Product> products = Database.GetProducts();
+                List<Product> products = await Database.GetProducts();
 
                 foreach (Product item in products.FindAll(x => x.IsDiscounted))
-                    Database.UpdateProduct(item.UnturnedId, item.IsVehicle, false, 0);
+                    await Database.UpdateProduct(item.UnturnedId, item.IsVehicle, false, 0);
 
                 if (products.Count > 2)
                     products.Shuffle();
@@ -151,21 +151,20 @@ namespace Tavstal.TShop
                 for (int i = 0; i < Config.ItemCountToDiscount; i++)
                 {
                     if (items.IsValidIndex(i))
-                        Database.UpdateProduct(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                        await Database.UpdateProduct(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
                 }
 
                 for (int i = 0; i < Config.VehicleCountToDiscount; i++)
                 {
                     if (vehs.IsValidIndex(i))
-                        Database.UpdateProduct(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                        await Database.UpdateProduct(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
                 }
-
-                _nextUpdate = DateTime.Now.AddSeconds(Config.DiscountInterval);
             }
             catch
-            { 
+            {
                 // Not logging because this error has a 99% chance is caused by load error
             }
+            //yield return new WaitForSeconds(Config.DiscountInterval);
         }
 
         public override Dictionary<string, string> LanguagePacks => new Dictionary<string, string>();

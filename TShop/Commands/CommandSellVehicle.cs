@@ -18,7 +18,7 @@ namespace Tavstal.TShop
         public List<string> Aliases => new List<string> { "sellv" };
         public List<string> Permissions => new List<string> { "tshop.sell.vehicle" };
 
-        public void Execute(IRocketPlayer caller, string[] args)
+        public async void Execute(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
             TShopComponent comp = callerPlayer.GetComponent<TShopComponent>();
@@ -40,7 +40,7 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                Product item = TShop.Database.FindVehicle(vehicle.id);
+                Product item = await TShop.Database.FindVehicle(vehicle.id);
                 if (item == null)
                 {
                     UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);

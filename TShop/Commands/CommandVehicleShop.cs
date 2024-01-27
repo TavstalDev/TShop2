@@ -23,7 +23,7 @@ namespace Tavstal.TShop
         public override List<SubCommand> SubCommands => new List<SubCommand>()
         {
             new SubCommand("add", "Adds vehicle to the shop.", "add [vehicle name | id] <buycost> <sellcost> <permission>", new List<string>() { "insert", "create" }, new List<string>() { "tshop.vehicleshop.add" },
-                (IRocketPlayer caller, string[] args) =>
+                async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;
                     VehicleAsset asset = null;
@@ -53,7 +53,7 @@ namespace Tavstal.TShop
                     }
                     id = asset.id;
 
-                    Product item = TShop.Database.FindVehicle(id);
+                    Product item = await TShop.Database.FindVehicle(id);
                     if (item != null)
                     {
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_already_added", asset.vehicleName, asset.id);
@@ -82,13 +82,13 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (TShop.Database.AddProduct(asset.id, true, buycost, sellcost, permission != null, permission))
+                    if (await TShop.Database.AddProduct(asset.id, true, buycost, sellcost, permission != null, permission))
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "success_vehicle_added", asset.vehicleName, asset.id);
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_added", asset.vehicleName);
                 }),
             new SubCommand("remove", "Removes a vehicle from the shop.", "remove [vehicle name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.vehicleshop.remove" },
-                (IRocketPlayer caller, string[] args) =>
+                async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;
                     VehicleAsset asset = null;
@@ -118,20 +118,20 @@ namespace Tavstal.TShop
                     }
                     id = asset.id;
 
-                    Product item = TShop.Database.FindVehicle(id);
+                    Product item = await TShop.Database.FindVehicle(id);
                     if (item == null)
                     {
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_added", args[0]);
                         return;
                     }
 
-                    if (TShop.Database.RemoveProduct(id, true))
+                    if (await TShop.Database.RemoveProduct(id, true))
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "success_vehicle_removed", asset.vehicleName);
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_removed", asset.vehicleName);
                 }),
             new SubCommand("update", "Updates a vehicle in the shop.", "update [vehicle name | id] <buycost> <sellcost> <permission>", new List<string>() { "change" }, new List<string>() { "tshop.vehicleshop.update" },
-                (IRocketPlayer caller, string[] args) =>
+                async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;
                     VehicleAsset asset = null;
@@ -161,7 +161,7 @@ namespace Tavstal.TShop
                     }
                     id = asset.id;
 
-                    Product item = TShop.Database.FindVehicle(id);
+                    Product item = await TShop.Database.FindVehicle(id);
                     if (item == null)
                     {
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_not_added", asset.vehicleName);
@@ -190,7 +190,7 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (TShop.Database.UpdateProduct(id, true, buycost, sellcost, permission != null, permission))
+                    if (await TShop.Database.UpdateProduct(id, true, buycost, sellcost, permission != null, permission))
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_vehicle_updated", asset.vehicleName, asset.id);
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_updated", asset.vehicleName);

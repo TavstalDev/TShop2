@@ -77,7 +77,7 @@ namespace Tavstal.TShop.Handlers
             }
         }
 
-        private static void Event_OnButtonClick(Player player, string button)
+        private static async void Event_OnButtonClick(Player player, string button)
         {
             try
             {
@@ -441,7 +441,7 @@ namespace Tavstal.TShop.Handlers
                 else if (button.StartsWith("bt_tshop_product#"))
                 {
                     int index = (Convert.ToInt32(button.Replace("bt_tshop_product#", "")) - 1) + 10 * ((comp.IsVehiclePage ? comp.PageVehicle : comp.PageItem) - 1);
-                    List<Product> products = comp.IsVehiclePage ? TShop.Database.GetVehicles(comp.VehicleFilter) : TShop.Database.GetItems(comp.ItemFilter);
+                    List<Product> products = await (comp.IsVehiclePage ? TShop.Database.GetVehicles(comp.VehicleFilter) : TShop.Database.GetItems(comp.ItemFilter));
 
                     if (!products.IsValidIndex(index))
                         return;

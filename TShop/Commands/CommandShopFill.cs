@@ -14,7 +14,7 @@ namespace Tavstal.TShop
         public List<string> Aliases => new List<string> { "shfill" };
         public List<string> Permissions => new List<string> { "tshop.shopfill" };
 
-        public void Execute(IRocketPlayer caller, string[] args)
+        public async void Execute(IRocketPlayer caller, string[] args)
         {
             int count = 0;
             foreach (var a in Assets.find(EAssetType.ITEM).OrderBy(x => x.id))
@@ -29,7 +29,7 @@ namespace Tavstal.TShop
                 if (a is SkinAsset)
                     continue;
 
-                TShop.Database.AddProduct(asset.id, false, 1, 1, false, "");
+                await TShop.Database.AddProduct(asset.id, false, 1, 1, false, "");
                 count++;
             }
 
@@ -47,7 +47,7 @@ namespace Tavstal.TShop
                 if (a is SkinAsset)
                     continue;
 
-                TShop.Database.AddProduct(asset.id, true, 1, 1, false, "");
+                await TShop.Database.AddProduct(asset.id, true, 1, 1, false, "");
                 count++;
             }
         }
