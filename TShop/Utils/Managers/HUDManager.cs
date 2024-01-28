@@ -80,6 +80,7 @@ namespace Tavstal.TShop.Managers
         public static void Show(UnturnedPlayer player, bool handleCursor = true)
         {
             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", true);
+            player.GetComponent<TShopComponent>().IsUIOpened = true;
             if (handleCursor)
                 player.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, true);
         }
@@ -87,6 +88,7 @@ namespace Tavstal.TShop.Managers
         public static void Hide(UnturnedPlayer player, bool handleCursor = true)
         {
             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", false);
+            player.GetComponent<TShopComponent>().IsUIOpened = false;
             if (handleCursor)
                 player.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, false);
         }

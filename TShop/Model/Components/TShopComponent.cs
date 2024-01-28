@@ -14,6 +14,7 @@ namespace Tavstal.TShop
 {
     public class TShopComponent : UnturnedPlayerComponent, IPlayerComponent
     {
+        public bool IsUIOpened {  get; set; }
         public DateTime LastButtonClick = DateTime.Now;
         public ITransportConnection TransportConnection => Player.SteamPlayer().transportConnection;
         public EMenuCategory MenuCategory { get; set; }

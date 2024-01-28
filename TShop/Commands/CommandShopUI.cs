@@ -17,8 +17,16 @@ namespace Tavstal.TShop
         public void Execute(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer p = (UnturnedPlayer)caller;
-            HUDManager.Show(p);
-            HUDManager.UpdateProductPage(p);
+            TShopComponent comp = p.GetComponent<TShopComponent>();
+            if (comp.IsUIOpened)
+            {
+                HUDManager.Hide(p);
+            }
+            else
+            {
+                HUDManager.Show(p);
+                HUDManager.UpdateProductPage(p);
+            }
         }
     }
 }
