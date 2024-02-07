@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
 
 namespace Tavstal.TShop.Compability.Hooks
 {
@@ -102,11 +103,6 @@ namespace Tavstal.TShop.Compability.Hooks
             return (GetBalance(player) - amount) >= 0;
         }
 
-        public void AddTransaction(UnturnedPlayer player, Transaction transaction)
-        {
-            
-        }
-
         public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return Withdraw(UnturnedPlayer.FromCSteamID(player), amount, method);
@@ -127,51 +123,6 @@ namespace Tavstal.TShop.Compability.Hooks
             return Has(UnturnedPlayer.FromCSteamID(player), amount, method);
         }
 
-        public void AddTransaction(CSteamID player, Transaction transaction)
-        {
-            AddTransaction(UnturnedPlayer.FromCSteamID(player), transaction);
-        }
-
-        public List<Transaction> GetTransactions(UnturnedPlayer player)
-        {
-            return null;
-        }
-
-        public void AddPlayerCard(CSteamID steamID, BankCard newCard)
-        {
-
-        }
-
-        public void UpdatePlayerCard(CSteamID steamID, string id, BankCardDetails newData)
-        {
-
-        }
-
-        public void RemovePlayerCard(CSteamID steamID, int index, bool isReversed = false)
-        {
-
-        }
-
-        public List<BankCard> GetPlayerCards(CSteamID steamID)
-        {
-            return null;
-        }
-
-        public BankCard GetPlayerCard(CSteamID steamID, int index)
-        {
-            return null;
-        }
-
-        public BankCard GetPlayerCard(CSteamID steamID, string id)
-        {
-            return null;
-        }
-
-        public BankCard GetCard(string id)
-        {
-            return null;
-        }
-
         public string Localize(string translationKey, params object[] placeholder)
         {
             return Localize(false, translationKey, placeholder);
@@ -180,6 +131,50 @@ namespace Tavstal.TShop.Compability.Hooks
         public string Localize(bool addPrefix, string translationKey, params object[] placeholder)
         {
             return TShop.Instance.Localize(addPrefix, translationKey, placeholder);
+        }
+
+        public void AddTransaction(CSteamID player, ITransaction transaction)
+        {
+            // Not implemented
+        }
+
+        public List<ITransaction> GetTransactions(CSteamID player)
+        {
+            // Not implemented
+            return default;
+        }
+
+        public void AddBankCard(CSteamID steamID, IBankCard newCard)
+        {
+            // Not implemented
+        }
+
+        public void UpdateBankCard(CSteamID steamID, string id, IBankCard newData)
+        {
+            // Not implemented
+        }
+
+        public void RemoveBankCard(CSteamID steamID, int index, bool isReversed = false)
+        {
+            // Not implemented
+        }
+
+        List<IBankCard> IEconomyProvider.GetPlayerCards(CSteamID steamID)
+        {
+            // Not implemented
+            return default;
+        }
+
+        IBankCard IEconomyProvider.GetPlayerCard(CSteamID steamID, int index)
+        {
+            // Not implemented
+            return default;
+        }
+
+        IBankCard IEconomyProvider.GetPlayerCard(CSteamID steamID, string id)
+        {
+            // Not implemented
+            return default;
         }
     }
 }

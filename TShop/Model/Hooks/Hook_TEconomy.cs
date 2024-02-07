@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
 using Tavstal.TLibrary.Extensions;
 
 namespace Tavstal.TShop.Compability.Hooks
@@ -350,6 +351,46 @@ namespace Tavstal.TShop.Compability.Hooks
         public string Localize(string translationKey, params object[] placeholder)
         {
             return Localize(false, translationKey, placeholder);
+        }
+
+        public void AddTransaction(CSteamID player, ITransaction transaction)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ITransaction> GetTransactions(CSteamID player)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddBankCard(CSteamID steamID, IBankCard newCard)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateBankCard(CSteamID steamID, string id, IBankCard newData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveBankCard(CSteamID steamID, int index, bool isReversed = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<IBankCard> IEconomyProvider.GetPlayerCards(CSteamID steamID)
+        {
+            throw new NotImplementedException();
+        }
+
+        IBankCard IEconomyProvider.GetPlayerCard(CSteamID steamID, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        IBankCard IEconomyProvider.GetPlayerCard(CSteamID steamID, string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
