@@ -11,17 +11,6 @@ namespace Tavstal.TShop.Compability.Hooks
 {
     public class ExpEconomyHook : Hook, IEconomyProvider
     {
-        public string GetCurrencyName()
-        {
-            string value = "Exp";
-            try
-            {
-                value = GetConfigValue<string>("MoneyName").ToString();
-            }
-            catch { }
-            return value;
-        }
-
         public ExpEconomyHook() : base("expeconomy_tshop", true) { }
 
         public override void OnLoad()
@@ -48,6 +37,7 @@ namespace Tavstal.TShop.Compability.Hooks
             return TShop.Instance.Config.ExpMode;
         }
 
+        #region IPluginProvider Methods
         public T GetConfigValue<T>(string VariableName)
         {
             try
@@ -81,8 +71,18 @@ namespace Tavstal.TShop.Compability.Hooks
             }
         }
 
-        public bool HasBuiltInTransactionSystem() { return false; }
-        public bool HasBuiltInBankCardSystem() { return false; }
+        public string Localize(string translationKey, params object[] placeholder)
+        {
+            return Localize(false, translationKey, placeholder);
+        }
+
+        public string Localize(bool addPrefix, string translationKey, params object[] placeholder)
+        {
+            return TShop.Instance.Localize(addPrefix, translationKey, placeholder);
+        }
+        #endregion
+
+        #region Economy Methods
         public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return player.Experience -= (uint)amount;
@@ -123,16 +123,21 @@ namespace Tavstal.TShop.Compability.Hooks
             return Has(UnturnedPlayer.FromCSteamID(player), amount, method);
         }
 
-        public string Localize(string translationKey, params object[] placeholder)
+        public string GetCurrencyName()
         {
-            return Localize(false, translationKey, placeholder);
+            string value = "Exp";
+            try
+            {
+                value = GetConfigValue<string>("MoneyName").ToString();
+            }
+            catch { }
+            return value;
         }
+        #endregion
 
-        public string Localize(bool addPrefix, string translationKey, params object[] placeholder)
-        {
-            return TShop.Instance.Localize(addPrefix, translationKey, placeholder);
-        }
-
+        #region TEconomy Methods
+        public bool HasBuiltInTransactionSystem() { return false; }
+        public bool HasBuiltInBankCardSystem() { return false; }
         public void AddTransaction(CSteamID player, ITransaction transaction)
         {
             // Not implemented
@@ -170,5 +175,6 @@ namespace Tavstal.TShop.Compability.Hooks
             // Not implemented
             return default;
         }
+        #endregion
     }
 }

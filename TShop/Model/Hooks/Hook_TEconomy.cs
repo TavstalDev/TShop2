@@ -16,17 +16,6 @@ namespace Tavstal.TShop.Compability.Hooks
 {
     public class TEconomyHook : Hook, IEconomyProvider
     {
-        public string GetCurrencyName()
-        {
-            string value = "Credits";
-            try
-            {
-                value = GetConfigValue("MoneyNameFull").ToString();
-            }
-            catch { }
-            return value;
-        }
-
         private MethodInfo _getBalanceByCurrencyMethod { get; set; }
         private MethodInfo _increaseBalanceByCurrencyMethod { get; set; }
         private MethodInfo _addTransactionMethod { get; set; }
@@ -111,35 +100,6 @@ namespace Tavstal.TShop.Compability.Hooks
         }
 
 
-        public bool HasBuiltInTransactionSystem() { return true; }
-
-        public bool HasBuiltInBankCardSystem() { return true; }
-
-        #region Basic Economy Methods
-        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return (decimal)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
-                            player, -amount, method });
-        }
-
-        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return (decimal)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
-                            player, amount, method });
-        }
-
-        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return (decimal)_getBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
-                            player.m_SteamID, method});
-        }
-
-        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return (GetBalance(player, method) - amount) >= 0;
-        }
-        #endregion
-
         #region IPluginProvider
         public T GetConfigValue<T>(string VariableName)
         {
@@ -159,24 +119,6 @@ namespace Tavstal.TShop.Compability.Hooks
                     return default;
                 }
             }
-        }
-
-        public object GetConfigValue(string VariableName)
-        {
-            object local = new object();
-            try
-            {
-                if (teconomyConfig.GetType().GetFields().FirstOrDefault(x => x.Name.EqualsIgnoreCase(VariableName)) != null)
-                    local = teconomyConfig.GetType().GetField(VariableName).GetValue(teconomyConfig).ToString();
-                else
-                    local = teconomyConfig.GetType().GetProperty(VariableName).GetValue(teconomyConfig).ToString();
-            }
-            catch
-            {
-                local = null;
-                TShop.Logger.LogError($"Failed to get '{VariableName}' variable!");
-            }
-            return local;
         }
 
         public JObject GetConfig()
@@ -203,7 +145,46 @@ namespace Tavstal.TShop.Compability.Hooks
         }
         #endregion
 
+        #region Basic Economy Methods
+        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            return (decimal)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
+                            player, -amount, method });
+        }
+
+        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            return (decimal)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
+                            player, amount, method });
+        }
+
+        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            return (decimal)_getBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
+                            player.m_SteamID, method});
+        }
+
+        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            return (GetBalance(player, method) - amount) >= 0;
+        }
+
+        public string GetCurrencyName()
+        {
+            string value = "Credits";
+            try
+            {
+                value = GetConfigValue<string>("MoneyNameFull").ToString();
+            }
+            catch { }
+            return value;
+        }
+        #endregion
+
         #region TEconomy Methods
+        public bool HasBuiltInTransactionSystem() { return true; }
+
+        public bool HasBuiltInBankCardSystem() { return true; }
         public void AddTransaction(CSteamID player, ITransaction transaction)
         {
             _addTransactionMethod.Invoke(_databaseInstance, new object[] { transaction.Type, transaction.PaymentMethod, transaction.StoreName, transaction.PayerId, transaction.PayeeId, transaction.Amount, transaction.Date });

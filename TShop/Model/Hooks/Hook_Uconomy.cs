@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using Rocket.Core;
-using Rocket.Unturned.Player;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -15,17 +14,6 @@ namespace Tavstal.TShop.Compability.Hooks
 {
     public class UconomyHook : Hook, IEconomyProvider
     {
-        public string GetCurrencyName()
-        {
-            string value = "Credits";
-            try
-            {
-                value = GetConfigValue<string>("MoneyName").ToString();
-            }
-            catch { }
-            return value;
-        }
-
         private MethodInfo _getBalanceMethod;
         private MethodInfo _increaseBalanceMethod;
         private MethodInfo _getTranslation;
@@ -77,6 +65,7 @@ namespace Tavstal.TShop.Compability.Hooks
             return R.Plugins.GetPlugins().Any(c => c.Name.EqualsIgnoreCase("uconomy"));
         }
 
+        #region IPluginProvider Methods
         public T GetConfigValue<T>(string VariableName)
         {
             try
@@ -110,8 +99,18 @@ namespace Tavstal.TShop.Compability.Hooks
             }
         }
 
-        public bool HasBuiltInTransactionSystem() { return false; }
-        public bool HasBuiltInBankCardSystem() { return false; }
+        public string Localize(string translationKey, params object[] placeholder)
+        {
+            return Localize(false, translationKey, placeholder);
+        }
+
+        public string Localize(bool addPrefix, string translationKey, params object[] placeholder)
+        {
+            return ((string)_getTranslation.Invoke(_pluginInstance, new object[] { translationKey, placeholder }));
+        }
+        #endregion
+
+        #region Economy Methods
         public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
@@ -141,16 +140,21 @@ namespace Tavstal.TShop.Compability.Hooks
                 return (GetBalance(player) - Math.Abs(amount)) >= 0;
         }
 
-        public string Localize(string translationKey, params object[] placeholder)
+        public string GetCurrencyName()
         {
-            return Localize(false, translationKey, placeholder);
+            string value = "Credits";
+            try
+            {
+                value = GetConfigValue<string>("MoneyName").ToString();
+            }
+            catch { }
+            return value;
         }
+        #endregion
 
-        public string Localize(bool addPrefix, string translationKey, params object[] placeholder)
-        {
-            return ((string)_getTranslation.Invoke(_pluginInstance, new object[] { translationKey, placeholder }));
-        }
-
+        #region TEconomy Methods
+        public bool HasBuiltInTransactionSystem() { return false; }
+        public bool HasBuiltInBankCardSystem() { return false; }
         public void AddTransaction(CSteamID player, ITransaction transaction)
         {
             // Not implemented
@@ -188,5 +192,6 @@ namespace Tavstal.TShop.Compability.Hooks
             // Not implemented
             return default;
         }
+        #endregion
     }
 }
