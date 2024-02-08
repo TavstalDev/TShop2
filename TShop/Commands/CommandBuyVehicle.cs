@@ -56,7 +56,7 @@ namespace Tavstal.TShop
 
                 decimal cost = item.GetBuyCost(amount);
 
-                if (TShop.EconomyProvider.GetBalance(callerPlayer) < cost)
+                if (TShop.EconomyProvider.GetBalance(callerPlayer.CSteamID) < cost)
                 {
                     UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_balance_not_enough");
                     return;
@@ -68,9 +68,9 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                TShop.EconomyProvider.Withdraw(callerPlayer, cost);
+                TShop.EconomyProvider.Withdraw(callerPlayer.CSteamID, cost);
                 VehicleManager.spawnLockedVehicleForPlayerV2(asset.id, callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation, callerPlayer.Player);
-                TShop.EconomyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                TShop.EconomyProvider.AddTransaction(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                 UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_buy", asset.vehicleName, amount, cost, TShop.EconomyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else

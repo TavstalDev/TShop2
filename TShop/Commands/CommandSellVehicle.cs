@@ -54,13 +54,13 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                TShop.EconomyProvider.Deposit(callerPlayer, cost);
+                TShop.EconomyProvider.Deposit(callerPlayer.CSteamID, cost);
                 foreach (Passenger pas in vehicle.passengers)
                 {
                     VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
                 }
                 VehicleManager.askVehicleDestroy(vehicle);
-                TShop.EconomyProvider.AddTransaction(callerPlayer, new Transaction(ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                TShop.EconomyProvider.AddTransaction(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
                 UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.EconomyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else
