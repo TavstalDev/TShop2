@@ -30,7 +30,6 @@ namespace Tavstal.TShop.Compability.Hooks
         private object _databaseInstance { get; set; }
         private object _pluginInstance { get; set; }
         private object teconomyConfig { get; set; }
-        private Type helperType { get; set; }
 
         public TEconomyHook() : base("teconomy_tshop", false) { }
 
