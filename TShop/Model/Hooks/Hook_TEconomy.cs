@@ -27,17 +27,16 @@ namespace Tavstal.TShop.Compability.Hooks
             return value;
         }
 
-        private MethodInfo _getBalanceMethod {  get; set; }
         private MethodInfo _getBalanceByCurrencyMethod { get; set; }
-        private MethodInfo _increaseBalanceMethod { get; set; }
         private MethodInfo _increaseBalanceByCurrencyMethod { get; set; }
         private MethodInfo _addTransactionMethod { get; set; }
-        private MethodInfo _getPlayerTransactionMethod { get; set; }
-        //private MethodInfo _getBankCard { get; set; }
+        private MethodInfo _getTransactionsMethod { get; set; }
+        //private MethodInfo _findTransactionMethod { get; set; }
         private MethodInfo _addBankCard { get; set; }
         private MethodInfo _updateBankCard { get; set; }
         private MethodInfo _removeBankCard { get; set; }
-        private MethodInfo _generateCardId { get; set; }
+        private MethodInfo _getBankCard { get; set; }
+        private MethodInfo _getBankCards { get; set; }
         private MethodInfo _getTranslation { get; set; }
         private object _databaseInstance { get; set; }
         private object _pluginInstance { get; set; }
@@ -63,15 +62,8 @@ namespace Tavstal.TShop.Compability.Hooks
                 _databaseInstance = _pluginInstance.GetType().GetProperty("Database").GetValue(_pluginInstance);
                 Type databaseType = _databaseInstance.GetType();
 
-
-                _getBalanceMethod = databaseType.GetMethod(
-                    "GetBalance", new[] { typeof(ulong) });
-
                 _getBalanceByCurrencyMethod = databaseType.GetMethod(
                     "GetBalance", new[] { typeof(ulong), typeof(EPaymentMethod) });
-
-                _increaseBalanceMethod = databaseType.GetMethod(
-                    "IncreaseBalance", new[] { typeof(ulong), typeof(decimal) });
 
                 _increaseBalanceByCurrencyMethod = databaseType.GetMethod(
                     "IncreaseBalance", new[] { typeof(ulong), typeof(decimal), typeof(EPaymentMethod) });
@@ -79,14 +71,26 @@ namespace Tavstal.TShop.Compability.Hooks
                 _addTransactionMethod = databaseType.GetMethod(
                     "AddTransaction", new[] { typeof(ETransaction), typeof(EPaymentMethod), typeof(string), typeof(ulong), typeof(ulong), typeof(decimal), typeof(DateTime) });
 
+                _getTransactionsMethod = databaseType.GetMethod(
+                    "GetTransactionsByParticipant", new [] { typeof(ulong) });
+
+                /*_findTransactionMethod = databaseType.GetMethod(
+                    "FindTransaction", new[] { typeof(Guid) });*/
+
                 _addBankCard = databaseType.GetMethod(
                     "AddBankCard", new[] { typeof(string), typeof(string), typeof(string), typeof(ulong), typeof(decimal), typeof(decimal), typeof(DateTime) } );
 
-                _generateCardId = ;
+                _removeBankCard = databaseType.GetMethod(
+                    "RemoveBankCard", new[] { typeof(string) });
 
-                _removeBankCard = ;
+                _updateBankCard = databaseType.GetMethod(
+                    "UpdateBankCard", new[] { typeof(string), typeof(decimal), typeof(bool) });
 
-                _updateBankCard = ;
+                _getBankCard = databaseType.GetMethod(
+                    "FindBankCard", new[] { typeof(string) });
+
+                _getBankCards = databaseType.GetMethod(
+                    "GetBankCards", new[] { typeof(ulong) });
 
                 _getTranslation = _pluginInstance.GetType().GetMethod("Localize", new[] { typeof(bool), typeof(string), typeof(object[]) });
 
@@ -111,83 +115,17 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public bool HasBuiltInBankCardSystem() { return true; }
 
-        public decimal Withdraw(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return Withdraw(player.CSteamID, amount, method);
-        }
-
-        public decimal Deposit(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return Deposit(player.CSteamID, amount, method);
-        }
-
-        public decimal GetBalance(UnturnedPlayer player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return GetBalance(player.CSteamID, method);
-        }
-
-        public bool Has(UnturnedPlayer player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return Has(player.CSteamID, amount, method);
-        }
-
-        public void AddTransaction(UnturnedPlayer player, Transaction transaction)
-        {
-            AddTransaction(player.CSteamID, transaction);
-        }
-
+        #region Basic Economy Methods
         public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            switch (method)
-            {
-                case EPaymentMethod.BANK_ACCOUNT:
-                    {
-                        return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, -amount });
-                    }
-                case EPaymentMethod.CRYPTO_WALLET:
-                    {
-                        return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, -amount });
-                    }
-                case EPaymentMethod.CASH:
-                    {
-                        return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, -amount });
-                    }
-                default:
-                    {
-                        return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player.m_SteamID.ToString(), -amount });
-                    }
-            }
+            return (decimal)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
+                            player, -amount, method });
         }
 
         public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            switch (method)
-            {
-                case EPaymentMethod.BANK_ACCOUNT:
-                    {
-                        return (decimal)_increaseBankBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, amount });
-                    }
-                case EPaymentMethod.CRYPTO_WALLET:
-                    {
-                        return (decimal)_increaseCryptoBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, amount });
-                    }
-                case EPaymentMethod.CASH:
-                    {
-                        return (decimal)_increaseCashBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player, amount });
-                    }
-                default:
-                    {
-                        return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                            player.m_SteamID.ToString(), amount });
-                    }
-            }
+            return (decimal)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
+                            player, amount, method });
         }
 
         public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
@@ -200,7 +138,9 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             return (GetBalance(player, method) - amount) >= 0;
         }
+        #endregion
 
+        #region IPluginProvider
         public T GetConfigValue<T>(string VariableName)
         {
             try
@@ -261,7 +201,9 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             return Localize(false, translationKey, placeholder);
         }
+        #endregion
 
+        #region TEconomy Methods
         public void AddTransaction(CSteamID player, ITransaction transaction)
         {
             _addTransactionMethod.Invoke(_databaseInstance, new object[] { transaction.Type, transaction.PaymentMethod, transaction.StoreName, transaction.PayerId, transaction.PayeeId, transaction.Amount, transaction.Date });
@@ -271,12 +213,7 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
-                var result = _getPlayerTransactionMethod.Invoke(_databaseInstance, new object[] { player.CSteamID });
-
-                if (result == null)
-                    return new List<ITransaction>();
-
-                return JsonConvert.DeserializeObject<List<Transaction>>(JObject.FromObject(result)["Transactions"].ToString(Formatting.None));
+                return (List<ITransaction>)_getTransactionsMethod.Invoke(_databaseInstance, new object[] { player.m_SteamID });
             }
             catch (Exception ex)
             {
@@ -287,34 +224,28 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public void AddBankCard(CSteamID steamID, IBankCard newCard)
         {
-            newCard.Id = Convert.ToString(_generateCardId.Invoke(helperType, null));
-            _addBankCard.Invoke(_databaseInstance, new object[] { steamID, JObject.FromObject(newCard).ToString(Formatting.None) });
+            _addBankCard.Invoke(_databaseInstance, new object[] { newCard.Id, newCard.SecurityCode, newCard.PinCode, newCard.HolderId, newCard.BalanceUse, newCard.BalanceLimit, newCard.ExpireDate });
         }
 
-        public void UpdateBankCard(CSteamID steamID, string id, IBankCard newData)
+        public void UpdateBankCard(string cardId, decimal limitUsed, bool isActive)
         {
-            _updateBankCard.Invoke(_databaseInstance, new object[] { steamID, id, JObject.FromObject(newData).ToString(Formatting.None) });
+            _updateBankCard.Invoke(_databaseInstance, new object[] { cardId, limitUsed, isActive });
         }
 
-        public void RemoveBankCard(CSteamID steamID, int index, bool isReversed = false)
+        public void RemoveBankCard(string cardId)
         {
-            _removeBankCard.Invoke(_databaseInstance, new object[] { steamID, index, isReversed });
+            _removeBankCard.Invoke(_databaseInstance, new object[] { cardId });
         }
 
-        List<IBankCard> IEconomyProvider.GetPlayerCards(CSteamID steamID)
+        public List<IBankCard> GetBankCardsByPlayer(CSteamID steamID)
         {
-            JObject account = GetPlayerAccount(steamID);
-            return JsonConvert.DeserializeObject<List<IBankCard>>(account["bankCards"].ToString(Formatting.None));
+            return (List<IBankCard>)_getBankCards.Invoke(_databaseInstance, new object[] { steamID.m_SteamID });
         }
 
-        IBankCard IEconomyProvider.GetPlayerCard(CSteamID steamID, int index)
+        public IBankCard GetBankCardById(string cardId)
         {
-           
+            return (IBankCard)_getBankCard.Invoke(_databaseInstance, new object[] { cardId });
         }
-
-        IBankCard IEconomyProvider.GetPlayerCard(CSteamID steamID, string id)
-        {
-            
-        }
+        #endregion
     }
 }

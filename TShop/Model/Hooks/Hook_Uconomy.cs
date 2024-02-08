@@ -167,29 +167,23 @@ namespace Tavstal.TShop.Compability.Hooks
             // Not implemented
         }
 
-        public void UpdateBankCard(CSteamID steamID, string id, IBankCard newData)
+        public void UpdateBankCard(string cardId, decimal limitUsed, bool isActive)
         {
             // Not implemented
         }
 
-        public void RemoveBankCard(CSteamID steamID, int index, bool isReversed = false)
+        public void RemoveBankCard(string cardId)
         {
             // Not implemented
         }
 
-        List<IBankCard> IEconomyProvider.GetPlayerCards(CSteamID steamID)
-        {
-            // Not implemented
-            return default;
-        }
-
-        IBankCard IEconomyProvider.GetPlayerCard(CSteamID steamID, int index)
+        public List<IBankCard> GetBankCardsByPlayer(CSteamID steamID)
         {
             // Not implemented
             return default;
         }
 
-        IBankCard IEconomyProvider.GetPlayerCard(CSteamID steamID, string id)
+        public IBankCard GetBankCardById(string cardId)
         {
             // Not implemented
             return default;
