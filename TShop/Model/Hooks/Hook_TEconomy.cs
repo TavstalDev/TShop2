@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Rocket.Core;
-using Rocket.Unturned.Player;
 using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
@@ -165,7 +164,39 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            return (GetBalance(player, method) - amount) >= 0;
+            if (amount >= 0) 
+                return (GetBalance(player, method) - amount) >= 0;
+            else
+                return (GetBalance(player, method) - (amount * -1)) >= 0;
+        }
+
+        public async Task<decimal> WithdrawAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            Task<decimal> task = (Task<decimal>)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
+                            player, -amount, method });
+            return await task;
+        }
+
+        public async Task<decimal> DepositAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            Task<decimal> task = (Task<decimal>)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
+                            player, +amount, method });
+            return await task;
+        }
+
+        public async Task<decimal> GetBalanceAsync(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            Task<decimal> task = (Task<decimal>)_getBalanceByCurrencyMethod.Invoke(_databaseInstance, new object[] {
+                            player.m_SteamID, method});
+            return await task;
+        }
+
+        public async Task<bool> HasAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            if (amount >= 0)
+                return (await GetBalanceAsync(player, method) - amount) >= 0;
+            else
+                return (await GetBalanceAsync(player, method) - (amount * -1)) >= 0;
         }
 
         public string GetCurrencyName()
@@ -181,9 +212,15 @@ namespace Tavstal.TShop.Compability.Hooks
         #endregion
 
         #region TEconomy Methods
-        public bool HasBuiltInTransactionSystem() { return true; }
+        public bool HasTransactionSystem()
+        {
+            return true;
+        }
 
-        public bool HasBuiltInBankCardSystem() { return true; }
+        public bool HasBankCardSystem()
+        {
+            return true;
+        }
         public void AddTransaction(CSteamID player, ITransaction transaction)
         {
             _addTransactionMethod.Invoke(_databaseInstance, new object[] { transaction.Type, transaction.PaymentMethod, transaction.StoreName, transaction.PayerId, transaction.PayeeId, transaction.Amount, transaction.Date });
@@ -225,6 +262,48 @@ namespace Tavstal.TShop.Compability.Hooks
         public IBankCard GetBankCardById(string cardId)
         {
             return (IBankCard)_getBankCard.Invoke(_databaseInstance, new object[] { cardId });
+        }
+
+        public async Task AddTransactionAsync(CSteamID player, ITransaction transaction)
+        {
+            Task task = (Task)_addTransactionMethod.Invoke(_databaseInstance, new object[] { transaction.Type, transaction.PaymentMethod, transaction.StoreName, transaction.PayerId, transaction.PayeeId, transaction.Amount, transaction.Date }); ;
+            await task;
+        }
+
+        public async Task<List<ITransaction>> GetTransactionsAsync(CSteamID player)
+        {
+            Task<List<ITransaction>> task = (Task<List<ITransaction>>)_getTransactionsMethod.Invoke(_databaseInstance, new object[] { player.m_SteamID }); ;
+            return await task;
+        }
+
+        public async Task AddBankCardAsync(CSteamID steamID, IBankCard newCard)
+        {
+            Task task = (Task)_addBankCard.Invoke(_databaseInstance, new object[] { newCard.Id, newCard.SecurityCode, newCard.PinCode, newCard.HolderId, newCard.BalanceUse, newCard.BalanceLimit, newCard.ExpireDate }); ;
+            await task;
+        }
+
+        public async Task UpdateBankCardAsync(string cardId, decimal limitUsed, bool isActive)
+        {
+            Task task = (Task)_updateBankCard.Invoke(_databaseInstance, new object[] { cardId, limitUsed, isActive }); ;
+            await task;
+        }
+
+        public async Task RemoveBankCardAsync(string cardId)
+        {
+            Task task = (Task)_removeBankCard.Invoke(_databaseInstance, new object[] { cardId }); ;
+            await task;
+        }
+
+        public async Task<List<IBankCard>> GetBankCardsByPlayerAsync(CSteamID steamID)
+        {
+            Task<List<IBankCard>> task = (Task<List<IBankCard>>)_getBankCards.Invoke(_databaseInstance, new object[] { steamID.m_SteamID }); ;
+            return await task;
+        }
+
+        public async Task<IBankCard> GetBankCardByIdAsync(string cardId)
+        {
+            Task<IBankCard> task = (Task<IBankCard>)_getBankCard.Invoke(_databaseInstance, new object[] { cardId });
+            return await task;
         }
         #endregion
     }

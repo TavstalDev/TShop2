@@ -65,7 +65,7 @@ namespace Tavstal.TShop
 
                 decimal cost =  item.GetBuyCost(amount);
 
-                if (TShop.EconomyProvider.GetBalance(callerPlayer.CSteamID) < cost)
+                if (await TShop.EconomyProvider.GetBalanceAsync(callerPlayer.CSteamID) < cost)
                 {
                     UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_balance_not_enough");
                     return;
@@ -77,13 +77,14 @@ namespace Tavstal.TShop
                     return;
                 }
 
-                TShop.EconomyProvider.Withdraw(callerPlayer.CSteamID, cost);
+                await TShop.EconomyProvider.WithdrawAsync(callerPlayer.CSteamID, cost);
                 for (int i = 0; i < amount; i++)
                 {
                     if (!callerPlayer.Inventory.tryAddItem(new Item(asset.id, true), false))
                         ItemManager.dropItem(new Item(asset.id, true), callerPlayer.Position, true, true, false);
                 }
-                TShop.EconomyProvider.AddTransaction(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                if (TShop.EconomyProvider.HasTransactionSystem())
+                    await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                 UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_buy", asset.itemName, amount, cost, TShop.EconomyProvider.GetConfigValue<string>("MoneySymbol"));
             }
             else

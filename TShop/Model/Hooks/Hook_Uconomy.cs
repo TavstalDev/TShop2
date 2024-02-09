@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
@@ -181,6 +182,38 @@ namespace Tavstal.TShop.Compability.Hooks
                 return (GetBalance(player) - Math.Abs(amount)) >= 0;
         }
 
+        public async Task<decimal> WithdrawAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            Task<decimal> task = (Task<decimal>)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
+                player.ToString(), -amount
+            });
+            return await task;
+        }
+
+        public async Task<decimal> DepositAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            Task<decimal> task = (Task<decimal>)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
+                player.ToString(), amount
+            });
+            return await task;
+        }
+
+        public async Task<decimal> GetBalanceAsync(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            Task<decimal> task = (Task<decimal>)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
+                player.ToString()
+            });
+            return await task;
+        }
+
+        public async Task<bool> HasAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        {
+            if (amount >= 0)
+                return (await GetBalanceAsync(player) - amount) >= 0;
+            else
+                return (await GetBalanceAsync(player) - Math.Abs(amount)) >= 0;
+        }
+
         public string GetCurrencyName()
         {
             string value = "Credits";
@@ -194,44 +227,83 @@ namespace Tavstal.TShop.Compability.Hooks
         #endregion
 
         #region TEconomy Methods
-        public bool HasBuiltInTransactionSystem() { return false; }
-        public bool HasBuiltInBankCardSystem() { return false; }
+        public bool HasTransactionSystem()
+        {
+            return false;
+        }
+
+        public bool HasBankCardSystem()
+        {
+            return false;
+        }
         public void AddTransaction(CSteamID player, ITransaction transaction)
         {
-            // Not implemented
+            throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
         }
 
         public List<ITransaction> GetTransactions(CSteamID player)
         {
-            // Not implemented
-            return default;
+            throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
         }
 
         public void AddBankCard(CSteamID steamID, IBankCard newCard)
         {
-            // Not implemented
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
         }
 
         public void UpdateBankCard(string cardId, decimal limitUsed, bool isActive)
         {
-            // Not implemented
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
         }
 
         public void RemoveBankCard(string cardId)
         {
-            // Not implemented
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
         }
 
         public List<IBankCard> GetBankCardsByPlayer(CSteamID steamID)
         {
-            // Not implemented
-            return default;
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
         }
 
         public IBankCard GetBankCardById(string cardId)
         {
-            // Not implemented
-            return default;
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
+        }
+
+        public async Task AddTransactionAsync(CSteamID player, ITransaction transaction)
+        {
+            throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
+        }
+
+        public async Task<List<ITransaction>> GetTransactionsAsync(CSteamID player)
+        {
+            throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
+        }
+
+        public async Task AddBankCardAsync(CSteamID steamID, IBankCard newCard)
+        {
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
+        }
+
+        public async Task UpdateBankCardAsync(string cardId, decimal limitUsed, bool isActive)
+        {
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
+        }
+
+        public async Task RemoveBankCardAsync(string cardId)
+        {
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
+        }
+
+        public async Task<List<IBankCard>> GetBankCardsByPlayerAsync(CSteamID steamID)
+        {
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
+        }
+
+        public async Task<IBankCard> GetBankCardByIdAsync(string cardId)
+        {
+            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
         }
         #endregion
     }
