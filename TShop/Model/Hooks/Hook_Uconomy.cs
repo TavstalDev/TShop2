@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Rocket.API;
 using Rocket.Core;
 using Steamworks;
 using System;
@@ -31,23 +32,27 @@ namespace Tavstal.TShop.Compability.Hooks
             {
                 TShop.Logger.Log("Loading Uconomy hook...");
 
-                var uconomyPlugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("uconomy"));
-                var uconomyType = uconomyPlugin.GetType().Assembly.GetType("fr34kyn01535.Uconomy.Uconomy");
+                IRocketPlugin uconomyPlugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("uconomy"));
+                Type uconomyType = uconomyPlugin.GetType().Assembly.GetType("fr34kyn01535.Uconomy.Uconomy");
                 _pluginInstance =
                     uconomyType.GetField("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(uconomyPlugin);
+                Type pluginInstanceType = _pluginInstance.GetType();
 
-                var uconomyConfigInst = uconomyType.GetProperty("Configuration").GetValue(uconomyPlugin);
+                object uconomyConfigInst = uconomyType.GetProperty("Configuration").GetValue(uconomyPlugin);
                 uconomyConfig = uconomyConfigInst.GetType().GetProperty("Instance").GetValue(uconomyConfigInst);
 
-                _databaseInstance = _pluginInstance.GetType().GetField("Database").GetValue(_pluginInstance);
+                _databaseInstance = pluginInstanceType.GetField("Database").GetValue(_pluginInstance);
 
-                _getBalanceMethod = _databaseInstance.GetType().GetMethod(
+                _getBalanceMethod = pluginInstanceType.GetMethod(
                     "GetBalance", new[] { typeof(string) });
 
-                _increaseBalanceMethod = _databaseInstance.GetType().GetMethod(
+                _increaseBalanceMethod = pluginInstanceType.GetMethod(
                     "IncreaseBalance", new[] { typeof(string), typeof(decimal) });
 
-                _getTranslation = _pluginInstance.GetType().GetMethod("Translate", new[] { typeof(string), typeof(object[]) });
+                if (pluginInstanceType.GetMethods().Any(x => x.Name == "Localize"))
+                    _getTranslation = pluginInstanceType.GetMethod("Localize", new[] { typeof(string), typeof(object[]) });
+                else
+                    _getTranslation = pluginInstanceType.GetMethod("Translate", new[] { typeof(string), typeof(object[]) });
 
                 #region Create Event Delegates
                 /* Added because it might be needed in the future
