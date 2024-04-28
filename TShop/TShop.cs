@@ -1,9 +1,7 @@
 ﻿using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
@@ -13,7 +11,6 @@ using Tavstal.TShop.Compability;
 using Tavstal.TShop.Compability.Hooks;
 using Tavstal.TShop.Handlers;
 using Tavstal.TShop.Managers;
-using UnityEngine;
 using Math = System.Math;
 
 namespace Tavstal.TShop
@@ -137,10 +134,10 @@ namespace Tavstal.TShop
                 if (IsConnectionAuthFailed || !_isLateInited)
                     return;
 
-                List<Product> products = await Database.GetProducts();
+                List<Product> products = await Database.GetProductsAsync();
 
                 foreach (Product item in products.FindAll(x => x.IsDiscounted))
-                    await Database.UpdateProduct(item.UnturnedId, item.IsVehicle, false, 0);
+                    await Database.UpdateProductAsync(item.UnturnedId, item.IsVehicle, false, 0);
 
                 if (products.Count > 2)
                     products.Shuffle();
@@ -151,13 +148,13 @@ namespace Tavstal.TShop
                 for (int i = 0; i < Config.ItemCountToDiscount; i++)
                 {
                     if (items.IsValidIndex(i))
-                        await Database.UpdateProduct(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                        await Database.UpdateProductAsync(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
                 }
 
                 for (int i = 0; i < Config.VehicleCountToDiscount; i++)
                 {
                     if (vehs.IsValidIndex(i))
-                        await Database.UpdateProduct(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                        await Database.UpdateProductAsync(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
                 }
             }
             catch

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tavstal.TShop.Model.Interfaces
+﻿namespace Tavstal.TShop.Model.Interfaces
 {
     public interface IProduct
     {

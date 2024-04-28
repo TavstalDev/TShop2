@@ -1,5 +1,4 @@
-﻿using Rocket.Unturned.Chat;
-using Rocket.Unturned.Player;
+﻿using Rocket.Unturned.Player;
 using SDG.NetTransport;
 using SDG.Unturned;
 using System;
@@ -10,14 +9,20 @@ using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Helpers;
-using Tavstal.TShop.Model.Interfaces;
 
 namespace Tavstal.TShop.Managers
 {
+    /// <summary>
+    /// Provides static methods and properties for managing the Heads-Up Display (HUD).
+    /// </summary>
     public static class HUDManager
     {
         private static TShopConfiguration Config => TShop.Instance.Config;
 
+        /// <summary>
+        /// Initializes the HUD for the specified Unturned player.
+        /// </summary>
+        /// <param name="player">The Unturned player for which to initialize the HUD.</param>
         public static void Init(UnturnedPlayer player)
         {
             EffectManager.sendUIEffect(Config.EffectID, (short)Config.EffectID, player.SteamPlayer().transportConnection, true);
@@ -25,6 +30,10 @@ namespace Tavstal.TShop.Managers
             Translate(player);
         }
 
+        /// <summary>
+        /// Translates the HUD elements for the specified Unturned player.
+        /// </summary>
+        /// <param name="player">The Unturned player for which to translate the HUD.</param>
         private static void Translate(UnturnedPlayer player)
         {
             var transportCon = player.SteamPlayer().transportConnection;
@@ -77,6 +86,11 @@ namespace Tavstal.TShop.Managers
             #endregion
         }
 
+        /// <summary>
+        /// Shows the HUD for the specified Unturned player.
+        /// </summary>
+        /// <param name="player">The Unturned player for which to show the HUD.</param>
+        /// <param name="handleCursor">Optional: A boolean value indicating whether to handle the cursor visibility along with showing the HUD. Default is true.</param>
         public static void Show(UnturnedPlayer player, bool handleCursor = true)
         {
             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", true);
@@ -85,6 +99,11 @@ namespace Tavstal.TShop.Managers
                 player.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, true);
         }
 
+        /// <summary>
+        /// Hides the HUD for the specified Unturned player.
+        /// </summary>
+        /// <param name="player">The Unturned player for which to hide the HUD.</param>
+        /// <param name="handleCursor">Optional: A boolean value indicating whether to handle the cursor visibility along with hiding the HUD. Default is true.</param>
         public static void Hide(UnturnedPlayer player, bool handleCursor = true)
         {
             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", false);
@@ -93,6 +112,10 @@ namespace Tavstal.TShop.Managers
                 player.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, false);
         }
 
+        /// <summary>
+        /// Asynchronously updates the product page for the specified Unturned player.
+        /// </summary>
+        /// <param name="player">The Unturned player for which to update the product page.</param>
         public static async void UpdateProductPage(UnturnedPlayer player)
         {
             try
@@ -115,7 +138,7 @@ namespace Tavstal.TShop.Managers
                 int itemPerPage = 10;
 
                 ITransportConnection playerTC = player.SteamPlayer().transportConnection;
-                List<Product> products = await (comp.IsVehiclePage ? TShop.Database.GetVehicles(comp.VehicleFilter) : TShop.Database.GetItems(comp.ItemFilter));
+                List<Product> products = await (comp.IsVehiclePage ? TShop.Database.GetVehiclesAsync(comp.VehicleFilter) : TShop.Database.GetItemsAsync(comp.ItemFilter));
                 int maxPage = products.Count / itemPerPage + (products.Count % itemPerPage > 0 ? 1 : 0);
                 #region Body
                 int validCount = 0;
@@ -202,6 +225,10 @@ namespace Tavstal.TShop.Managers
             }
         }
 
+        /// <summary>
+        /// Updates the basket page for the specified Unturned player.
+        /// </summary>
+        /// <param name="player">The Unturned player for which to update the basket page.</param>
         public static void UpdateBasketPage(UnturnedPlayer player)
         {
             TShopComponent comp = player.GetComponent<TShopComponent>();
@@ -309,6 +336,10 @@ namespace Tavstal.TShop.Managers
             }
         }
 
+        /// <summary>
+        /// Updates the payment information on the basket page for the specified Unturned player.
+        /// </summary>
+        /// <param name="player">The Unturned player for which to update the basket payment information.</param>
         public static void UpdateBasketPayment(UnturnedPlayer player)
         {
             TShopComponent comp = player.GetComponent<TShopComponent>();

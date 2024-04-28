@@ -53,7 +53,7 @@ namespace Tavstal.TShop
                     }
                     id = asset.id;
 
-                    Product item = await TShop.Database.FindVehicle(id);
+                    Product item = await TShop.Database.FindVehicleAsync(id);
                     if (item != null)
                     {
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_already_added", asset.vehicleName, asset.id);
@@ -82,7 +82,7 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (await TShop.Database.AddProduct(asset.id, true, buycost, sellcost, permission != null, permission))
+                    if (await TShop.Database.AddProductAsync(asset.id, true, buycost, sellcost, permission != null, permission))
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "success_vehicle_added", asset.vehicleName, asset.id);
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_added", asset.vehicleName);
@@ -118,14 +118,14 @@ namespace Tavstal.TShop
                     }
                     id = asset.id;
 
-                    Product item = await TShop.Database.FindVehicle(id);
+                    Product item = await TShop.Database.FindVehicleAsync(id);
                     if (item == null)
                     {
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_added", args[0]);
                         return;
                     }
 
-                    if (await TShop.Database.RemoveProduct(id, true))
+                    if (await TShop.Database.RemoveProductAsync(id, true))
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "success_vehicle_removed", asset.vehicleName);
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_removed", asset.vehicleName);
@@ -161,7 +161,7 @@ namespace Tavstal.TShop
                     }
                     id = asset.id;
 
-                    Product item = await TShop.Database.FindVehicle(id);
+                    Product item = await TShop.Database.FindVehicleAsync(id);
                     if (item == null)
                     {
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_not_added", asset.vehicleName);
@@ -190,7 +190,7 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (await TShop.Database.UpdateProduct(id, true, buycost, sellcost, permission != null, permission))
+                    if (await TShop.Database.UpdateProductAsync(id, true, buycost, sellcost, permission != null, permission))
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_vehicle_updated", asset.vehicleName, asset.id);
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_updated", asset.vehicleName);

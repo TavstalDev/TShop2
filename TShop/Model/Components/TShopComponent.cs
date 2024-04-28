@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Compatibility.Interfaces;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TShop.Compability;
 using Tavstal.TShop.Model.Enums;
-using Tavstal.TLibrary.Compatibility.Interfaces;
 
 namespace Tavstal.TShop
 {

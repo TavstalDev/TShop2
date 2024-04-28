@@ -29,7 +29,7 @@ namespace Tavstal.TShop
                 if (a is SkinAsset)
                     continue;
 
-                await TShop.Database.AddProduct(asset.id, false, 1, 1, false, "");
+                await TShop.Database.AddProductAsync(asset.id, false, 1, 1, false, "");
                 count++;
             }
 
@@ -47,7 +47,7 @@ namespace Tavstal.TShop
                 if (a is SkinAsset)
                     continue;
 
-                await TShop.Database.AddProduct(asset.id, true, 1, 1, false, "");
+                await TShop.Database.AddProductAsync(asset.id, true, 1, 1, false, "");
                 count++;
             }
         }
