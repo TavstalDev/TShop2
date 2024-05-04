@@ -27,12 +27,14 @@ namespace Tavstal.TShop
             {
                 ushort id = 0;
                 int amount = 1;
+                // Get ID
                 try
                 {
                     ushort.TryParse(args[0], out id);
                 }
                 catch { }
 
+                // Get Amount
                 if (args.Length == 2)
                 {
                     try
@@ -42,8 +44,7 @@ namespace Tavstal.TShop
                     catch { }
                 }
 
-                ItemAsset asset = null;
-
+                ItemAsset asset;
                 if (id > 0)
                     asset = UAssetHelper.FindItemAsset(id);
                 else

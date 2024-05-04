@@ -41,7 +41,7 @@ namespace Tavstal.TShop.Handlers
 
         private static void Event_OnPlayerJoin(UnturnedPlayer player)
         {
-            HUDManager.Init(player);
+            UIManager.Init(player);
         }
 
         private static void Event_OnInputFieldEdit(Player player, string button, string text)
@@ -72,7 +72,7 @@ namespace Tavstal.TShop.Handlers
                     else
                         comp.Basket[key] = v;
 
-                    HUDManager.UpdateBasketPayment(uPlayer);
+                    UIManager.UpdateBasketPayment(uPlayer);
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace Tavstal.TShop.Handlers
 
                             comp.MenuCategory = EMenuCategory.ProductItems;
                             comp.IsVehiclePage = false;
-                            HUDManager.UpdateProductPage(uPlayer);
+                            UIManager.UpdateProductPage(uPlayer);
                             EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_products", true);
                             EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_basket", false);
                             return;
@@ -111,7 +111,7 @@ namespace Tavstal.TShop.Handlers
 
                             comp.MenuCategory = EMenuCategory.ProductVehicles;
                             comp.IsVehiclePage = true;
-                            HUDManager.UpdateProductPage(uPlayer);
+                            UIManager.UpdateProductPage(uPlayer);
                             EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_products", true);
                             EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_basket", false);
                             return;
@@ -122,14 +122,14 @@ namespace Tavstal.TShop.Handlers
                                 return;
 
                             comp.MenuCategory = EMenuCategory.Basket;
-                            HUDManager.UpdateBasketPage(uPlayer);
+                            UIManager.UpdateBasketPage(uPlayer);
                             EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_products", false);
                             EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_basket", true);
                             return;
                         }
                     case "bt_nav_tshop_logout":
                         {
-                            HUDManager.Hide(uPlayer);
+                            UIManager.Hide(uPlayer);
                             return;
                         }
                     case "bt_tshop_products#page#prev":
@@ -139,7 +139,7 @@ namespace Tavstal.TShop.Handlers
                             if (!comp.IsVehiclePage && comp.PageItem > 1)
                                 comp.PageItem--;
 
-                            HUDManager.UpdateProductPage(uPlayer);
+                            UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
                     case "bt_tshop_products#page#next":
@@ -149,7 +149,7 @@ namespace Tavstal.TShop.Handlers
                             else
                                 comp.PageItem++;
 
-                            HUDManager.UpdateProductPage(uPlayer);
+                            UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
                     case "bt_tshop_basket#page#prev":
@@ -157,14 +157,14 @@ namespace Tavstal.TShop.Handlers
                             if (comp.PageBasket > 1)
                                 comp.PageBasket--;
 
-                            HUDManager.UpdateBasketPage(uPlayer);
+                            UIManager.UpdateBasketPage(uPlayer);
                             return;
                         }
                     case "bt_tshop_basket#page#next":
                         {
                             comp.PageBasket++;
 
-                            HUDManager.UpdateBasketPage(uPlayer);
+                            UIManager.UpdateBasketPage(uPlayer);
                             return;
                         }
                     case "bt_product#category#item#all":
@@ -212,7 +212,7 @@ namespace Tavstal.TShop.Handlers
                                 comp.ItemFilter = EItemFilter.Misc;
 
                             comp.PageItem = 1;
-                            HUDManager.UpdateProductPage(uPlayer);
+                            UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
                     case "bt_product#category#vehicle#all":
@@ -239,7 +239,7 @@ namespace Tavstal.TShop.Handlers
                                 comp.VehicleFilter = EEngine.TRAIN;
 
                             comp.PageVehicle = 1;
-                            HUDManager.UpdateProductPage(uPlayer);
+                            UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
                     case "bt_tshop_basket#buy":
@@ -314,7 +314,7 @@ namespace Tavstal.TShop.Handlers
                             {
                                 foreach (var elem in toRemove)
                                     comp.Basket.Remove(elem.Key);
-                                HUDManager.UpdateBasketPage(uPlayer);
+                                UIManager.UpdateBasketPage(uPlayer);
                             }
                             break;
                         }
@@ -397,7 +397,7 @@ namespace Tavstal.TShop.Handlers
                             {
                                 foreach (var elem in toRemove)
                                     comp.Basket.Remove(elem.Key);
-                                HUDManager.UpdateBasketPage(uPlayer);
+                                UIManager.UpdateBasketPage(uPlayer);
                             }
                             break;
                         }
@@ -420,7 +420,7 @@ namespace Tavstal.TShop.Handlers
                         else
                             comp.PageItem = page;
 
-                        HUDManager.UpdateProductPage(uPlayer);
+                        UIManager.UpdateProductPage(uPlayer);
                     }
 
                     return;
@@ -437,7 +437,7 @@ namespace Tavstal.TShop.Handlers
                     {
                         comp.PageBasket = page;
 
-                        HUDManager.UpdateBasketPage(uPlayer);
+                        UIManager.UpdateBasketPage(uPlayer);
                     }
 
                     return;
@@ -479,7 +479,7 @@ namespace Tavstal.TShop.Handlers
                         var key = comp.Basket.Keys.ElementAt(elementIndex);
                         comp.Basket.Remove(key);
 
-                        HUDManager.UpdateBasketPage(uPlayer);
+                        UIManager.UpdateBasketPage(uPlayer);
                     }
                 }
             }

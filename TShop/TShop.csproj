@@ -124,6 +124,7 @@
     <Compile Include="Commands\CommandSellItem.cs" />
     <Compile Include="Commands\CommandItemShop.cs" />
     <Compile Include="Commands\CommandShopUI.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\Classes\DatabaseData.cs" />
     <Compile Include="Model\Classes\Product.cs" />
     <Compile Include="Model\Classes\ZaupProduct.cs" />
@@ -138,7 +139,7 @@
     <Compile Include="Model\Handlers\UnturnedEventHandler.cs" />
     <Compile Include="Utils\Managers\DatabaseManager.cs" />
     <Compile Include="Utils\Helpers\UnturnedHelper.cs" />
-    <Compile Include="Utils\Managers\HUDManager.cs" />
+    <Compile Include="Utils\Managers\UIManager.cs" />
     <Compile Include="TShopConfiguration.cs" />
     <Compile Include="TShop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

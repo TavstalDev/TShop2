@@ -15,7 +15,7 @@ namespace Tavstal.TShop.Managers
     /// <summary>
     /// Provides static methods and properties for managing the Heads-Up Display (HUD).
     /// </summary>
-    public static class HUDManager
+    public static class UIManager
     {
         private static TShopConfiguration Config => TShop.Instance.Config;
 

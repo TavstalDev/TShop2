@@ -20,9 +20,9 @@ namespace Tavstal.TShop
         [JsonProperty(Order = 7)]
         public bool EnableDiscounts { get; set; }
         [JsonProperty(Order = 8)]
-        public float minDiscount { get; set; }
+        public float MinDiscount { get; set; }
         [JsonProperty(Order = 9)]
-        public float maxDiscount{ get; set; }
+        public float MaxDiscount{ get; set; }
         [JsonProperty(Order = 10)]
         public int ItemCountToDiscount { get; set; }
         [JsonProperty(Order = 11)]
@@ -44,14 +44,16 @@ namespace Tavstal.TShop
         {
             Locale = "en";
             DownloadLocalePacks = true;
-            Database = new DatabaseData();
-            Database.DatabaseTable_Products = "tshop_products";
+            Database = new DatabaseData()
+            {
+                DatabaseTable_Products = "tshop_products"
+            };
             UIButtonDelay = 0.45f;
             UseQuality = true;
             ExpMode = false;
             EnableDiscounts = true;
-            minDiscount = 5;
-            maxDiscount = 10;
+            MinDiscount = 5;
+            MaxDiscount = 10;
             ItemCountToDiscount = 10;
             VehicleCountToDiscount = 5;
             DiscountInterval = 1800;

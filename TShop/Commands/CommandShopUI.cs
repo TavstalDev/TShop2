@@ -20,12 +20,12 @@ namespace Tavstal.TShop
             TShopComponent comp = p.GetComponent<TShopComponent>();
             if (comp.IsUIOpened)
             {
-                HUDManager.Hide(p);
+                UIManager.Hide(p);
             }
             else
             {
-                HUDManager.Show(p);
-                HUDManager.UpdateProductPage(p);
+                UIManager.Show(p);
+                UIManager.UpdateProductPage(p);
             }
         }
     }

@@ -20,7 +20,7 @@ namespace Tavstal.TShop
     /// </summary>
     public class DatabaseManager : DatabaseManagerBase
     {
-        private static TShopConfiguration pluginConfig => TShop.Instance.Config;
+        private static TShopConfiguration _pluginConfig => TShop.Instance.Config;
 
         public DatabaseManager(IConfigurationBase configuration) : base(TShop.Instance, configuration)
         {
@@ -41,10 +41,10 @@ namespace Tavstal.TShop
                         throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
 
                     //Item Shop
-                    if (await connection.DoesTableExistAsync<Product>(pluginConfig.Database.DatabaseTable_Products))
-                        await connection.CheckTableAsync<Product>(pluginConfig.Database.DatabaseTable_Products);
+                    if (await connection.DoesTableExistAsync<Product>(_pluginConfig.Database.DatabaseTable_Products))
+                        await connection.CheckTableAsync<Product>(_pluginConfig.Database.DatabaseTable_Products);
                     else
-                        await connection.CreateTableAsync<Product>(pluginConfig.Database.DatabaseTable_Products);
+                        await connection.CreateTableAsync<Product>(_pluginConfig.Database.DatabaseTable_Products);
 
                     if (connection.State != System.Data.ConnectionState.Closed)
                         connection.Close();
@@ -72,7 +72,7 @@ namespace Tavstal.TShop
         public async Task<bool> AddProductAsync(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool enableperm, string permission)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.AddTableRowAsync(tableName: pluginConfig.Database.DatabaseTable_Products, new Product(id, isVehicle, buycost, sellcost, enableperm, permission, false, 0));
+            return await MySQLConnection.AddTableRowAsync(tableName: _pluginConfig.Database.DatabaseTable_Products, new Product(id, isVehicle, buycost, sellcost, enableperm, permission, false, 0));
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Tavstal.TShop
         public async Task<bool> RemoveProductAsync(ushort id, bool isVehicle)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.RemoveTableRowAsync<Product>(tableName: pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", null);
+            return await MySQLConnection.RemoveTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", null);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Tavstal.TShop
         public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool enablepermission, string permission)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.UpdateTableRowAsync<Product>(tableName: pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
+            return await MySQLConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
             {
                 SqlParameter.Get<Product>(x => x.BuyCost, buycost),
                 SqlParameter.Get<Product>(x => x.SellCost, sellcost),
@@ -126,7 +126,7 @@ namespace Tavstal.TShop
         public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, bool isdiscounted, decimal percent)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.UpdateTableRowAsync<Product>(tableName: pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
+            return await MySQLConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
             {
                 SqlParameter.Get<Product>(x => x.IsDiscounted, isdiscounted),
                 SqlParameter.Get<Product>(x => x.DiscountPercent, percent)
@@ -142,7 +142,7 @@ namespace Tavstal.TShop
         public async Task<List<Product>> GetProductsAsync()
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: string.Empty, null);
+            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: string.Empty, null);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Tavstal.TShop
         public async Task<List<Product>> GetItemsAsync()
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{false}'", null);
+            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{false}'", null);
         }
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace Tavstal.TShop
         public async Task<List<Product>> GetVehiclesAsync()
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{true}'", null);
+            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{true}'", null);
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace Tavstal.TShop
         public async Task<Product> FindItemAsync(ushort id)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowAsync<Product>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{false}'", null);
+            return await MySQLConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{false}'", null);
         }
 
         /// <summary>
@@ -357,7 +357,7 @@ namespace Tavstal.TShop
         public async Task<Product> FindVehicleAsync(ushort id)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowAsync<Product>(tableName: pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{true}'", null);
+            return await MySQLConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{true}'", null);
         }
 
         #region Zaup
@@ -372,17 +372,17 @@ namespace Tavstal.TShop
             MySqlConnection mySqlConnection = null;
             try
             {
-                if (pluginConfig.Database.Port == 0)
+                if (_pluginConfig.Database.Port == 0)
                 {
-                    pluginConfig.Database.Port = 3306;
-                    pluginConfig.SaveConfig();
+                    _pluginConfig.Database.Port = 3306;
+                    _pluginConfig.SaveConfig();
                 }
                 mySqlConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};", new object[] {
-                    pluginConfig.Database.Host,
-                    pluginConfig.Database.DatabaseName,
-                    pluginConfig.Database.UserName,
-                    pluginConfig.Database.UserPassword,
-                    pluginConfig.Database.Port
+                    _pluginConfig.Database.Host,
+                    _pluginConfig.Database.DatabaseName,
+                    _pluginConfig.Database.UserName,
+                    _pluginConfig.Database.UserPassword,
+                    _pluginConfig.Database.Port
                 }));
             }
             catch (Exception exception)

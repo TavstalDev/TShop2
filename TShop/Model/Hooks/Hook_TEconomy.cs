@@ -28,7 +28,7 @@ namespace Tavstal.TShop.Compability.Hooks
         private MethodInfo _getTranslation { get; set; }
         private object _databaseInstance { get; set; }
         private object _pluginInstance { get; set; }
-        private object teconomyConfig { get; set; }
+        private object _teconomyConfig { get; set; }
 
         public TEconomyHook() : base("teconomy_tshop", false) { }
 
@@ -45,7 +45,7 @@ namespace Tavstal.TShop.Compability.Hooks
                     teconomyType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(teconomyPlugin);
 
                 var uconomyConfigInst = teconomyType.GetProperty("Configuration").GetValue(teconomyPlugin);
-                teconomyConfig = uconomyConfigInst.GetType().GetProperty("Instance").GetValue(uconomyConfigInst);
+                _teconomyConfig = uconomyConfigInst.GetType().GetProperty("Instance").GetValue(uconomyConfigInst);
                 _databaseInstance = _pluginInstance.GetType().GetProperty("Database").GetValue(_pluginInstance);
                 Type databaseType = _databaseInstance.GetType();
 
@@ -103,13 +103,13 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
-                return (T)Convert.ChangeType(teconomyConfig.GetType().GetField(VariableName).GetValue(teconomyConfig), typeof(T));
+                return (T)Convert.ChangeType(_teconomyConfig.GetType().GetField(VariableName).GetValue(_teconomyConfig), typeof(T));
             }
             catch
             {
                 try
                 {
-                    return (T)Convert.ChangeType(teconomyConfig.GetType().GetProperty(VariableName).GetValue(teconomyConfig), typeof(T));
+                    return (T)Convert.ChangeType(_teconomyConfig.GetType().GetProperty(VariableName).GetValue(_teconomyConfig), typeof(T));
                 }
                 catch
                 {
@@ -123,7 +123,7 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
-                return JObject.FromObject(teconomyConfig.GetType());
+                return JObject.FromObject(_teconomyConfig.GetType());
             }
             catch
             {

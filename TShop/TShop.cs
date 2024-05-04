@@ -15,6 +15,10 @@ using Math = System.Math;
 
 namespace Tavstal.TShop
 {
+    /// <summary>
+    /// Represents the TShop plugin with the specified configuration.
+    /// </summary>
+    /// <typeparam name="TShopConfiguration">The type of configuration used by TShop.</typeparam>
     public class TShop : PluginBase<TShopConfiguration>
     {
         public new static TShop Instance { get; private set; }
@@ -23,6 +27,9 @@ namespace Tavstal.TShop
         public static bool IsConnectionAuthFailed { get; set; }
         private bool _isLateInited { get; set; }
 
+        /// <summary>
+        /// Called when the plugin is loaded.
+        /// </summary>
         public override void OnLoad()
         {
             Instance = this;
@@ -67,6 +74,9 @@ namespace Tavstal.TShop
             }
         }
 
+        /// <summary>
+        /// Called when the plugin is unloaded.
+        /// </summary>
         public override void OnUnLoad()
         {
             UnturnedEventHandler.Unattach();
@@ -74,14 +84,19 @@ namespace Tavstal.TShop
             _isLateInited = false;
             foreach (SteamPlayer steamPlayer in Provider.clients)
             {
-                HUDManager.Hide(UnturnedPlayer.FromSteamPlayer(steamPlayer));
+                UIManager.Hide(UnturnedPlayer.FromSteamPlayer(steamPlayer));
                 EffectManager.askEffectClearByID(Config.EffectID, steamPlayer.transportConnection);
             }
+
             if (Config.EnableDiscounts)
                 CancelInvoke(nameof(CheckDiscount));
+
             Logger.Log("# TShop has been successfully unloaded.");
         }
 
+        /// <summary>
+        /// Event handler for when all plugins are loaded.
+        /// </summary>
         private void Event_OnPluginsLoaded(int i)
         {
             if (IsConnectionAuthFailed)
@@ -127,6 +142,9 @@ namespace Tavstal.TShop
             _isLateInited = true;
         }
 
+        /// <summary>
+        /// Asynchronously checks for any available discounts and updates them.
+        /// </summary>
         private async void CheckDiscount()
         {
             try
@@ -135,37 +153,44 @@ namespace Tavstal.TShop
                     return;
 
                 List<Product> products = await Database.GetProductsAsync();
-
+                // Remove the current discounts
                 foreach (Product item in products.FindAll(x => x.IsDiscounted))
                     await Database.UpdateProductAsync(item.UnturnedId, item.IsVehicle, false, 0);
 
+                // Shuffle the product list
                 if (products.Count > 2)
                     products.Shuffle();
 
+                // Items
                 List<Product> items = products.FindAll(x => !x.IsVehicle);
-                List<Product> vehs = products.FindAll(x => x.IsVehicle);
-
                 for (int i = 0; i < Config.ItemCountToDiscount; i++)
                 {
                     if (items.IsValidIndex(i))
-                        await Database.UpdateProductAsync(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                        await Database.UpdateProductAsync(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
                 }
 
+                // Vehicles
+                List<Product> vehs = products.FindAll(x => x.IsVehicle);
                 for (int i = 0; i < Config.VehicleCountToDiscount; i++)
                 {
                     if (vehs.IsValidIndex(i))
-                        await Database.UpdateProductAsync(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.minDiscount, Config.maxDiscount), 2));
+                        await Database.UpdateProductAsync(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
                 }
             }
             catch
             {
                 // Not logging because this error has a 99% chance is caused by load error
             }
-            //yield return new WaitForSeconds(Config.DiscountInterval);
         }
 
+        /// <summary>
+        /// Gets the language packs dictionary for the plugin.
+        /// </summary>
         public override Dictionary<string, string> LanguagePacks => new Dictionary<string, string>();
 
+        /// <summary>
+        /// Gets the default localization dictionary for the plugin.
+        /// </summary>
         public override Dictionary<string, string> DefaultLocalization =>
             new Dictionary<string, string>
             {

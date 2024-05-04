@@ -271,6 +271,7 @@ namespace Tavstal.TShop.Compability.Hooks
             throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task AddTransactionAsync(CSteamID player, ITransaction transaction)
         {
             throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
@@ -305,6 +306,7 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
         }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         #endregion
     }
 }
