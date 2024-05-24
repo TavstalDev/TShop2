@@ -14,7 +14,7 @@ namespace Tavstal.TShop
         public string Help => "Checks the cost of a specific item.";
         public string Syntax => "[itemID]";
         public List<string> Aliases => new List<string> { "costitem", "costi" };
-        public List<string> Permissions => new List<string> { "tshop.cost.item" };
+        public List<string> Permissions => new List<string> { "tshop.cost.item", "tshop.commands.cost.item" };
 
         public async void Execute(IRocketPlayer caller, string[] args)
         {

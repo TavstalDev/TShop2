@@ -16,7 +16,7 @@ namespace Tavstal.TShop
         public string Help => "Sells the current vehicle.";
         public string Syntax => "";
         public List<string> Aliases => new List<string> { "sellv" };
-        public List<string> Permissions => new List<string> { "tshop.sell.vehicle" };
+        public List<string> Permissions => new List<string> { "tshop.sell.vehicle", "tshop.commands.sell.vehicle" };
 
         public async void Execute(IRocketPlayer caller, string[] args)
         {

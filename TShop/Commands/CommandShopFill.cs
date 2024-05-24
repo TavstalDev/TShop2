@@ -12,7 +12,7 @@ namespace Tavstal.TShop
         public string Help => "Fills the shop with items. Used for debug";
         public string Syntax => "";
         public List<string> Aliases => new List<string> { "shfill" };
-        public List<string> Permissions => new List<string> { "tshop.shopfill" };
+        public List<string> Permissions => new List<string> { "tshop.shopfill", "tshop.commands.shopfill" };
 
         public async void Execute(IRocketPlayer caller, string[] args)
         {

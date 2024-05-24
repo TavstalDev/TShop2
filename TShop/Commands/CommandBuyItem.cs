@@ -16,7 +16,7 @@ namespace Tavstal.TShop
         public string Help => "Buys a specific amount of items.";
         public string Syntax => "[itemID | itemName] <amount>";
         public List<string> Aliases => new List<string> { "buyi", "buyitem" };
-        public List<string> Permissions => new List<string> { "tshop.buy.item" };
+        public List<string> Permissions => new List<string> { "tshop.buy.item", "tshop.commands.buy.item" };
 
         public async void Execute(IRocketPlayer caller, string[] args)
         {

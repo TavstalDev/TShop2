@@ -1,10 +1,8 @@
 ﻿using Rocket.API;
-using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Compability;
 using Tavstal.TShop.Model.Classes;
 
 namespace Tavstal.TShop
@@ -16,7 +14,7 @@ namespace Tavstal.TShop
         public string Help => "Migrates data from the database of the zaupshop plugin.";
         public string Syntax => "[itemtablename] [vehicletablename]";
         public List<string> Aliases => new List<string> { "mzdb" };
-        public List<string> Permissions => new List<string> { "tshop.admin.migratezaupdb" };
+        public List<string> Permissions => new List<string> { "tshop.admin.migratezaupdb", "tshop.commands.migratezaupdb" };
 
         public async void Execute(IRocketPlayer caller, string[] args)
         {
