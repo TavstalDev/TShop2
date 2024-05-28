@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MySqlX.XDevAPI.Common;
+using Newtonsoft.Json.Linq;
 using Rocket.API;
 using Rocket.Core;
 using Steamworks;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
@@ -184,26 +186,68 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public async Task<decimal> WithdrawAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            Task<decimal> task = (Task<decimal>)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                player.ToString(), -amount
+            var taskCompletionSource = new TaskCompletionSource<decimal>();
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    decimal result = (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
+                        player.ToString(), -amount
+                    });
+                    taskCompletionSource.SetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    taskCompletionSource.SetException(ex);
+                }
             });
-            return await task;
+
+            return await taskCompletionSource.Task;
         }
 
         public async Task<decimal> DepositAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            Task<decimal> task = (Task<decimal>)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                player.ToString(), amount
+            var taskCompletionSource = new TaskCompletionSource<decimal>();
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    decimal result = (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
+                        player.ToString(), amount
+                    });
+                    taskCompletionSource.SetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    taskCompletionSource.SetException(ex);
+                }
             });
-            return await task;
+
+            return await taskCompletionSource.Task;
         }
 
         public async Task<decimal> GetBalanceAsync(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            Task<decimal> task = (Task<decimal>)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
-                player.ToString()
+            var taskCompletionSource = new TaskCompletionSource<decimal>();
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    decimal result = (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
+                        player.ToString()
+                    });
+                    taskCompletionSource.SetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    taskCompletionSource.SetException(ex);
+                }
             });
-            return await task;
+
+            return await taskCompletionSource.Task;
         }
 
         public async Task<bool> HasAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
