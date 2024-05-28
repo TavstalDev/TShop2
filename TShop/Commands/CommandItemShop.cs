@@ -16,11 +16,11 @@ namespace Tavstal.TShop
         public override string Help => "Manages the item shop.";
         public override string Syntax => "add | remove | update";
         public override List<string> Aliases => new List<string> { "ishop" };
-        public override List<string> Permissions => new List<string> { "tshop.itemshop" };
+        public override List<string> Permissions => new List<string> { "tshop.itemshop", "tshop.commands.itemshop" };
         public override IPlugin Plugin => TShop.Instance;
         public override List<SubCommand> SubCommands => new List<SubCommand>()
         {
-            new SubCommand("add", "Adds an item to the shop.", "add [item name | id] [buycost] [sellcost] <permission>", new List<string>() { "insert", "create" }, new List<string>() { "tshop.itemshop.add" }, 
+            new SubCommand("add", "Adds an item to the shop.", "add [item name | id] [buycost] [sellcost] <permission>", new List<string>() { "insert", "create" }, new List<string>() { "tshop.itemshop.add", "tshop.commands.itemshop.add" }, 
                 async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;
@@ -85,7 +85,7 @@ namespace Tavstal.TShop
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_added", asset.itemName);
                 }),
-            new SubCommand("remove", "Removes an item from the shop", "remove [item name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.itemshop.remove" },
+            new SubCommand("remove", "Removes an item from the shop", "remove [item name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.itemshop.remove", "tshop.commands.itemshop.remove" },
                 async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;
@@ -127,7 +127,7 @@ namespace Tavstal.TShop
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_removed", asset.itemName);
                 }),
-            new SubCommand("update", "Updates an item in the shop.", "update [item name | id] [buycost] [sellcost] <permission>", new List<string> { "change" }, new List<string>() { "tshop.itemshop.update" },
+            new SubCommand("update", "Updates an item in the shop.", "update [item name | id] [buycost] [sellcost] <permission>", new List<string> { "change" }, new List<string>() { "tshop.itemshop.update", "tshop.commands.itemshop.update"  },
                 async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;

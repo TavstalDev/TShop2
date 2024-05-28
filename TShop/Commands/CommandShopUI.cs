@@ -8,11 +8,11 @@ namespace Tavstal.TShop
     public class CommandShopUI : IRocketCommand
     {
         public AllowedCaller AllowedCaller => AllowedCaller.Player;
-        public string Name => "Shop";
+        public string Name => "shop";
         public string Help => "Opens the shop UI.";
         public string Syntax => "";
         public List<string> Aliases => new List<string> { "shui", "shopui" };
-        public List<string> Permissions => new List<string> { "tshop.shop" };
+        public List<string> Permissions => new List<string> { "tshop.shop", "tshop.commands.shop", "tshop.commands.shopui" };
 
         public void Execute(IRocketPlayer caller, string[] args)
         {
