@@ -1,5 +1,4 @@
-﻿using MySqlX.XDevAPI.Common;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Rocket.API;
 using Rocket.Core;
 using Steamworks;
@@ -7,10 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Compatibility.Interfaces;
 using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
 using Tavstal.TLibrary.Extensions;
 
@@ -27,7 +26,8 @@ namespace Tavstal.TShop.Compability.Hooks
         private object _pluginInstance;
         private object uconomyConfig;
 
-        public UconomyHook() : base("uconomy_tshop", true) { }
+
+        public UconomyHook() : base(TShop.Instance, "uconomy_tshop", true) { }
 
         public override void OnLoad()
         {
