@@ -35,7 +35,7 @@ namespace Tavstal.TShop
             {
                 using (var connection = CreateConnection())
                 {
-                    if (!await connection.OpenSafe())
+                    if (!await connection.OpenSafeAsync())
                         TShop.IsConnectionAuthFailed = true;
                     if (connection.State != System.Data.ConnectionState.Open)
                         throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
@@ -407,7 +407,7 @@ namespace Tavstal.TShop
             {
                 MySqlConnection MySQLConnection = CreateConnection();
                 MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                await MySQLConnection.OpenSafe();
+                await MySQLConnection.OpenSafeAsync();
 
                 // Get Items
                 MySQLCommand.CommandText = "SELECT * FROM " + itemTable;
