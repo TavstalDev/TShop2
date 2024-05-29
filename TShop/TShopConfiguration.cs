@@ -42,6 +42,7 @@ namespace Tavstal.TShop
 
         public override void LoadDefaults()
         {
+            DebugMode = false;
             Locale = "en";
             DownloadLocalePacks = true;
             Database = new DatabaseData()

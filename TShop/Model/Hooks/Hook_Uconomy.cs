@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
-using Tavstal.TLibrary.Compatibility.Interfaces;
 using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
 using Tavstal.TLibrary.Extensions;
 
@@ -24,7 +23,7 @@ namespace Tavstal.TShop.Compability.Hooks
         //private EventInfo _onBalanceUpdateMethod;
         private object _databaseInstance;
         private object _pluginInstance;
-        private object uconomyConfig;
+        private object _uconomyConfig;
 
 
         public UconomyHook() : base(TShop.Instance, "uconomy_tshop", true) { }
@@ -35,28 +34,39 @@ namespace Tavstal.TShop.Compability.Hooks
             {
                 TShop.Logger.Log("Loading Uconomy hook...");
 
+                TShop.Logger.LogDebug("UconomyHook #1: Searching for IRocketPlugin");
                 IRocketPlugin uconomyPlugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("uconomy"));
+
+                TShop.Logger.LogDebug($"UconomyHook #2: Searching for plugin type. IRocketPlugin valid?: {uconomyPlugin != null}");
                 Type uconomyType = uconomyPlugin.GetType().Assembly.GetType("fr34kyn01535.Uconomy.Uconomy");
-                _pluginInstance =
-                    uconomyType.GetField("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(uconomyPlugin);
+
+                TShop.Logger.LogDebug($"UconomyHook #3: Searching for plugin instance. Plugin type valid?: {uconomyType != null}");
+                _pluginInstance = uconomyType.GetField("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(uconomyPlugin);
+
+
+                TShop.Logger.LogDebug($"UconomyHook #4: Searching for plugin instance type. Plugin instance valid?: {_pluginInstance != null}");
                 Type pluginInstanceType = _pluginInstance.GetType();
 
+                TShop.Logger.LogDebug($"UconomyHook #5: Searching for plugin configuration. Plugin instance type valid?: {pluginInstanceType != null}");
                 object uconomyConfigInst = uconomyType.GetProperty("Configuration").GetValue(uconomyPlugin);
-                uconomyConfig = uconomyConfigInst.GetType().GetProperty("Instance").GetValue(uconomyConfigInst);
 
+                _uconomyConfig = uconomyConfigInst.GetType().GetProperty("Instance").GetValue(uconomyConfigInst);
+
+                TShop.Logger.LogDebug($"UconomyHook #6: Searching for plugin database. Plugin config valid?: {_uconomyConfig != null}");
                 _databaseInstance = pluginInstanceType.GetField("Database").GetValue(_pluginInstance);
 
+                TShop.Logger.LogDebug($"UconomyHook #7: Getting database methods. Database instance valid?: {_databaseInstance != null}");
                 _getBalanceMethod = _databaseInstance.GetType().GetMethod(
                     "GetBalance", new[] { typeof(string) });
 
                 _increaseBalanceMethod = _databaseInstance.GetType().GetMethod(
                     "IncreaseBalance", new[] { typeof(string), typeof(decimal) });
-
+                TShop.Logger.LogDebug($"UconomyHook #8: Getting translation method");
                 if (pluginInstanceType.GetMethods().Any(x => x.Name == "Localize"))
                     _getTranslation = pluginInstanceType.GetMethod("Localize", new[] { typeof(string), typeof(object[]) });
                 else
                     _getTranslation = pluginInstanceType.GetMethod("Translate", new[] { typeof(string), typeof(object[]) });
-
+                TShop.Logger.LogDebug($"UconomyHook #9: Searching for events");
                 #region Create Event Delegates
                 /* Added because it might be needed in the future
                 var parentPlugin = TShop.Instance;
@@ -114,13 +124,13 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
-                return (T)Convert.ChangeType(uconomyConfig.GetType().GetField(VariableName).GetValue(uconomyConfig), typeof(T));
+                return (T)Convert.ChangeType(_uconomyConfig.GetType().GetField(VariableName).GetValue(_uconomyConfig), typeof(T));
             }
             catch
             {
                 try
                 {
-                    return (T)Convert.ChangeType(uconomyConfig.GetType().GetProperty(VariableName).GetValue(uconomyConfig), typeof(T));
+                    return (T)Convert.ChangeType(_uconomyConfig.GetType().GetProperty(VariableName).GetValue(_uconomyConfig), typeof(T));
                 }
                 catch
                 {
@@ -134,7 +144,7 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
-                return JObject.FromObject(uconomyConfig.GetType());
+                return JObject.FromObject(_uconomyConfig.GetType());
             }
             catch
             {
