@@ -46,10 +46,10 @@ namespace Tavstal.TShop.Compability.Hooks
 
                 _databaseInstance = pluginInstanceType.GetField("Database").GetValue(_pluginInstance);
 
-                _getBalanceMethod = pluginInstanceType.GetMethod(
+                _getBalanceMethod = _databaseInstance.GetType().GetMethod(
                     "GetBalance", new[] { typeof(string) });
 
-                _increaseBalanceMethod = pluginInstanceType.GetMethod(
+                _increaseBalanceMethod = _databaseInstance.GetType().GetMethod(
                     "IncreaseBalance", new[] { typeof(string), typeof(decimal) });
 
                 if (pluginInstanceType.GetMethods().Any(x => x.Name == "Localize"))
@@ -230,23 +230,28 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public async Task<decimal> GetBalanceAsync(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
+            TShop.Logger.LogError("1");
             var taskCompletionSource = new TaskCompletionSource<decimal>();
-
+            TShop.Logger.LogError("2");
             await Task.Run(() =>
             {
+                TShop.Logger.LogError("2.1");
                 try
                 {
+                    TShop.Logger.LogError($"2.2 -> {_getBalanceMethod != null}, {_databaseInstance != null}");
                     decimal result = (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
                         player.ToString()
                     });
+                    TShop.Logger.LogError("2.3");
                     taskCompletionSource.SetResult(result);
                 }
                 catch (Exception ex)
                 {
+                    TShop.Logger.LogError("2.4");
                     taskCompletionSource.SetException(ex);
                 }
             });
-
+            TShop.Logger.LogError("3");
             return await taskCompletionSource.Task;
         }
 
