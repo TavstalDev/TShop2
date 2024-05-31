@@ -31,8 +31,8 @@ namespace Tavstal.TShop.Helpers
             }
             catch (Exception e)
             {
-                TShop.Logger.Log("Error in " + voidName + "(): ");
-                TShop.Logger.Log(e);
+                TShop.Logger.LogException("Error in " + voidName + "(): ");
+                TShop.Logger.LogError(e);
             }
             return TShop.Instance.Config.DefaultProductIconUrl;
         }
@@ -57,8 +57,8 @@ namespace Tavstal.TShop.Helpers
             }
             catch (Exception e)
             {
-                TShop.Logger.Log("Error in " + voidName + "(): ");
-                TShop.Logger.Log(e);
+                TShop.Logger.LogException("Error in " + voidName + "(): ");
+                TShop.Logger.LogError(e);
             }
             return TShop.Instance.Config.DefaultProductIconUrl;
         }

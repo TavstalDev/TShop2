@@ -86,7 +86,7 @@ namespace Tavstal.TShop
                 }
                 if (TShop.EconomyProvider.HasTransactionSystem())
                     await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_buy", asset.itemName, amount, cost, TShop.EconomyProvider.GetConfigValue<string>("MoneySymbol"));
+                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_buy", asset.itemName, amount, cost, TShop.EconomyProvider.GetCurrencyName());
             }
             else
                 UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_buyitem_args");
