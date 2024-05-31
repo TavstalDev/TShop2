@@ -15,7 +15,7 @@ An user-friendly item and vehicle shop plugin supporting async (mysql) database.
 * Supports economy plugins that are based on Uconomy
 
 ### Requirements
-- [Uconomy](https://github.com/Rawrfuls/Uconomy/releases/download/1.2/Uconomy.zip) or other economy plugin
+- [Uconomy](https://github.com/Rawrfuls/Uconomy/releases/download/1.2/Uconomy.zip), [Uconomy2](https://github.com/TavstalDev/Uconomy) or other economy plugin
 - [Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2767766199)
 
 ### Commands
