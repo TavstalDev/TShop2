@@ -68,7 +68,7 @@ namespace Tavstal.TShop
 
                 if (await TShop.EconomyProvider.GetBalanceAsync(callerPlayer.CSteamID) < cost)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_balance_not_enough");
+                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_balance_not_enough", cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName());
                     return;
                 }
 

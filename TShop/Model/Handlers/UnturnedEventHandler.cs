@@ -259,7 +259,7 @@ namespace Tavstal.TShop.Handlers
 
                                     if (await TShop.EconomyProvider.GetBalanceAsync(uPlayer.CSteamID) < cost)
                                     {
-                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough"));
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough", cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName()));
                                         continue;
                                     }
 
@@ -287,7 +287,7 @@ namespace Tavstal.TShop.Handlers
 
                                     if (await TShop.EconomyProvider.GetBalanceAsync(uPlayer.CSteamID) < cost)
                                     {
-                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough"));
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough", cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName()));
                                         continue;
                                     }
 
