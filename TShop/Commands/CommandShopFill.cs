@@ -2,6 +2,7 @@
 using SDG.Unturned;
 using System.Collections.Generic;
 using System.Linq;
+using Tavstal.TLibrary.Helpers.Unturned;
 
 namespace Tavstal.TShop
 {
@@ -17,16 +18,11 @@ namespace Tavstal.TShop
         public async void Execute(IRocketPlayer caller, string[] args)
         {
             int count = 0;
-            foreach (var a in Assets.find(EAssetType.ITEM).OrderBy(x => x.id))
+            foreach (var asset in UAssetHelper.GetItemAssets().OrderBy(x => x.id))
             {
                 if (count == 300)
                     break;
-
-                ItemAsset asset = a as ItemAsset;
                 if (asset == null)
-                    continue;
-
-                if (a is SkinAsset)
                     continue;
 
                 await TShop.Database.AddProductAsync(asset.id, false, 1, 1, false, "");
@@ -35,17 +31,10 @@ namespace Tavstal.TShop
 
 
             count = 0;
-            foreach (var a in Assets.find(EAssetType.VEHICLE).OrderBy(x => x.id))
+            foreach (var asset in UAssetHelper.GetVehicleAssets().OrderBy(x => x.id))
             {
                 if (count == 300)
                     break;
-
-                VehicleAsset asset = a as VehicleAsset;
-                if (asset == null)
-                    continue;
-
-                if (a is SkinAsset)
-                    continue;
 
                 await TShop.Database.AddProductAsync(asset.id, true, 1, 1, false, "");
                 count++;
