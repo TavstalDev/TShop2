@@ -17,12 +17,21 @@ namespace Tavstal.TShop
 
         public async void Execute(IRocketPlayer caller, string[] args)
         {
+            if (!TShop.Instance.Config.DebugMode)
+                {
+                    TShop.Logger.LogWarning("You must enable debugMode to use 'shopfill'.");
+                    return;
+                }
+
             int count = 0;
             foreach (var asset in UAssetHelper.GetItemAssets().OrderBy(x => x.id))
             {
-                if (count == 300)
+                if (count == 100)
                     break;
                 if (asset == null)
+                    continue;
+
+                if (asset.id == 0)
                     continue;
 
                 await TShop.Database.AddProductAsync(asset.id, false, 1, 1, false, "");
@@ -33,8 +42,14 @@ namespace Tavstal.TShop
             count = 0;
             foreach (var asset in UAssetHelper.GetVehicleAssets().OrderBy(x => x.id))
             {
-                if (count == 300)
+                if (count == 100)
                     break;
+
+                if (asset == null)
+                    continue;
+
+                if (asset.id == 0)
+                    continue;
 
                 await TShop.Database.AddProductAsync(asset.id, true, 1, 1, false, "");
                 count++;
