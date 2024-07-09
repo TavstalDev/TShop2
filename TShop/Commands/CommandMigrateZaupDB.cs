@@ -30,7 +30,7 @@ namespace Tavstal.TShop
                     List<ZaupProduct> productsToCheck = products.FindAll(x => !x.IsVehicle);
                     foreach (ZaupProduct product in productsToCheck)
                     {
-                        if (Assets.find(EAssetType.ITEM, product.UnturnedId) == null)
+                        if (UAssetHelper.FindItemAsset(product.UnturnedId) == null)
                         {
                             TShop.Logger.LogRichWarning($"&6Failed to get &citem &6asset with &e'{product.UnturnedId}' &6id.");
                             continue;
@@ -46,7 +46,7 @@ namespace Tavstal.TShop
                     productsToCheck = products.FindAll(x => x.IsVehicle);
                     foreach (ZaupProduct product in productsToCheck)
                     {
-                        if (Assets.find(EAssetType.VEHICLE, product.UnturnedId) == null)
+                        if (UAssetHelper.FindVehicleAsset(product.UnturnedId) == null)
                         {
                             TShop.Logger.LogRichWarning($"&6Failed to get &cvehicle &6asset with &e'{product.UnturnedId}' &6id.");
                             continue;

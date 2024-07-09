@@ -1,6 +1,7 @@
 ﻿using SDG.Unturned;
 using System;
 using Tavstal.TLibrary.Compatibility.Database;
+using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Interfaces;
 
 namespace Tavstal.TShop.Compability
@@ -72,7 +73,7 @@ namespace Tavstal.TShop.Compability
             {
                 if (IsVehicle)
                 {
-                    Asset asset = Assets.find(EAssetType.VEHICLE, UnturnedId);
+                    Asset asset = UAssetHelper.FindVehicleAsset(UnturnedId);
                     if (asset == null)
                         throw new NullReferenceException("Failed to get the unturned asset.");
 
@@ -83,7 +84,7 @@ namespace Tavstal.TShop.Compability
                 }
                 else
                 {
-                    Asset asset = Assets.find(EAssetType.ITEM, UnturnedId);
+                    Asset asset = UAssetHelper.FindItemAsset(UnturnedId);
                     if (asset == null)
                         throw new NullReferenceException("Failed to get the unturned asset.");
 

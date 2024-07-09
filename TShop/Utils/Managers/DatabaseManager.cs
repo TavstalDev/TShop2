@@ -324,7 +324,7 @@ namespace Tavstal.TShop
             List<Product> local = new List<Product>();
             foreach (var vehicle in vehicles)
             {
-                VehicleAsset asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, vehicle.UnturnedId);
+                VehicleAsset asset = UAssetHelper.FindVehicleAsset(vehicle.UnturnedId);
                 if (asset == null)
                     continue;
 

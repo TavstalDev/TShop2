@@ -34,7 +34,7 @@ namespace Tavstal.TShop
                 VehicleAsset asset = null;
 
                 if (id > 0)
-                    asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
+                    asset = UAssetHelper.FindVehicleAsset(id);
                 else
                     asset = UAssetHelper.FindVehicleAsset(args[0]);
 

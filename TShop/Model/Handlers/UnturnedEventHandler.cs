@@ -250,7 +250,7 @@ namespace Tavstal.TShop.Handlers
                                 decimal cost = prod.Key.GetBuyCost(prod.Value);
                                 if (prod.Key.IsVehicle)
                                 {
-                                    VehicleAsset asset = (VehicleAsset)Assets.find(EAssetType.VEHICLE, prod.Key.UnturnedId);
+                                    VehicleAsset asset = UAssetHelper.FindVehicleAsset(prod.Key.UnturnedId);
                                     if (asset == null)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_exists", prod.Key.UnturnedId));
