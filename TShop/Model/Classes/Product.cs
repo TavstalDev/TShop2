@@ -73,10 +73,7 @@ namespace Tavstal.TShop.Compability
             {
                 if (IsVehicle)
                 {
-                    Asset asset = UAssetHelper.FindVehicleAsset(UnturnedId);
-                    if (asset == null)
-                        throw new NullReferenceException("Failed to get the unturned asset.");
-
+                    Asset asset = UAssetHelper.FindVehicleAsset(UnturnedId) ?? throw new NullReferenceException("Failed to get the unturned asset.");
                     if (asset is VehicleAsset vehicleAsset)
                         return vehicleAsset.vehicleName;
                     else
@@ -84,10 +81,7 @@ namespace Tavstal.TShop.Compability
                 }
                 else
                 {
-                    Asset asset = UAssetHelper.FindItemAsset(UnturnedId);
-                    if (asset == null)
-                        throw new NullReferenceException("Failed to get the unturned asset.");
-
+                    Asset asset = UAssetHelper.FindItemAsset(UnturnedId) ?? throw new NullReferenceException("Failed to get the unturned asset.");
                     if (asset is ItemAsset itemAsset)
                         return itemAsset.itemName;
                     else

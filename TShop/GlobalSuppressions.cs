@@ -20,3 +20,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "This is my private member naming style", Scope = "member", Target = "~P:Tavstal.TShop.Compability.Hooks.TEconomyHook._removeBankCard")]
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "This is my private member naming style", Scope = "member", Target = "~P:Tavstal.TShop.Compability.Hooks.TEconomyHook._teconomyConfig")]
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "This is my private member naming style", Scope = "member", Target = "~P:Tavstal.TShop.TShop._isLateInited")]
+[assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "This is my private member naming style", Scope = "member", Target = "~P:Tavstal.TShop.Compability.TextFormat.isDecoration")]

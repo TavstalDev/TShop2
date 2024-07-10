@@ -19,7 +19,6 @@ namespace Tavstal.TShop
         public async void Execute(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-            TShopComponent comp = callerPlayer.GetComponent<TShopComponent>();
 
             if (args.Length == 1)
             {
@@ -30,8 +29,7 @@ namespace Tavstal.TShop
                 }
                 catch { }
 
-                ItemAsset asset = null;
-
+                ItemAsset asset;
                 if (id > 0)
                     asset = UAssetHelper.FindItemAsset(id);
                 else

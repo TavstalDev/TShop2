@@ -42,8 +42,7 @@ namespace Tavstal.TShop
                     catch { }
                 }
 
-                ItemAsset asset = null;
-
+                ItemAsset asset;
                 if (id > 0)
                     asset = UAssetHelper.FindItemAsset(id);
                 else
