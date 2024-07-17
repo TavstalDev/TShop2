@@ -413,18 +413,43 @@ namespace Tavstal.TShop
                 MySQLCommand.CommandText = "SELECT * FROM " + itemTable;
                 var Reader = await MySQLCommand.ExecuteReaderAsync();
                 while (await Reader.ReadAsync())
-                    i.Add(new ZaupProduct(Reader.GetUInt16("id"), false, Reader.GetDecimal("cost"), Reader.GetDecimal("buyback")));
+                {
+                    ZaupProduct prod = null;
+                    try
+                    {
+                        prod = new ZaupProduct(Reader.GetUInt16("id"), false, Reader.GetDecimal("cost"), Reader.GetDecimal("buyback"));
+                    }
+                    catch (OverflowException) {
+                        uint id = Reader.GetUInt32("id");
+                        prod = new ZaupProduct((ushort)id, false, Reader.GetDecimal("cost"), Reader.GetDecimal("buyback"));
+                    }
+                    if (prod != null)
+                        i.Add(prod);
+                }
                 Reader.Close();
 
                 // Get Vehicles
                 MySQLCommand.CommandText = "SELECT * FROM " + vehicleTable;
                 Reader = await MySQLCommand.ExecuteReaderAsync();
                 while (await Reader.ReadAsync())
-                    i.Add(new ZaupProduct(Reader.GetUInt16("id"), true, Reader.GetDecimal("cost"), 0));
+                {
+                    ZaupProduct prod = null;
+                    try
+                    {
+                        prod = new ZaupProduct(Reader.GetUInt16("id"), true, Reader.GetDecimal("cost"), 0);
+                    }
+                    catch (OverflowException) {
+                        uint id = Reader.GetUInt32("id");
+                        prod = new ZaupProduct((ushort)id, true, Reader.GetDecimal("cost"), 0);
+                    }
+                    if (prod != null)
+                        i.Add(prod);
+                }
                 await MySQLConnection.CloseAsync();
             }
             catch (Exception ex)
             {
+                TShop.Logger.LogWarning("This error might be caused by the database because it does not use ushort (uint16) as itemId, or decimal as price.");
                 TShop.Logger.LogException(ex);
             }
             return i;
