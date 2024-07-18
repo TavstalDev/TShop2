@@ -39,11 +39,16 @@ namespace Tavstal.TShop
                         ushort.TryParse(args[0], out id);
                     }
                     catch { }
-                    
+
+                    TShop.Logger.LogDebug($"Id > 0 ?: {id > 0}");
                     if (id > 0)
                         asset = UAssetHelper.FindVehicleAsset(id);
                     else
+                    {
                         asset = UAssetHelper.FindVehicleAsset(args[0]);
+                        if (asset != null)
+                            id = asset.id;
+                    }
 
 
                     if (asset == null)
@@ -51,12 +56,11 @@ namespace Tavstal.TShop
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_exists", args[0]);
                         return;
                     }
-                    id = asset.id;
 
                     Product item = await TShop.Database.FindVehicleAsync(id);
                     if (item != null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_already_added", asset.vehicleName, asset.id);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_already_added", asset.vehicleName, id);
                         return;
                     }
 
@@ -82,8 +86,8 @@ namespace Tavstal.TShop
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (await TShop.Database.AddProductAsync(asset.id, true, buycost, sellcost, permission != null, permission))
-                        UChatHelper.SendCommandReply(TShop.Instance, caller, "success_vehicle_added", asset.vehicleName, asset.id);
+                    if (await TShop.Database.AddProductAsync(id, true, buycost, sellcost, permission != null, permission))
+                        UChatHelper.SendCommandReply(TShop.Instance, caller, "success_vehicle_added", asset.vehicleName, id);
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_added", asset.vehicleName);
                 }),
@@ -108,7 +112,11 @@ namespace Tavstal.TShop
                     if (id > 0)
                         asset = UAssetHelper.FindVehicleAsset(id);
                     else
+                    {
                         asset = UAssetHelper.FindVehicleAsset(args[0]);
+                        if (asset != null)
+                            id = asset.id;
+                    }
 
 
                     if (asset == null)
@@ -116,7 +124,6 @@ namespace Tavstal.TShop
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_exists", args[0]);
                         return;
                     }
-                    id = asset.id;
 
                     Product item = await TShop.Database.FindVehicleAsync(id);
                     if (item == null)
@@ -151,7 +158,11 @@ namespace Tavstal.TShop
                     if (id > 0)
                         asset = UAssetHelper.FindVehicleAsset(id);
                     else
+                    {
                         asset = UAssetHelper.FindVehicleAsset(args[0]);
+                        if (asset != null)
+                            id = asset.id;
+                    }
 
 
                     if (asset == null)
@@ -159,7 +170,6 @@ namespace Tavstal.TShop
                         UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_vehicle_not_exists", args[0]);
                         return;
                     }
-                    id = asset.id;
 
                     Product item = await TShop.Database.FindVehicleAsync(id);
                     if (item == null)
@@ -191,7 +201,7 @@ namespace Tavstal.TShop
                         permission = null;
 
                     if (await TShop.Database.UpdateProductAsync(id, true, buycost, sellcost, permission != null, permission))
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_vehicle_updated", asset.vehicleName, asset.id);
+                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_vehicle_updated", asset.vehicleName, id);
                     else
                         UChatHelper.SendCommandReply(TShop.Instance, caller, "error_vehicle_updated", asset.vehicleName);
                 })

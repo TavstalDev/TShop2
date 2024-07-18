@@ -76,6 +76,9 @@ namespace Tavstal.TShop.Compability
                     Asset asset = UAssetHelper.FindVehicleAsset(UnturnedId) ?? throw new NullReferenceException("Failed to get the unturned asset.");
                     if (asset is VehicleAsset vehicleAsset)
                         return vehicleAsset.vehicleName;
+                    else if (asset is VehicleRedirectorAsset vehicleRedirectorAsset) {
+                        return vehicleRedirectorAsset.TargetVehicle.Find().vehicleName;
+                    }
                     else
                         throw new Exception("The asset is not a vehicle asset. Please review your database.");
                 }

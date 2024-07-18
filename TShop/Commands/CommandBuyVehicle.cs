@@ -37,14 +37,17 @@ namespace Tavstal.TShop
                 if (id > 0)
                     asset = UAssetHelper.FindVehicleAsset(id);
                 else
+                {
                     asset = UAssetHelper.FindVehicleAsset(args[0]);
+                    if (asset != null)
+                        id = asset.id;
+                }
 
                 if (asset == null)
                 {
                     UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
                     return;
                 }
-                id = asset.id;
 
                 Product item = await TShop.Database.FindVehicleAsync(id);
                 if (item == null)
@@ -68,7 +71,7 @@ namespace Tavstal.TShop
                 }
 
                 await TShop.EconomyProvider.WithdrawAsync(callerPlayer.CSteamID, cost);
-                VehicleManager.spawnLockedVehicleForPlayerV2(asset.id, callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation, callerPlayer.Player);
+                VehicleManager.spawnLockedVehicleForPlayerV2(id, callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation, callerPlayer.Player);
                 if (TShop.EconomyProvider.HasTransactionSystem())
                     await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                 UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_buy", asset.vehicleName, amount, cost, TShop.EconomyProvider.GetCurrencyName());

@@ -34,14 +34,17 @@ namespace Tavstal.TShop
                 if (id > 0)
                     asset = UAssetHelper.FindVehicleAsset(id);
                 else
+                {
                     asset = UAssetHelper.FindVehicleAsset(args[0]);
+                    if (asset != null)
+                        id = asset.id;
+                }
 
                 if (asset == null)
                 {
                     UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
                     return;
                 }
-                id = asset.id;
 
                 Product item = await TShop.Database.FindVehicleAsync(id);
                 if (item == null)

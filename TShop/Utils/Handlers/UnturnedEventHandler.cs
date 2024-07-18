@@ -270,7 +270,7 @@ namespace Tavstal.TShop.Handlers
                                     }
 
                                     await TShop.EconomyProvider.WithdrawAsync(uPlayer.CSteamID, cost);
-                                    VehicleManager.spawnLockedVehicleForPlayerV2(asset.id, uPlayer.Position + new UnityEngine.Vector3(0, 0, 5), uPlayer.Player.transform.rotation, uPlayer.Player);
+                                    VehicleManager.spawnLockedVehicleForPlayerV2(prod.Key.UnturnedId, uPlayer.Position + new UnityEngine.Vector3(0, 0, 5), uPlayer.Player.transform.rotation, uPlayer.Player);
                                     if (TShop.EconomyProvider.HasTransactionSystem())
                                         await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_buy", asset.vehicleName, prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
@@ -300,8 +300,8 @@ namespace Tavstal.TShop.Handlers
                                     await TShop.EconomyProvider.WithdrawAsync(uPlayer.CSteamID, cost);
                                     for (int i = 0; i < prod.Value; i++)
                                     {
-                                        if (!uPlayer.Inventory.tryAddItem(new Item(asset.id, true), false))
-                                            ItemManager.dropItem(new Item(asset.id, true), uPlayer.Position, true, true, false);
+                                        if (!uPlayer.Inventory.tryAddItem(new Item(prod.Key.UnturnedId, true), false))
+                                            ItemManager.dropItem(new Item(prod.Key.UnturnedId, true), uPlayer.Position, true, true, false);
                                     }
                                     if (TShop.EconomyProvider.HasTransactionSystem())
                                         await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
@@ -368,7 +368,7 @@ namespace Tavstal.TShop.Handlers
                                         continue;
                                     }
 
-                                    List<InventorySearch> search = uPlayer.Inventory.search(asset.id, true, true);
+                                    List<InventorySearch> search = uPlayer.Inventory.search(prod.Key.UnturnedId, true, true);
                                     if (search.Count < prod.Value)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_enough"));
