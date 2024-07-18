@@ -39,7 +39,7 @@ namespace Tavstal.TShop
                         ushort.TryParse(args[0], out id);
                     }
                     catch { }
-
+                    
                     if (id > 0)
                         asset = UAssetHelper.FindVehicleAsset(id);
                     else
