@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Tavstal.TLibrary.Helpers.Unturned;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Commands
 {
     public class CommandVersion : IRocketCommand
     {
@@ -17,10 +17,10 @@ namespace Tavstal.TShop
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            UChatHelper.SendPlainCommandReply(TShop.Instance, caller, "#########################################");
-            UChatHelper.SendPlainCommandReply(TShop.Instance, caller, string.Format("# Build Version: {0}", TShop.Version));
-            UChatHelper.SendPlainCommandReply(TShop.Instance, caller, string.Format("# Build Date: {0}", TShop.BuildDate));
-            UChatHelper.SendPlainCommandReply(TShop.Instance, caller, "#########################################");
+            TShop.Instance.SendPlainCommandReply(caller, "#########################################");
+            TShop.Instance.SendPlainCommandReply(caller, $"# Build Version: {TShop.Version}");
+            TShop.Instance.SendPlainCommandReply(caller, $"# Build Date: {TShop.BuildDate}");
+            TShop.Instance.SendPlainCommandReply(caller, "#########################################");
         }
     }
 }

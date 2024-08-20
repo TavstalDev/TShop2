@@ -7,10 +7,10 @@ using System.Linq;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Compatibility.Interfaces;
 using Tavstal.TLibrary.Extensions;
-using Tavstal.TShop.Compability;
+using Tavstal.TShop.Model.Classes;
 using Tavstal.TShop.Model.Enums;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Model.Components
 {
     public class TShopComponent : UnturnedPlayerComponent, IPlayerComponent
     {

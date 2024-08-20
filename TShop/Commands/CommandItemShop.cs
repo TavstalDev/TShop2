@@ -5,9 +5,9 @@ using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Interfaces;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Compability;
+using Tavstal.TShop.Model.Classes;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Commands
 {
     public class CommandItemShop : CommandBase
     {
@@ -24,7 +24,7 @@ namespace Tavstal.TShop
                 async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;
-                    ItemAsset asset = null;
+                    ItemAsset asset;
 
                     if (args.Length < 3 || args.Length > 4)
                     {
@@ -36,7 +36,7 @@ namespace Tavstal.TShop
                     {
                         ushort.TryParse(args[0], out id);
                     }
-                    catch { }
+                    catch { /* ignore */ }
 
 
                     if (id > 0)
@@ -46,7 +46,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_not_found", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -54,7 +54,7 @@ namespace Tavstal.TShop
                     Product item = await TShop.Database.FindItemAsync(id);
                     if (item != null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_already_added", asset.itemName, asset.id);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_already_added", asset.itemName, asset.id);
                         return;
                     }
 
@@ -66,13 +66,13 @@ namespace Tavstal.TShop
                     {
                         decimal.TryParse(args[1], out buycost);
                     }
-                    catch { }
+                    catch { /* ignore */ }
 
                     try
                     {
                         decimal.TryParse(args[2], out sellcost);
                     }
-                    catch { }
+                    catch { /* ignore */ }
 
                     if (args.Length == 5)
                         permission = args[3];
@@ -81,15 +81,15 @@ namespace Tavstal.TShop
                         permission = null;
 
                     if (await TShop.Database.AddProductAsync(asset.id, false, buycost, sellcost, permission != null, permission))
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_item_added", asset.itemName, asset.id);
+                        TShop.Instance.SendCommandReply(caller,  "success_item_added", asset.itemName, asset.id);
                     else
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_added", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_added", asset.itemName);
                 }),
             new SubCommand("remove", "Removes an item from the shop", "remove [item name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.itemshop.remove", "tshop.commands.itemshop.remove" },
                 async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;
-                    ItemAsset asset = null;
+                    ItemAsset asset;
 
                     if (args.Length != 1)
                     {
@@ -101,7 +101,7 @@ namespace Tavstal.TShop
                     {
                         ushort.TryParse(args[0], out id);
                     }
-                    catch { }
+                    catch { /* ignore */ }
 
                     if (id > 0)
                         asset = UAssetHelper.FindItemAsset(id);
@@ -110,7 +110,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_not_found", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -118,20 +118,20 @@ namespace Tavstal.TShop
                     Product item = await TShop.Database.FindItemAsync(id);
                     if (item == null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_not_added", args[0]);
+                        TShop.Instance.SendCommandReply(caller, "error_item_not_added", args[0]);
                         return;
                     }
 
                     if (await TShop.Database.RemoveProductAsync(id, false))
-                        UChatHelper.SendCommandReply(TShop.Instance, caller, "success_item_removed", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller, "success_item_removed", asset.itemName);
                     else
-                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_removed", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller, "error_item_removed", asset.itemName);
                 }),
             new SubCommand("update", "Updates an item in the shop.", "update [item name | id] [buycost] [sellcost] <permission>", new List<string> { "change" }, new List<string>() { "tshop.itemshop.update", "tshop.commands.itemshop.update"  },
                 async (IRocketPlayer caller, string[] args) =>
                 {
                     ushort id = 0;
-                    ItemAsset asset = null;
+                    ItemAsset asset;
 
                     if (args.Length < 3 || args.Length > 4)
                     {
@@ -143,7 +143,7 @@ namespace Tavstal.TShop
                     {
                         ushort.TryParse(args[0], out id);
                     }
-                    catch { }
+                    catch { /* ignore */ }
 
                     if (id > 0)
                         asset = UAssetHelper.FindItemAsset(id);
@@ -152,7 +152,7 @@ namespace Tavstal.TShop
 
                     if (asset == null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_item_not_found", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", args[0]);
                         return;
                     }
                     id = asset.id;
@@ -160,7 +160,7 @@ namespace Tavstal.TShop
                     Product item = await TShop.Database.FindItemAsync(id);
                     if (item == null)
                     {
-                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_not_added", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller, "error_item_not_added", asset.itemName);
                         return;
                     }
 
@@ -172,13 +172,13 @@ namespace Tavstal.TShop
                     {
                         decimal.TryParse(args[1], out buycost);
                     }
-                    catch { }
+                    catch { /* ignore */ }
 
                     try
                     {
                         decimal.TryParse(args[2], out sellcost);
                     }
-                    catch { }
+                    catch { /* ignore */ }
 
                     if (args.Length == 4)
                         permission = args[3];
@@ -187,9 +187,9 @@ namespace Tavstal.TShop
                         permission = null;
 
                     if (await TShop.Database.UpdateProductAsync(id, false, buycost, sellcost, permission != null, permission))
-                        UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_item_updated", asset.itemName, asset.id);
+                        TShop.Instance.SendCommandReply(caller,  "success_item_updated", asset.itemName, asset.id);
                     else
-                        UChatHelper.SendCommandReply(TShop.Instance, caller, "error_item_updated", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller, "error_item_updated", asset.itemName);
                 })
         };
 

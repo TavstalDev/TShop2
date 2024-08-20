@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Tavstal.TShop.Compability
+namespace Tavstal.TShop.Model.Classes
 {
     public class FileServerFolder
     {

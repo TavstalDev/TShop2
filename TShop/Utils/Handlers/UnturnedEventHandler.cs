@@ -2,20 +2,21 @@
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Compability;
+using Tavstal.TShop.Model.Classes;
 using Tavstal.TShop.Model.Enums;
-using Tavstal.TShop.Managers;
+using Tavstal.TShop.Utils.Managers;
+using Tavstal.TShop.Model.Components;
 
-namespace Tavstal.TShop.Handlers
+namespace Tavstal.TShop.Utils.Handlers
 {
     internal static class UnturnedEventHandler
     {
-        private static bool _isAttached = false;
+        private static bool _isAttached;
 
         public static void Attach()
         {
@@ -337,23 +338,25 @@ namespace Tavstal.TShop.Handlers
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_sell_null"));
                                         continue;
                                     }
-                                    else if (vehicle.lockedOwner != uPlayer.CSteamID || !vehicle.isLocked || vehicle.isDead)
+                                    
+                                    if (vehicle.lockedOwner != uPlayer.CSteamID || !vehicle.isLocked || vehicle.isDead)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_sell_owner"));
                                         continue;
                                     }
-                                    else if (vehicle.id != prod.Key.UnturnedId)
+                                    
+                                    if (vehicle.id != prod.Key.UnturnedId)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_found"));
                                         continue;
                                     }
-
-                                    await TShop.EconomyProvider.DepositAsync(uPlayer.CSteamID, cost);
+                                    
                                     foreach (Passenger pas in vehicle.passengers)
                                     {
                                         VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
                                     }
                                     VehicleManager.askVehicleDestroy(vehicle);
+                                    await TShop.EconomyProvider.DepositAsync(uPlayer.CSteamID, cost);
                                     if (TShop.EconomyProvider.HasTransactionSystem())
                                         await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_sell", asset.vehicleName, 1, cost, TShop.EconomyProvider.GetCurrencyName()));
@@ -422,8 +425,7 @@ namespace Tavstal.TShop.Handlers
 
                         UIManager.UpdateProductPage(uPlayer);
                     }
-
-                    return;
+                    //return;
                 }
                 else if (button.StartsWith("bt_tshop_basket#page#"))
                 {
@@ -439,8 +441,7 @@ namespace Tavstal.TShop.Handlers
 
                         UIManager.UpdateBasketPage(uPlayer);
                     }
-
-                    return;
+                    //return;
                 }
                 else if (button.StartsWith("bt_tshop_product#"))
                 {

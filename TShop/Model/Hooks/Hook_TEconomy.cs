@@ -11,7 +11,7 @@ using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
 using Tavstal.TLibrary.Extensions;
 
-namespace Tavstal.TShop.Compability.Hooks
+namespace Tavstal.TShop.Model.Hooks
 {
     public class TEconomyHook : Hook, IEconomyProvider
     {
@@ -36,6 +36,7 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
+                // ReSharper disable PossibleNullReferenceException
                 TShop.Logger.Log("Loading TEconomy hook...");
 
                 var teconomyPlugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("teconomy"));
@@ -80,7 +81,7 @@ namespace Tavstal.TShop.Compability.Hooks
                     "GetBankCards", new[] { typeof(ulong) });
 
                 _getTranslation = _pluginInstance.GetType().GetMethod("Localize", new[] { typeof(bool), typeof(string), typeof(object[]) });
-
+                // ReSharper restore PossibleNullReferenceException
                 TShop.Logger.Log("TEconomy hook loaded.");
             }
             catch (Exception e)
@@ -109,7 +110,9 @@ namespace Tavstal.TShop.Compability.Hooks
             {
                 try
                 {
+                    // ReSharper disable PossibleNullReferenceException
                     return (T)Convert.ChangeType(_teconomyConfig.GetType().GetProperty(VariableName).GetValue(_teconomyConfig), typeof(T));
+                    // ReSharper restore PossibleNullReferenceException
                 }
                 catch
                 {
@@ -204,9 +207,9 @@ namespace Tavstal.TShop.Compability.Hooks
             string value = "Credits";
             try
             {
-                value = GetConfigValue<string>("MoneyNameFull").ToString();
+                value = GetConfigValue<string>("MoneyNameFull");
             }
-            catch { }
+            catch { /* ignore */ }
             return value;
         }
         #endregion
@@ -266,37 +269,37 @@ namespace Tavstal.TShop.Compability.Hooks
 
         public async Task AddTransactionAsync(CSteamID player, ITransaction transaction)
         {
-            Task task = (Task)_addTransactionMethod.Invoke(_databaseInstance, new object[] { transaction.Type, transaction.PaymentMethod, transaction.StoreName, transaction.PayerId, transaction.PayeeId, transaction.Amount, transaction.Date }); ;
+            Task task = (Task)_addTransactionMethod.Invoke(_databaseInstance, new object[] { transaction.Type, transaction.PaymentMethod, transaction.StoreName, transaction.PayerId, transaction.PayeeId, transaction.Amount, transaction.Date });
             await task;
         }
 
         public async Task<List<ITransaction>> GetTransactionsAsync(CSteamID player)
         {
-            Task<List<ITransaction>> task = (Task<List<ITransaction>>)_getTransactionsMethod.Invoke(_databaseInstance, new object[] { player.m_SteamID }); ;
+            Task<List<ITransaction>> task = (Task<List<ITransaction>>)_getTransactionsMethod.Invoke(_databaseInstance, new object[] { player.m_SteamID });
             return await task;
         }
 
         public async Task AddBankCardAsync(CSteamID steamID, IBankCard newCard)
         {
-            Task task = (Task)_addBankCard.Invoke(_databaseInstance, new object[] { newCard.Id, newCard.SecurityCode, newCard.PinCode, newCard.HolderId, newCard.BalanceUse, newCard.BalanceLimit, newCard.ExpireDate }); ;
+            Task task = (Task)_addBankCard.Invoke(_databaseInstance, new object[] { newCard.Id, newCard.SecurityCode, newCard.PinCode, newCard.HolderId, newCard.BalanceUse, newCard.BalanceLimit, newCard.ExpireDate });
             await task;
         }
 
         public async Task UpdateBankCardAsync(string cardId, decimal limitUsed, bool isActive)
         {
-            Task task = (Task)_updateBankCard.Invoke(_databaseInstance, new object[] { cardId, limitUsed, isActive }); ;
+            Task task = (Task)_updateBankCard.Invoke(_databaseInstance, new object[] { cardId, limitUsed, isActive });
             await task;
         }
 
         public async Task RemoveBankCardAsync(string cardId)
         {
-            Task task = (Task)_removeBankCard.Invoke(_databaseInstance, new object[] { cardId }); ;
+            Task task = (Task)_removeBankCard.Invoke(_databaseInstance, new object[] { cardId });
             await task;
         }
 
         public async Task<List<IBankCard>> GetBankCardsByPlayerAsync(CSteamID steamID)
         {
-            Task<List<IBankCard>> task = (Task<List<IBankCard>>)_getBankCards.Invoke(_databaseInstance, new object[] { steamID.m_SteamID }); ;
+            Task<List<IBankCard>> task = (Task<List<IBankCard>>)_getBankCards.Invoke(_databaseInstance, new object[] { steamID.m_SteamID });
             return await task;
         }
 

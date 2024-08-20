@@ -7,10 +7,10 @@ using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Managers;
-using Tavstal.TShop.Compability;
-using Tavstal.TShop.Compability.Hooks;
-using Tavstal.TShop.Handlers;
-using Tavstal.TShop.Managers;
+using Tavstal.TShop.Model.Classes;
+using Tavstal.TShop.Model.Hooks;
+using Tavstal.TShop.Utils.Handlers;
+using Tavstal.TShop.Utils.Managers;
 using Math = System.Math;
 
 namespace Tavstal.TShop
@@ -47,8 +47,8 @@ namespace Tavstal.TShop
             Logger.Log("# Website: https://redstoneplugins.com");
             Logger.Log("# Discord: https://discord.gg/redstoneplugins");
             Logger.Log("#########################################");
-            Logger.Log(string.Format("# Build Version: {0}", Version));
-            Logger.Log(string.Format("# Build Date: {0}", BuildDate));
+            Logger.Log($"# Build Version: {Version}");
+            Logger.Log($"# Build Date: {BuildDate}");
             Logger.Log("#########################################");
             try
             {
@@ -102,7 +102,7 @@ namespace Tavstal.TShop
             if (IsConnectionAuthFailed)
             {
                 Logger.LogWarning($"# Unloading {GetPluginName()} due to database authentication error.");
-                this?.UnloadPlugin();
+                this.UnloadPlugin();
                 return;
             }
 
@@ -116,7 +116,7 @@ namespace Tavstal.TShop
                 if (!HookManager.IsHookLoadable<ExpEconomyHook>())
                 {
                     Logger.LogError("# Failed to load economy hook. Unloading TShop...");
-                    this?.UnloadPlugin();
+                    this.UnloadPlugin();
                     return;
                 }
                 EconomyProvider = HookManager.GetHook<ExpEconomyHook>();
@@ -130,7 +130,7 @@ namespace Tavstal.TShop
                     if (!HookManager.IsHookLoadable<UconomyHook>())
                     {
                         Logger.LogError("# Failed to load economy hook. Unloading TShop...");
-                        this?.UnloadPlugin();
+                        this.UnloadPlugin();
                         return;
                     }
                     EconomyProvider = HookManager.GetHook<UconomyHook>();

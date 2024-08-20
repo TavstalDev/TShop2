@@ -1,10 +1,9 @@
 ﻿using Rocket.API;
-using SDG.Unturned;
 using System.Collections.Generic;
 using System.Linq;
 using Tavstal.TLibrary.Helpers.Unturned;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Commands
 {
     public class CommandShopFill : IRocketCommand
     {
@@ -18,18 +17,16 @@ namespace Tavstal.TShop
         public async void Execute(IRocketPlayer caller, string[] args)
         {
             if (!TShop.Instance.Config.DebugMode)
-                {
-                    TShop.Logger.LogWarning("You must enable debugMode to use 'shopfill'.");
-                    return;
-                }
+            {
+                TShop.Instance.SendPlainCommandReply(caller,"&cYou must enable debugMode to use 'shopfill'.");
+                return;
+            }
 
             int count = 0;
             foreach (var asset in UAssetHelper.GetItemAssets().OrderBy(x => x.id))
             {
                 if (count == 100)
                     break;
-                if (asset == null)
-                    continue;
 
                 if (asset.id == 0)
                     continue;
@@ -44,9 +41,6 @@ namespace Tavstal.TShop
             {
                 if (count == 100)
                     break;
-
-                if (asset == null)
-                    continue;
 
                 if (asset.id == 0)
                     continue;

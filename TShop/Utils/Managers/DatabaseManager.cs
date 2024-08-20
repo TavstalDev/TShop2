@@ -9,11 +9,10 @@ using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Managers;
-using Tavstal.TShop.Compability;
 using Tavstal.TShop.Model.Classes;
 using Tavstal.TShop.Model.Enums;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Utils.Managers
 {
     /// <summary>
     /// Represents a database manager derived from <see cref="DatabaseManagerBase"/>.
@@ -414,7 +413,7 @@ namespace Tavstal.TShop
                 var Reader = await MySQLCommand.ExecuteReaderAsync();
                 while (await Reader.ReadAsync())
                 {
-                    ZaupProduct prod = null;
+                    ZaupProduct prod;
                     try
                     {
                         prod = new ZaupProduct(Reader.GetUInt16("id"), false, Reader.GetDecimal("cost"), Reader.GetDecimal("buyback"));
@@ -423,8 +422,7 @@ namespace Tavstal.TShop
                         uint id = Reader.GetUInt32("id");
                         prod = new ZaupProduct((ushort)id, false, Reader.GetDecimal("cost"), Reader.GetDecimal("buyback"));
                     }
-                    if (prod != null)
-                        i.Add(prod);
+                    i.Add(prod);
                 }
                 Reader.Close();
 
@@ -433,7 +431,7 @@ namespace Tavstal.TShop
                 Reader = await MySQLCommand.ExecuteReaderAsync();
                 while (await Reader.ReadAsync())
                 {
-                    ZaupProduct prod = null;
+                    ZaupProduct prod;
                     try
                     {
                         prod = new ZaupProduct(Reader.GetUInt16("id"), true, Reader.GetDecimal("cost"), 0);

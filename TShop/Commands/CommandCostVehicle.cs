@@ -3,9 +3,9 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Compability;
+using Tavstal.TShop.Model.Classes;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Commands
 {
     public class CommandCostVehicle : IRocketCommand
     {
@@ -28,7 +28,7 @@ namespace Tavstal.TShop
                 {
                     ushort.TryParse(args[0], out id);
                 }
-                catch { }
+                catch { /* ignore */ }
 
                 VehicleAsset asset;
                 if (id > 0)
@@ -42,21 +42,21 @@ namespace Tavstal.TShop
 
                 if (asset == null)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
                     return;
                 }
 
                 Product item = await TShop.Database.FindVehicleAsync(id);
                 if (item == null)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
                     return;
                 }
 
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_cost", asset.vehicleName, amount, item.GetBuyCost(), item.GetSellCost(), TShop.EconomyProvider.GetCurrencyName());
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_vehicle_cost", asset.vehicleName, amount, item.GetBuyCost(), item.GetSellCost(), TShop.EconomyProvider.GetCurrencyName());
             }
             else
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_costvehicle_args");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_command_costvehicle_args");
         }
     }
 }

@@ -7,10 +7,11 @@ using System.Linq;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Compability;
-using Tavstal.TShop.Helpers;
+using Tavstal.TShop.Model.Classes;
+using Tavstal.TShop.Utils.Helpers;
+using Tavstal.TShop.Model.Components;
 
-namespace Tavstal.TShop.Managers
+namespace Tavstal.TShop.Utils.Managers
 {
     /// <summary>
     /// Provides static methods and properties for managing the Heads-Up Display (HUD).
@@ -122,7 +123,7 @@ namespace Tavstal.TShop.Managers
             {
                 TShopComponent comp = player.GetComponent<TShopComponent>();
 
-                int page = 1;
+                int page;
                 int arrayIndex = 0;
                 if (comp.IsVehiclePage)
                 {

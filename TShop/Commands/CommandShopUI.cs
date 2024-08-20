@@ -1,9 +1,10 @@
 ﻿using Rocket.API;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
-using Tavstal.TShop.Managers;
+using Tavstal.TShop.Utils.Managers;
+using Tavstal.TShop.Model.Components;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Commands
 {
     public class CommandShopUI : IRocketCommand
     {

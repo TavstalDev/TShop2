@@ -4,7 +4,7 @@ using Tavstal.TLibrary.Compatibility.Database;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Interfaces;
 
-namespace Tavstal.TShop.Compability
+namespace Tavstal.TShop.Model.Classes
 {
     [Serializable]
     public class Product : IProduct
@@ -129,7 +129,7 @@ namespace Tavstal.TShop.Compability
         public string GetBuyCostFormatted(int amount = 1)
         {
             if (IsDiscounted)
-                return TShop.Instance.Localize(true, "ui_discount", (BuyCost * amount).ToString("0.00"), ((BuyCost - BuyCost * (DiscountPercent / 100)) * amount).ToString("0.00"), TShop.EconomyProvider.GetCurrencyName()).ToString();
+                return TShop.Instance.Localize(true, "ui_discount", (BuyCost * amount).ToString("0.00"), ((BuyCost - BuyCost * (DiscountPercent / 100)) * amount).ToString("0.00"), TShop.EconomyProvider.GetCurrencyName());
             else
                 return TShop.EconomyProvider.GetCurrencyName() + (BuyCost * amount).ToString("0.00");
         }
@@ -137,7 +137,7 @@ namespace Tavstal.TShop.Compability
         public string GetSellCostFormatted(int amount = 1)
         {
             if (IsDiscounted)
-                return TShop.Instance.Localize(true, "ui_discount", (SellCost * amount).ToString("0.00"), ((SellCost - SellCost * (DiscountPercent / 100)) * amount).ToString("0.00"), TShop.EconomyProvider.GetCurrencyName()).ToString();
+                return TShop.Instance.Localize(true, "ui_discount", (SellCost * amount).ToString("0.00"), ((SellCost - SellCost * (DiscountPercent / 100)) * amount).ToString("0.00"), TShop.EconomyProvider.GetCurrencyName());
             else
                 return TShop.EconomyProvider.GetCurrencyName() + (SellCost * amount).ToString("0.00");
         }

@@ -5,9 +5,10 @@ using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Compability;
+using Tavstal.TShop.Model.Classes;
+using Tavstal.TShop.Model.Components;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Commands
 {
     public class CommandSellItem : IRocketCommand
     {
@@ -31,7 +32,7 @@ namespace Tavstal.TShop
                 {
                     ushort.TryParse(args[0], out id);
                 }
-                catch { }
+                catch { /* ignore */ }
 
                 if (args.Length == 2)
                 {
@@ -39,7 +40,7 @@ namespace Tavstal.TShop
                     {
                         int.TryParse(args[1], out amount);
                     }
-                    catch { }
+                    catch { /* ignore */ }
                 }
 
                 ItemAsset asset;
@@ -50,7 +51,7 @@ namespace Tavstal.TShop
 
                 if (asset == null)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_found", args[0]);
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_item_not_found", args[0]);
                     return;
                 }
                 id = asset.id;
@@ -58,7 +59,7 @@ namespace Tavstal.TShop
                 Product item = await TShop.Database.FindItemAsync(id);
                 if (item == null)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_added", args[0]);
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_item_not_added", args[0]);
                     return;
                 }
 
@@ -66,13 +67,13 @@ namespace Tavstal.TShop
                 List<InventorySearch> search = callerPlayer.Inventory.search(asset.id, true, true);
                 if (search.Count < amount)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_not_enough");
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_item_not_enough");
                     return;
                 }
 
                 if (cost == 0)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_item_sell_error");
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_item_sell_error");
                     return;
                 }
 
@@ -83,10 +84,10 @@ namespace Tavstal.TShop
                 }
                 if (TShop.EconomyProvider.HasTransactionSystem())
                     await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_item_sell", asset.itemName, amount, cost, TShop.EconomyProvider.GetCurrencyName());
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_item_sell", asset.itemName, amount, cost, TShop.EconomyProvider.GetCurrencyName());
             }
             else
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_sellitem_args");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_command_sellitem_args");
         }
     }
 }

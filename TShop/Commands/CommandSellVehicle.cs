@@ -5,9 +5,10 @@ using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Compability;
+using Tavstal.TShop.Model.Classes;
+using Tavstal.TShop.Model.Components;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Commands
 {
     public class CommandSellVehicle : IRocketCommand
     {
@@ -26,46 +27,47 @@ namespace Tavstal.TShop
             if (args.Length == 0)
             {
                 int amount = 1;
-
-                VehicleAsset asset = null;
+                
                 InteractableVehicle vehicle = callerPlayer.CurrentVehicle;
                 if (vehicle == null)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_null");
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_sell_null");
                     return;
                 }
-                else if (vehicle.lockedOwner != callerPlayer.CSteamID || !vehicle.isLocked ||vehicle.isDead)
+                VehicleAsset asset = vehicle.asset;
+                
+                if (vehicle.lockedOwner != callerPlayer.CSteamID || !vehicle.isLocked || vehicle.isDead)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_owner");
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_sell_owner");
                     return;
                 }
 
                 Product item = await TShop.Database.FindVehicleAsync(vehicle.id);
                 if (item == null)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
                     return;
                 }
 
                 decimal cost = item.GetSellCost(amount);
                 if (cost == 0)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_vehicle_sell_error");
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_sell_error");
                     return;
                 }
-
-                await TShop.EconomyProvider.DepositAsync(callerPlayer.CSteamID, cost);
+                
                 foreach (Passenger pas in vehicle.passengers)
                 {
                     VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
                 }
                 VehicleManager.askVehicleDestroy(vehicle);
+                await TShop.EconomyProvider.DepositAsync(callerPlayer.CSteamID, cost);
                 if (TShop.EconomyProvider.HasTransactionSystem())
                     await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.EconomyProvider.GetCurrencyName());
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.EconomyProvider.GetCurrencyName());
             }
             else
-                UChatHelper.SendCommandReply(TShop.Instance,callerPlayer.SteamPlayer(),  "error_command_sellvehicle_args");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_command_sellvehicle_args");
         }
     }
 }

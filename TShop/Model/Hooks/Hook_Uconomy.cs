@@ -12,7 +12,7 @@ using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
 using Tavstal.TLibrary.Extensions;
 
-namespace Tavstal.TShop.Compability.Hooks
+namespace Tavstal.TShop.Model.Hooks
 {
     public class UconomyHook : Hook, IEconomyProvider
     {
@@ -32,13 +32,16 @@ namespace Tavstal.TShop.Compability.Hooks
         {
             try
             {
+                // ReSharper disable PossibleNullReferenceException
                 TShop.Logger.Log("Loading Uconomy hook...");
 
                 TShop.Logger.LogDebug("UconomyHook #1: Searching for IRocketPlugin");
                 IRocketPlugin uconomyPlugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("uconomy"));
-
+                
                 TShop.Logger.LogDebug($"UconomyHook #2: Searching for plugin type. IRocketPlugin valid?: {uconomyPlugin != null}");
+                
                 Type uconomyType = uconomyPlugin.GetType().Assembly.GetType("fr34kyn01535.Uconomy.Uconomy");
+                
 
                 TShop.Logger.LogDebug($"UconomyHook #3: Searching for plugin instance. Plugin type valid?: {uconomyType != null}");
                 _pluginInstance = uconomyType.GetField("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(uconomyPlugin);
@@ -67,6 +70,7 @@ namespace Tavstal.TShop.Compability.Hooks
                 else
                     _getTranslation = pluginInstanceType.GetMethod("Translate", new[] { typeof(string), typeof(object[]) });
                 TShop.Logger.LogDebug($"UconomyHook #9: Searching for events");
+                // ReSharper restore PossibleNullReferenceException
                 #region Create Event Delegates
                 /* Added because it might be needed in the future
                 var parentPlugin = TShop.Instance;
@@ -102,7 +106,7 @@ namespace Tavstal.TShop.Compability.Hooks
                 #endregion
 
                 TShop.Logger.LogException("Currency Name >> " + GetCurrencyName());
-                TShop.Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance").ToString());
+                TShop.Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance"));
                 TShop.Logger.Log("Uconomy hook loaded.");
             }
             catch (Exception e)
@@ -130,7 +134,9 @@ namespace Tavstal.TShop.Compability.Hooks
             {
                 try
                 {
+                    // ReSharper disable PossibleNullReferenceException
                     return (T)Convert.ChangeType(_uconomyConfig.GetType().GetProperty(VariableName).GetValue(_uconomyConfig), typeof(T));
+                    // ReSharper restore PossibleNullReferenceException
                 }
                 catch
                 {
@@ -273,9 +279,9 @@ namespace Tavstal.TShop.Compability.Hooks
             string value = "Credits";
             try
             {
-                value = GetConfigValue<string>("MoneyName").ToString();
+                value = GetConfigValue<string>("MoneyName");
             }
-            catch { }
+            catch { /* ignore */ }
             return value;
         }
         #endregion

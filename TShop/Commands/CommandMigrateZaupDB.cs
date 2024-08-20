@@ -1,11 +1,10 @@
 ﻿using Rocket.API;
-using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Classes;
 
-namespace Tavstal.TShop
+namespace Tavstal.TShop.Commands
 {
     public class CommandMigrateZaupDB : IRocketCommand
     {
@@ -57,16 +56,16 @@ namespace Tavstal.TShop
                     }
                     TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6vehicles have been successfully migrated to TShop's table.");
                     TShop.Logger.LogRich("&bIf there are any items or vehicles that were not migrated then please check Zaup's database or the workshop mod on the server. The problem is not on TShop's side.");
-                    UChatHelper.SendCommandReply(TShop.Instance, caller,  "success_migrate");
+                    TShop.Instance.SendCommandReply(caller,  "success_migrate");
                 }
                 catch (Exception ex)
                 {
-                    UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_migrate_console");
+                    TShop.Instance.SendCommandReply(caller,  "error_migrate_console");
                     TShop.Logger.LogError("Migration error: " + ex);
                 }
             }
             else
-                UChatHelper.SendCommandReply(TShop.Instance, caller,  "error_command_migrate_args");
+                TShop.Instance.SendCommandReply(caller,  "error_command_migrate_args");
         }
     }
 }

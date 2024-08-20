@@ -2,9 +2,9 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
-using Tavstal.TShop.Compability;
+using Tavstal.TShop.Model.Classes;
 
-namespace Tavstal.TShop.Helpers
+namespace Tavstal.TShop.Utils.Helpers
 {
     /// <summary>
     /// Provides helper methods for Unturned-related functionality.

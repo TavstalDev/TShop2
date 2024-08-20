@@ -8,7 +8,7 @@ using Tavstal.TLibrary.Compatibility;
 using Tavstal.TLibrary.Compatibility.Economy;
 using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
 
-namespace Tavstal.TShop.Compability.Hooks
+namespace Tavstal.TShop.Model.Hooks
 {
     public class ExpEconomyHook : Hook, IEconomyProvider
     {
@@ -21,7 +21,7 @@ namespace Tavstal.TShop.Compability.Hooks
                 TShop.Logger.Log("Loading ExpEconomy hook...");
 
                 TShop.Logger.LogException("Currency Name >> " + GetCurrencyName());
-                TShop.Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance").ToString());
+                TShop.Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance"));
                 TShop.Logger.Log("ExpEconomy hook loaded.");
             }
             catch (Exception e)
@@ -49,7 +49,9 @@ namespace Tavstal.TShop.Compability.Hooks
             {
                 try
                 {
+                    // ReSharper disable PossibleNullReferenceException
                     return (T)Convert.ChangeType(TShop.Instance.Config.GetType().GetProperty(VariableName).GetValue(TShop.Instance.Config), typeof(T));
+                    // ReSharper restore PossibleNullReferenceException
                 }
                 catch
                 {
@@ -156,9 +158,9 @@ namespace Tavstal.TShop.Compability.Hooks
             string value = "Exp";
             try
             {
-                value = GetConfigValue<string>("MoneyName").ToString();
+                value = GetConfigValue<string>("MoneyName");
             }
-            catch { }
+            catch { /* ignore */ }
             return value;
         }
 #pragma warning restore IDE0060 // Remove unused parameter
