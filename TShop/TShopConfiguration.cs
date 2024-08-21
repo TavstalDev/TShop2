@@ -70,5 +70,13 @@ namespace Tavstal.TShop
                 new FileServerFolder("my-server", "https://api.myserver.com/vehicles/", 0, 60000),
             };
         }
+        
+        public TShopConfiguration(string filename, string path) : base(filename, path)
+        {
+        }
+
+        public TShopConfiguration()
+        {
+        }
     }
 }
