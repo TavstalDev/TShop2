@@ -19,6 +19,9 @@ namespace Tavstal.TShop.Model.Components
         public ITransportConnection TransportConnection => Player.SteamPlayer().transportConnection;
         public EMenuCategory MenuCategory { get; set; }
         public EItemFilter? ItemFilter { get; set; }
+        public ESortType SortType { get; set; }
+        public string ProductSearch { get; set; }
+        public bool IsProductSearchDirty { get; set; }
         public EEngine? VehicleFilter { get; set; }
         public EPaymentMethod PaymentMethod { get; set; } = EPaymentMethod.CASH;
         public int PageItem { get; set; } = 1;

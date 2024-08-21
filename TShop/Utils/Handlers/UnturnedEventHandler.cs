@@ -76,6 +76,11 @@ namespace Tavstal.TShop.Utils.Handlers
                     UIManager.UpdateBasketPayment(uPlayer);
                 }
             }
+            else if (button.EqualsIgnoreCase("inputf_product_search"))
+            {
+                comp.ProductSearch = text;
+                comp.IsProductSearchDirty = true;
+            }
         }
 
         private static async void Event_OnButtonClick(Player player, string button)
@@ -143,6 +148,60 @@ namespace Tavstal.TShop.Utils.Handlers
                             UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
+                    case "bt_product#search":
+                        {
+                            if (!comp.IsProductSearchDirty)
+                                return;
+                            
+                            UIManager.UpdateProductPage(uPlayer);
+                            comp.IsProductSearchDirty = false;
+                            break;
+                        }
+                    case "bt_products#sort#featured":
+                    {
+                        if (comp.SortType != ESortType.Featured)
+                        {
+                            comp.SortType = ESortType.Featured;
+                            UIManager.UpdateProductPage(uPlayer);
+                        }
+                        break;
+                    }
+                    case "bt_products#sort#nameaz":
+                    {
+                        if (comp.SortType != ESortType.NameAZ)
+                        {
+                            comp.SortType = ESortType.NameAZ;
+                            UIManager.UpdateProductPage(uPlayer);
+                        }
+                        break;
+                    }
+                    case "bt_products#sort#nameza":
+                    {
+                        if (comp.SortType != ESortType.NameZA)
+                        {
+                            comp.SortType = ESortType.NameZA;
+                            UIManager.UpdateProductPage(uPlayer);
+                        }
+                        break;
+                    }
+                    case "bt_products#sort#priceasc":
+                    {
+                        if (comp.SortType != ESortType.PriceAscending)
+                        {
+                            comp.SortType = ESortType.PriceAscending;
+                            UIManager.UpdateProductPage(uPlayer);
+                        }
+                        break;
+                    }
+                    case "bt_products#sort#pricedesc":
+                    {
+                        if (comp.SortType != ESortType.PriceDescending)
+                        {
+                            comp.SortType = ESortType.PriceDescending;
+                            UIManager.UpdateProductPage(uPlayer);
+                        }
+                        break;
+                    }
                     case "bt_tshop_products#page#next":
                         {
                             if (comp.IsVehiclePage)

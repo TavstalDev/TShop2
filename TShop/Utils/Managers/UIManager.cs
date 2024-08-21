@@ -3,6 +3,7 @@ using SDG.NetTransport;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
@@ -10,6 +11,7 @@ using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Classes;
 using Tavstal.TShop.Utils.Helpers;
 using Tavstal.TShop.Model.Components;
+using Tavstal.TShop.Model.Enums;
 
 namespace Tavstal.TShop.Utils.Managers
 {
@@ -59,6 +61,22 @@ namespace Tavstal.TShop.Utils.Managers
             }
             EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_product#category#item#all", TShop.Instance.Localize("ui_text_all"));
             EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_product#category#vehicle#all", TShop.Instance.Localize("ui_text_all"));
+            
+            #region Sort
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "inputf_product_search#placeholder", 
+                TShop.Instance.Localize("ui_product_search"));
+            
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_products#sort#featured", 
+                TShop.Instance.Localize("ui_sort_selected", TShop.Instance.Localize("ui_sort_featured")));
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_products#sort#nameaz", 
+                TShop.Instance.Localize("ui_sort_unselected", TShop.Instance.Localize("ui_sort_az")));
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_products#sort#nameza", 
+                TShop.Instance.Localize("ui_sort_unselected",TShop.Instance.Localize("ui_sort_za")));
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_products#sort#priceasc", 
+                TShop.Instance.Localize("ui_sort_unselected",TShop.Instance.Localize("ui_sort_price_ascending")));
+            EffectManager.sendUIEffectText((short)Config.EffectID, transportCon, true, "tb_products#sort#pricedesc", 
+                TShop.Instance.Localize("ui_sort_unselected",TShop.Instance.Localize("ui_sort_price_descending")));
+            #endregion
             #endregion
 
             #region Basket Content
@@ -140,6 +158,58 @@ namespace Tavstal.TShop.Utils.Managers
 
                 ITransportConnection playerTC = player.SteamPlayer().transportConnection;
                 List<Product> products = await (comp.IsVehiclePage ? TShop.Database.GetVehiclesAsync(comp.VehicleFilter) : TShop.Database.GetItemsAsync(comp.ItemFilter));
+                if (!comp.ProductSearch.IsNullOrEmpty())
+                    products = products.FindAll(x => x.DisplayName.ContainsIgnoreCase(comp.ProductSearch));
+                
+                #region Sort
+                switch (comp.SortType)
+                {
+                    default:
+                    case ESortType.Featured:
+                        break;
+                    case ESortType.NameAZ:
+                    {
+                        products = products.OrderBy(x => x.DisplayName).ToList();
+                        break;
+                    }
+                    case ESortType.NameZA:
+                    {
+                        products = products.OrderByDescending(x => x.DisplayName).ToList();
+                        break;
+                    }
+                    case ESortType.PriceAscending:
+                    {
+                        products = products.OrderBy(x => x.BuyCost).ToList();
+                        break;
+                    }
+                    case ESortType.PriceDescending:
+                    {
+                        products = products.OrderByDescending(x => x.BuyCost).ToList();
+                        break;
+                    }
+                }
+
+                string stateKey = comp.SortType == ESortType.Featured ? "ui_sort_selected" : "ui_sort_unselected";
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#featured", 
+                    TShop.Instance.Localize(stateKey, TShop.Instance.Localize("ui_sort_featured")));
+                
+                stateKey = comp.SortType == ESortType.NameAZ ? "ui_sort_selected" : "ui_sort_unselected";
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#nameaz", 
+                    TShop.Instance.Localize(stateKey, TShop.Instance.Localize("ui_sort_az")));
+                
+                stateKey = comp.SortType == ESortType.NameZA ? "ui_sort_selected" : "ui_sort_unselected";
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#nameza", 
+                    TShop.Instance.Localize(stateKey,TShop.Instance.Localize("ui_sort_za")));
+                
+                stateKey = comp.SortType == ESortType.PriceAscending ? "ui_sort_selected" : "ui_sort_unselected";
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#priceasc", 
+                    TShop.Instance.Localize(stateKey,TShop.Instance.Localize("ui_sort_price_ascending")));
+                
+                stateKey = comp.SortType == ESortType.PriceDescending ? "ui_sort_selected" : "ui_sort_unselected";
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#pricedesc", 
+                    TShop.Instance.Localize(stateKey,TShop.Instance.Localize("ui_sort_price_descending")));
+                #endregion
+                
                 int maxPage = products.Count / itemPerPage + (products.Count % itemPerPage > 0 ? 1 : 0);
                 #region Body
                 int validCount = 0;

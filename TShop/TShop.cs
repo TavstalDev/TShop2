@@ -303,7 +303,15 @@ namespace Tavstal.TShop
                 { "ui_text_buy_disabled", "Purchasing is disabled for this product." },
                 { "ui_text_sell_disabled", "Selling is disabled for this product." },
                 { "ui_text_complete_order", "Complete Order" },
-                { "ui_text_all", "All" }
+                { "ui_text_all", "All" },
+                { "ui_product_search", "Search product by name" },
+                { "ui_sort_featured", "Featured" },
+                { "ui_sort_az", "Name: A to Z" },
+                { "ui_sort_za", "Name: Z to A" },
+                { "ui_sort_price_ascending", "Price ascending" },
+                { "ui_sort_price_descending", "Price descending" },
+                { "ui_sort_selected", "<color=#8CABC0>{0}</color>" },
+                { "ui_sort_unselected", "<color=#486C84>{0}</color>" }
             };
     }
 }
