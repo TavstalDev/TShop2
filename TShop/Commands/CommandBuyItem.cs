@@ -3,7 +3,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
-using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Classes;
 using Tavstal.TShop.Model.Components;

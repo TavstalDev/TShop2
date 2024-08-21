@@ -4,9 +4,8 @@ using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tavstal.TLibrary.Compatibility;
-using Tavstal.TLibrary.Compatibility.Economy;
-using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
+using Tavstal.TLibrary.Models.Hooks;
+using Tavstal.TLibrary.Models.Economy;
 
 namespace Tavstal.TShop.Model.Hooks
 {

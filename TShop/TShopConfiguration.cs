@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Model.Classes;
 
 namespace Tavstal.TShop
@@ -40,7 +40,7 @@ namespace Tavstal.TShop
         [JsonIgnore]
         public readonly ushort EffectID = 8818;
 
-        public override void LoadDefaults()
+        public new void LoadDefaults()
         {
             DebugMode = false;
             Locale = "en";
@@ -70,9 +70,5 @@ namespace Tavstal.TShop
                 new FileServerFolder("my-server", "https://api.myserver.com/vehicles/", 0, 60000),
             };
         }
-
-        public TShopConfiguration() { }
-
-        public TShopConfiguration(string fileName, string path) : base(fileName, path) { }
     }
 }

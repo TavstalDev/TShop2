@@ -2,8 +2,8 @@
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
-using Tavstal.TLibrary.Compatibility;
-using Tavstal.TLibrary.Compatibility.Economy;
+using Tavstal.TLibrary.Models.Plugin;
+using Tavstal.TLibrary.Models.Hooks;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Managers;
@@ -18,7 +18,7 @@ namespace Tavstal.TShop
     /// <summary>
     /// Represents the TShop plugin with the specified configuration.
     /// </summary>
-    /// <typeparam name="TShopConfiguration">The type of configuration used by TShop.</typeparam>
+    /// <typeparam>The type of configuration used by TShop.</typeparam>
     public class TShop : PluginBase<TShopConfiguration>
     {
         public new static TShop Instance { get; private set; }

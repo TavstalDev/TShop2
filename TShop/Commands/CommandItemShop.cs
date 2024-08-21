@@ -1,11 +1,12 @@
 ﻿using Rocket.API;
 using SDG.Unturned;
 using System.Collections.Generic;
-using Tavstal.TLibrary.Compatibility;
-using Tavstal.TLibrary.Compatibility.Interfaces;
+using Tavstal.TLibrary.Models.Commands;
+using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Classes;
+// ReSharper disable AsyncVoidLambda
 
 namespace Tavstal.TShop.Commands
 {
@@ -17,11 +18,11 @@ namespace Tavstal.TShop.Commands
         public override string Syntax => "add | remove | update";
         public override List<string> Aliases => new List<string> { "ishop" };
         public override List<string> Permissions => new List<string> { "tshop.itemshop", "tshop.commands.itemshop" };
-        public override IPlugin Plugin => TShop.Instance;
-        public override List<SubCommand> SubCommands => new List<SubCommand>()
+        protected override IPlugin Plugin => TShop.Instance;
+        protected override List<SubCommand> SubCommands => new List<SubCommand>()
         {
             new SubCommand("add", "Adds an item to the shop.", "add [item name | id] [buycost] [sellcost] <permission>", new List<string>() { "insert", "create" }, new List<string>() { "tshop.itemshop.add", "tshop.commands.itemshop.add" }, 
-                async (IRocketPlayer caller, string[] args) =>
+                async (caller, args) =>
                 {
                     ushort id = 0;
                     ItemAsset asset;
@@ -86,7 +87,7 @@ namespace Tavstal.TShop.Commands
                         TShop.Instance.SendCommandReply(caller,  "error_item_added", asset.itemName);
                 }),
             new SubCommand("remove", "Removes an item from the shop", "remove [item name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.itemshop.remove", "tshop.commands.itemshop.remove" },
-                async (IRocketPlayer caller, string[] args) =>
+                async (caller, args) =>
                 {
                     ushort id = 0;
                     ItemAsset asset;
@@ -128,7 +129,7 @@ namespace Tavstal.TShop.Commands
                         TShop.Instance.SendCommandReply(caller, "error_item_removed", asset.itemName);
                 }),
             new SubCommand("update", "Updates an item in the shop.", "update [item name | id] [buycost] [sellcost] <permission>", new List<string> { "change" }, new List<string>() { "tshop.itemshop.update", "tshop.commands.itemshop.update"  },
-                async (IRocketPlayer caller, string[] args) =>
+                async (caller, args) =>
                 {
                     ushort id = 0;
                     ItemAsset asset;
@@ -193,7 +194,7 @@ namespace Tavstal.TShop.Commands
                 })
         };
 
-        public override bool ExecutionRequested(IRocketPlayer caller, string[] args)
+        protected override bool ExecutionRequested(IRocketPlayer caller, string[] args)
         {
             return false;
         }

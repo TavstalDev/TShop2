@@ -1,6 +1,6 @@
 ﻿using SDG.Unturned;
 using System;
-using Tavstal.TLibrary.Compatibility.Database;
+using Tavstal.TLibrary.Models.Database.Attributes;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Interfaces;
 

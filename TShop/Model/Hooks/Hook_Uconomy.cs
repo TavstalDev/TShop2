@@ -7,9 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Tavstal.TLibrary.Compatibility;
-using Tavstal.TLibrary.Compatibility.Economy;
-using Tavstal.TLibrary.Compatibility.Interfaces.Economy;
+using Tavstal.TLibrary.Models.Hooks;
+using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Extensions;
 
 namespace Tavstal.TShop.Model.Hooks

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using Tavstal.TLibrary.Compatibility;
+using Tavstal.TLibrary.Models.Database;
 
 namespace Tavstal.TShop.Model.Classes
 {
