@@ -100,7 +100,7 @@ An user-friendly item and vehicle shop plugin supporting async (mysql) database.
 </details>
 
 <details>
-<summary>/vehicleshop add [vehicle name | id] <buycost> <sellcost> <permission></summary>
+<summary>/vehicleshop add [vehicle name | id] <buycost> <sellcost> <hexColor> <permission></summary>
 <b>Description:</b> Manages the vehicle shop.
 <br>
 <b>Permission(s):</b>  tshop.commands.vehicleshop, tshop.commands.vehicleshop.add
@@ -111,6 +111,13 @@ An user-friendly item and vehicle shop plugin supporting async (mysql) database.
 <b>Description:</b> Manages the vehicle shop.
 <br>
 <b>Permission(s):</b> tshop.commands.vehicleshop, tshop.commands.vehicleshop.remove
+</details>
+
+<details>
+<summary>/vehicleshop color  [vehicle name | id] [hexColor]</summary>
+<b>Description:</b> Manages the vehicle shop.
+<br>
+<b>Permission(s):</b> tshop.commands.vehicleshop, tshop.commands.vehicleshop.color
 </details>
 
 <details>

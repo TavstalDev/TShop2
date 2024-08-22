@@ -1,8 +1,10 @@
 ﻿using SDG.Unturned;
 using System;
+using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Models.Database.Attributes;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Interfaces;
+using UnityEngine;
 
 namespace Tavstal.TShop.Model.Classes
 {
@@ -17,6 +19,8 @@ namespace Tavstal.TShop.Model.Classes
         public string DisplayName { get; set; }
         [SqlMember]
         public bool IsVehicle { get; set; }
+        [SqlMember(columnType:"varchar(255)", isNullable: true)]
+        public string VehicleColor { get; set; }
         [SqlMember(columnType: "decimal(14, 1)")]
         public decimal BuyCost { get; set; }
         [SqlMember(columnType: "decimal(14, 1)")]
@@ -32,10 +36,11 @@ namespace Tavstal.TShop.Model.Classes
 
         public Product() { }
 
-        public Product(ushort id, bool isVehicle, decimal buycost, decimal sellcost, string perm)
+        public Product(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, string perm)
         {
             UnturnedId = id;
             IsVehicle = isVehicle;
+            VehicleColor = vehicleColor;
             BuyCost = buycost;
             SellCost = sellcost;
             HasPermission = true;
@@ -43,10 +48,11 @@ namespace Tavstal.TShop.Model.Classes
             DisplayName = GetName();
         }
 
-        public Product(ushort id, bool isVehicle, decimal buycost, decimal sellcost)
+        public Product(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost)
         {
             UnturnedId = id;
             IsVehicle = isVehicle;
+            VehicleColor = vehicleColor;
             BuyCost = buycost;
             SellCost = sellcost;
             HasPermission = false;
@@ -54,10 +60,11 @@ namespace Tavstal.TShop.Model.Classes
             DisplayName = GetName();
         }
 
-        public Product(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool hasperm, string perm, bool isdiscount, decimal discount)
+        public Product(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, bool hasperm, string perm, bool isdiscount, decimal discount)
         {
             UnturnedId = id;
             IsVehicle = isVehicle;
+            VehicleColor = vehicleColor;
             BuyCost = buycost;
             SellCost = sellcost;
             HasPermission = hasperm;
@@ -97,6 +104,20 @@ namespace Tavstal.TShop.Model.Classes
                 TShop.Logger.LogWarning($"Failed to get the asset name for '{type}' with {UnturnedId} id. Exception:");
                 TShop.Logger.LogException(ex);
                 return "unknown_name";
+            }
+        }
+
+        public Color32 GetVehicleColor()
+        {
+            if (VehicleColor.IsNullOrEmpty())
+                return default;
+            
+            if (ColorUtility.TryParseHtmlString(VehicleColor, out var newCol))
+                return newCol;
+            else
+            {
+                TShop.Logger.LogError("Failed to parse the product's vehicle color. Please fix its database value to html HEX color.");
+                return default;
             }
         }
 

@@ -35,7 +35,7 @@ namespace Tavstal.TShop.Commands
                             continue;
                         }
 
-                        await TShop.Database.AddProductAsync(product.UnturnedId, false, product.BuyCost, product.SellCost, false, "");
+                        await TShop.Database.AddProductAsync(product.UnturnedId, false, null, product.BuyCost, product.SellCost, false, "");
                         successCount++;
                     }
                     TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6items have been successfully migrated to TShop's table.");
@@ -51,7 +51,7 @@ namespace Tavstal.TShop.Commands
                             continue;
                         }
 
-                        await TShop.Database.AddProductAsync(product.UnturnedId, true, product.BuyCost, product.SellCost, false, "");
+                        await TShop.Database.AddProductAsync(product.UnturnedId, true, null, product.BuyCost, product.SellCost, false, "");
                         successCount++;
                     }
                     TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6vehicles have been successfully migrated to TShop's table.");

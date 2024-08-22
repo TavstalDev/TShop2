@@ -3,6 +3,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
+using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Classes;
@@ -72,7 +73,11 @@ namespace Tavstal.TShop.Commands
                 }
 
                 await TShop.EconomyProvider.WithdrawAsync(callerPlayer.CSteamID, cost);
-                VehicleManager.spawnLockedVehicleForPlayerV2(id, callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation, callerPlayer.Player);
+                InteractableVehicle vehicle = VehicleManager.spawnLockedVehicleForPlayerV2(id, callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation, callerPlayer.Player);
+                
+                if (!item.VehicleColor.IsNullOrEmpty())
+                    vehicle.ServerSetPaintColor(item.GetVehicleColor());
+                    
                 if (TShop.EconomyProvider.HasTransactionSystem())
                     await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_vehicle_buy", asset.vehicleName, amount, cost, TShop.EconomyProvider.GetCurrencyName());

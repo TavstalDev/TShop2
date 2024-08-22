@@ -81,7 +81,7 @@ namespace Tavstal.TShop.Commands
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (await TShop.Database.AddProductAsync(asset.id, false, buycost, sellcost, permission != null, permission))
+                    if (await TShop.Database.AddProductAsync(asset.id, false, null, buycost, sellcost, permission != null, permission))
                         TShop.Instance.SendCommandReply(caller,  "success_item_added", asset.itemName, asset.id);
                     else
                         TShop.Instance.SendCommandReply(caller,  "error_item_added", asset.itemName);

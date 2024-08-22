@@ -61,6 +61,7 @@ namespace Tavstal.TShop.Utils.Managers
         /// </summary>
         /// <param name="id">The ID of the product.</param>
         /// <param name="isVehicle">A boolean value indicating whether the product is a vehicle.</param>
+        /// <param name="vehicleColor">HEX color code of a vehicle</param>
         /// <param name="buycost">The buy cost of the product.</param>
         /// <param name="sellcost">The sell cost of the product.</param>
         /// <param name="enableperm">A boolean value indicating whether the product requires permission to be enabled.</param>
@@ -68,10 +69,10 @@ namespace Tavstal.TShop.Utils.Managers
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains a boolean value indicating whether the product was successfully added to the database.
         /// </returns>
-        public async Task<bool> AddProductAsync(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool enableperm, string permission)
+        public async Task<bool> AddProductAsync(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, bool enableperm, string permission)
         {
             MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.AddTableRowAsync(tableName: _pluginConfig.Database.DatabaseTable_Products, new Product(id, isVehicle, buycost, sellcost, enableperm, permission, false, 0));
+            return await MySQLConnection.AddTableRowAsync(tableName: _pluginConfig.Database.DatabaseTable_Products, new Product(id, isVehicle, vehicleColor, buycost, sellcost, enableperm, permission, false, 0));
         }
 
         /// <summary>
@@ -129,6 +130,23 @@ namespace Tavstal.TShop.Utils.Managers
             {
                 SqlParameter.Get<Product>(x => x.IsDiscounted, isdiscounted),
                 SqlParameter.Get<Product>(x => x.DiscountPercent, percent)
+            });
+        }
+        
+        /// <summary>
+        /// Asynchronously updates a product in the database with vehicleColor.
+        /// </summary>
+        /// <param name="id">The ID of the product.</param>
+        /// <param name="vehicleColor">HEX color code of a vehicle</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous operation. The task result contains a boolean value indicating whether the product was successfully updated in the database.
+        /// </returns>
+        public async Task<bool> UpdateProductAsync(ushort id, string vehicleColor)
+        {
+            MySqlConnection MySQLConnection = CreateConnection();
+            return await MySQLConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{true}'", new List<SqlParameter>
+            {
+                SqlParameter.Get<Product>(x => x.VehicleColor, vehicleColor)
             });
         }
 
@@ -440,8 +458,7 @@ namespace Tavstal.TShop.Utils.Managers
                         uint id = Reader.GetUInt32("id");
                         prod = new ZaupProduct((ushort)id, true, Reader.GetDecimal("cost"), 0);
                     }
-                    if (prod != null)
-                        i.Add(prod);
+                    i.Add(prod);
                 }
                 await MySQLConnection.CloseAsync();
             }
