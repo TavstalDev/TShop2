@@ -1,6 +1,7 @@
 ﻿using Rocket.API;
 using SDG.Unturned;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Extensions;
@@ -260,24 +261,22 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
                     
-                    string vehicleColor = null;
                     if (!ColorUtility.TryParseHtmlString(args[1], out _))
                     {
                         TShop.Instance.SendCommandReply(caller,  "error_vehicle_color_not_hex", args[1]);
                         return;
                     }
-                    vehicleColor = args[1];
-
-                    if (await TShop.Database.UpdateProductAsync(id, vehicleColor))
+                    
+                    if (await TShop.Database.UpdateProductAsync(id, args[1]))
                         TShop.Instance.SendCommandReply(caller,  "success_vehicle_updated", asset.vehicleName, id);
                     else
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_updated", asset.vehicleName);
                 })
             };
 
-        protected override bool ExecutionRequested(IRocketPlayer caller, string[] args)
+        protected override Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
         {
-            return false;
+            return Task.FromResult(false);
         }
     }
 }

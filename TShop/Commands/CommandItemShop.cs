@@ -1,6 +1,7 @@
 ﻿using Rocket.API;
 using SDG.Unturned;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Extensions;
@@ -29,7 +30,7 @@ namespace Tavstal.TShop.Commands
 
                     if (args.Length < 3 || args.Length > 4)
                     {
-                        ExecuteHelp(caller, true, "add", args);
+                        await ExecuteHelp(caller, true, "add", args);
                         return;
                     }
 
@@ -94,7 +95,7 @@ namespace Tavstal.TShop.Commands
 
                     if (args.Length != 1)
                     {
-                        this.ExecuteHelp(caller,  true, "remove", args);
+                        await ExecuteHelp(caller,  true, "remove", args);
                         return;
                     }
 
@@ -136,7 +137,7 @@ namespace Tavstal.TShop.Commands
 
                     if (args.Length < 3 || args.Length > 4)
                     {
-                        ExecuteHelp(caller, true, "update", args);
+                        await ExecuteHelp(caller, true, "update", args);
                         return;
                     }
 
@@ -194,9 +195,9 @@ namespace Tavstal.TShop.Commands
                 })
         };
 
-        protected override bool ExecutionRequested(IRocketPlayer caller, string[] args)
+        protected override Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
         {
-            return false;
+            return Task.FromResult(false);
         }
     }
 }

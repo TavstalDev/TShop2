@@ -3,7 +3,6 @@ using SDG.NetTransport;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
