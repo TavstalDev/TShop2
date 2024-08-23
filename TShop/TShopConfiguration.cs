@@ -40,7 +40,7 @@ namespace Tavstal.TShop
         [JsonIgnore]
         public readonly ushort EffectID = 8818;
 
-        public new void LoadDefaults()
+        public override void LoadDefaults()
         {
             DebugMode = false;
             Locale = "en";
