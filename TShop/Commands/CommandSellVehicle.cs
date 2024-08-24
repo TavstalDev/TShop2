@@ -3,6 +3,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
+using Rocket.Core.Logging;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Model.Classes;
@@ -56,15 +57,11 @@ namespace Tavstal.TShop.Commands
                     return;
                 }
                 
-                foreach (Passenger pas in vehicle.passengers)
-                {
-                    VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
-                }
                 VehicleManager.askVehicleDestroy(vehicle);
                 await TShop.EconomyProvider.DepositAsync(callerPlayer.CSteamID, cost);
                 if (TShop.EconomyProvider.HasTransactionSystem())
                     await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_vehicle_sell", asset.vehicleName, amount, cost, TShop.EconomyProvider.GetCurrencyName());
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_vehicle_sell", asset.vehicleName, cost, TShop.EconomyProvider.GetCurrencyName());
             }
             else
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_command_sellvehicle_args");

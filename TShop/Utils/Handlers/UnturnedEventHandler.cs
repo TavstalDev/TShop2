@@ -414,10 +414,6 @@ namespace Tavstal.TShop.Utils.Handlers
                                         continue;
                                     }
                                     
-                                    foreach (Passenger pas in vehicle.passengers)
-                                    {
-                                        VehicleManager.forceRemovePlayer(vehicle, pas.player.playerID.steamID);
-                                    }
                                     VehicleManager.askVehicleDestroy(vehicle);
                                     await TShop.EconomyProvider.DepositAsync(uPlayer.CSteamID, cost);
                                     if (TShop.EconomyProvider.HasTransactionSystem())

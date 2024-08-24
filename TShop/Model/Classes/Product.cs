@@ -80,22 +80,15 @@ namespace Tavstal.TShop.Model.Classes
             {
                 if (IsVehicle)
                 {
-                    Asset asset = UAssetHelper.FindVehicleAsset(UnturnedId) ?? throw new NullReferenceException("Failed to get the unturned asset.");
-                    if (asset is VehicleAsset vehicleAsset)
-                        return vehicleAsset.vehicleName;
-                    else if (asset is VehicleRedirectorAsset vehicleRedirectorAsset) {
-                        return vehicleRedirectorAsset.TargetVehicle.Find().vehicleName;
-                    }
-                    else
-                        throw new Exception("The asset is not a vehicle asset. Please review your database.");
+                    VehicleAsset asset = UAssetHelper.FindVehicleAsset(UnturnedId) ?? throw new NullReferenceException("Failed to get the unturned asset.");
+                    return asset.vehicleName;
                 }
                 else
                 {
                     Asset asset = UAssetHelper.FindItemAsset(UnturnedId) ?? throw new NullReferenceException("Failed to get the unturned asset.");
                     if (asset is ItemAsset itemAsset)
                         return itemAsset.itemName;
-                    else
-                        throw new Exception("The asset is not an item asset. Please review your database.");
+                    throw new Exception("The asset is not an item asset. Please review your database.");
                 }
             }
             catch (Exception ex)
@@ -114,27 +107,22 @@ namespace Tavstal.TShop.Model.Classes
             
             if (ColorUtility.TryParseHtmlString(VehicleColor, out var newCol))
                 return newCol;
-            else
-            {
-                TShop.Logger.LogError("Failed to parse the product's vehicle color. Please fix its database value to html HEX color.");
-                return default;
-            }
+            TShop.Logger.LogError("Failed to parse the product's vehicle color. Please fix its database value to html HEX color.");
+            return default;
         }
 
         public decimal GetBuyCost(int amount = 1)
         {
             if (IsDiscounted)
                 return (BuyCost - BuyCost * (DiscountPercent / 100)) * amount;
-            else
-                return BuyCost * amount;
+            return BuyCost * amount;
         }
 
         public decimal GetSellCost(int amount = 1)
         {
             if (IsDiscounted)
                 return (SellCost - SellCost * (DiscountPercent / 100)) * amount;
-            else
-                return  SellCost * amount;
+            return  SellCost * amount;
         }
 
         public decimal GetSellCostByQuality(byte quality = 100)
@@ -143,24 +131,21 @@ namespace Tavstal.TShop.Model.Classes
 
             if (IsDiscounted)
                 return (cost - cost * (DiscountPercent / 100));
-            else
-                return cost;
+            return cost;
         }
 
         public string GetBuyCostFormatted(int amount = 1)
         {
             if (IsDiscounted)
                 return TShop.Instance.Localize(true, "ui_discount", (BuyCost * amount).ToString("0.00"), ((BuyCost - BuyCost * (DiscountPercent / 100)) * amount).ToString("0.00"), TShop.EconomyProvider.GetCurrencyName());
-            else
-                return TShop.EconomyProvider.GetCurrencyName() + (BuyCost * amount).ToString("0.00");
+            return TShop.EconomyProvider.GetCurrencyName() + (BuyCost * amount).ToString("0.00");
         }
 
         public string GetSellCostFormatted(int amount = 1)
         {
             if (IsDiscounted)
                 return TShop.Instance.Localize(true, "ui_discount", (SellCost * amount).ToString("0.00"), ((SellCost - SellCost * (DiscountPercent / 100)) * amount).ToString("0.00"), TShop.EconomyProvider.GetCurrencyName());
-            else
-                return TShop.EconomyProvider.GetCurrencyName() + (SellCost * amount).ToString("0.00");
+            return TShop.EconomyProvider.GetCurrencyName() + (SellCost * amount).ToString("0.00");
         }
     }
    

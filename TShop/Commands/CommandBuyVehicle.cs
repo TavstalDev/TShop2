@@ -28,7 +28,7 @@ namespace Tavstal.TShop.Commands
             if (args.Length == 1)
             {
                 ushort id = 0;
-                int amount = 1;
+                const int amount = 1;
                 try
                 {
                     ushort.TryParse(args[0], out id);
@@ -80,7 +80,7 @@ namespace Tavstal.TShop.Commands
                     
                 if (TShop.EconomyProvider.HasTransactionSystem())
                     await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_vehicle_buy", asset.vehicleName, amount, cost, TShop.EconomyProvider.GetCurrencyName());
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_vehicle_buy", asset.vehicleName, cost, TShop.EconomyProvider.GetCurrencyName());
             }
             else
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_command_buyvehicle_args");
