@@ -60,7 +60,7 @@ namespace Tavstal.TShop.Utils.Handlers
 
                 if (int.TryParse(text, out int v))
                 {
-                    if (v > 100 || v < 0)
+                    if (v > 100 || v < 1)
                         return;
 
                     var key = comp.Basket.Keys.ElementAt(elementIndex);
