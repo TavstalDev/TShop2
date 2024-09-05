@@ -28,7 +28,7 @@ namespace Tavstal.TShop.Utils.Managers
         /// <summary>
         /// Checks the schema of the database.
         /// </summary>
-        protected override async void CheckSchema()
+        public override async Task CheckSchemaAsync()
         {
             try
             {
