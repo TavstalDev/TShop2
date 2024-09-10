@@ -46,7 +46,7 @@ namespace Tavstal.TShop.Utils.Managers
                         await connection.CreateTableAsync<Product>(_pluginConfig.Database.DatabaseTable_Products);
 
                     if (connection.State != System.Data.ConnectionState.Closed)
-                        connection.Close();
+                        await connection.CloseAsync();
                 }
             }
             catch (Exception ex)
