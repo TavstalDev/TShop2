@@ -28,7 +28,6 @@ namespace Tavstal.TShop.Commands
             if (args.Length == 1)
             {
                 ushort id = 0;
-                const int amount = 1;
                 try
                 {
                     ushort.TryParse(args[0], out id);
@@ -58,7 +57,7 @@ namespace Tavstal.TShop.Commands
                     return;
                 }
 
-                decimal cost = item.GetBuyCost(amount);
+                decimal cost = item.GetBuyCost();
 
                 if (await TShop.EconomyProvider.GetBalanceAsync(callerPlayer.CSteamID) < cost)
                 {
