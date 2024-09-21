@@ -4,6 +4,8 @@ using SDG.Unturned;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Rocket.Unturned.Chat;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
@@ -48,7 +50,7 @@ namespace Tavstal.TShop.Utils.Handlers
         private static void Event_OnInputFieldEdit(Player player, string button, string text)
         {
             UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
-            TShopComponent comp = player.GetComponent<TShopComponent>();
+            ShopComponent comp = player.GetComponent<ShopComponent>();
 
             if (button.StartsWith("inputf_tshop_basket#product#"))
             {
@@ -78,8 +80,10 @@ namespace Tavstal.TShop.Utils.Handlers
             }
             else if (button.EqualsIgnoreCase("inputf_product_search"))
             {
+                if (comp.ProductSearch.EqualsIgnoreCase(text)) 
+                    return;
                 comp.ProductSearch = text;
-                comp.IsProductSearchDirty = true;
+                UIManager.UpdateProductPage(uPlayer);
             }
         }
 
@@ -88,8 +92,8 @@ namespace Tavstal.TShop.Utils.Handlers
             try
             {
                 UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
-                TShopComponent comp = player.GetComponent<TShopComponent>();
-                var playerTC = uPlayer.SteamPlayer().transportConnection;
+                ShopComponent comp = player.GetComponent<ShopComponent>();
+                var playerTc = uPlayer.SteamPlayer().transportConnection;
 
                 if (comp.LastButtonClick > DateTime.Now)
                     return;
@@ -106,8 +110,8 @@ namespace Tavstal.TShop.Utils.Handlers
                             comp.MenuCategory = EMenuCategory.ProductItems;
                             comp.IsVehiclePage = false;
                             UIManager.UpdateProductPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_products", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_basket", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_products", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_basket", false);
                             return;
                         }
                     case "bt_nav_tshop_vehicles":
@@ -118,8 +122,8 @@ namespace Tavstal.TShop.Utils.Handlers
                             comp.MenuCategory = EMenuCategory.ProductVehicles;
                             comp.IsVehiclePage = true;
                             UIManager.UpdateProductPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_products", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_basket", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_products", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_basket", false);
                             return;
                         }
                     case "bt_nav_tshop_basket":
@@ -129,8 +133,8 @@ namespace Tavstal.TShop.Utils.Handlers
 
                             comp.MenuCategory = EMenuCategory.Basket;
                             UIManager.UpdateBasketPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_products", false);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTC, true, "tshop_basket", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_products", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_basket", true);
                             return;
                         }
                     case "bt_nav_tshop_logout":
@@ -168,18 +172,18 @@ namespace Tavstal.TShop.Utils.Handlers
                     }
                     case "bt_products#sort#nameaz":
                     {
-                        if (comp.SortType != ESortType.NameAZ)
+                        if (comp.SortType != ESortType.NameAz)
                         {
-                            comp.SortType = ESortType.NameAZ;
+                            comp.SortType = ESortType.NameAz;
                             UIManager.UpdateProductPage(uPlayer);
                         }
                         break;
                     }
                     case "bt_products#sort#nameza":
                     {
-                        if (comp.SortType != ESortType.NameZA)
+                        if (comp.SortType != ESortType.NameZa)
                         {
-                            comp.SortType = ESortType.NameZA;
+                            comp.SortType = ESortType.NameZa;
                             UIManager.UpdateProductPage(uPlayer);
                         }
                         break;
@@ -525,6 +529,8 @@ namespace Tavstal.TShop.Utils.Handlers
 
                     comp.Basket.Add(item, 1);
                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_product_added", item.GetName()));
+                    
+                    UIManager.UpdateBasketPage(uPlayer);
                 }
                 else if (button.StartsWith("bt_tshop_basket#product#"))
                 {
