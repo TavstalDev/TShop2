@@ -9,13 +9,15 @@ using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TShop.Model.Classes;
 using Tavstal.TShop.Model.Enums;
+using Tavstal.TShop.Utils.Managers;
 
 namespace Tavstal.TShop.Model.Components
 {
-    public class TShopComponent : UnturnedPlayerComponent, IPlayerComponent
+    public class ShopComponent : UnturnedPlayerComponent, IPlayerComponent
     {
         public bool IsUIOpened {  get; set; }
         public DateTime LastButtonClick = DateTime.Now;
+        public DateTime ProductRefreshTime = DateTime.Now;
         public ITransportConnection TransportConnection => Player.SteamPlayer().transportConnection;
         public EMenuCategory MenuCategory { get; set; }
         public EItemFilter? ItemFilter { get; set; }
@@ -34,7 +36,7 @@ namespace Tavstal.TShop.Model.Components
 
         public List<string> NotifiesOnQueue = new List<string>();
 
-        public TShopComponent()
+        public ShopComponent()
         {
             PageIndexes[0] = new int[5];
             PageIndexes[1] = new int[5];
