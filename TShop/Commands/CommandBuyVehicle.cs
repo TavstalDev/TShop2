@@ -23,7 +23,7 @@ namespace Tavstal.TShop.Commands
         public async void Execute(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-            TShopComponent comp = callerPlayer.GetComponent<TShopComponent>();
+            ShopComponent comp = callerPlayer.GetComponent<ShopComponent>();
 
             if (args.Length == 1)
             {
@@ -54,6 +54,12 @@ namespace Tavstal.TShop.Commands
                 if (item == null)
                 {
                     TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
+                    return;
+                }
+                
+                if (item.HasPermission && !callerPlayer.HasPermission(item.Permission))
+                {
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_no_permission");
                     return;
                 }
 
