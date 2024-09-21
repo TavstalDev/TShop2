@@ -225,7 +225,7 @@ namespace Tavstal.TShop
                 { "error_item_added", "&6Failed to add {0} to the item store." },
                 { "error_item_removed", "&6Failed to remove {0} from the item store." },
                 { "error_item_updated", "&6Failed to update {0} in the item store." },
-                { "error_no_permission", "&6You don't have enough permission to buy or sell that item." },
+                { "error_no_permission", "&6You don't have enough permission to buy or sell that product." },
                 { "error_vehicle_not_exists", "&6This vehicle does not exists." },
                 { "error_vehicle_not_added", "&6This vehicle isn't added to the shop." },
                 { "error_vehicle_buy_error", "&6You can't buy this vehicle." },

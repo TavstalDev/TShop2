@@ -38,23 +38,23 @@ namespace Tavstal.TShop.Model.Hooks
         }
 
         #region IPluginProvider Methods
-        public T GetConfigValue<T>(string VariableName)
+        public T GetConfigValue<T>(string variableName)
         {
             try
             {
-                return (T)Convert.ChangeType(TShop.Instance.Config.GetType().GetField(VariableName).GetValue(TShop.Instance.Config), typeof(T));
+                return (T)Convert.ChangeType(TShop.Instance.Config.GetType().GetField(variableName).GetValue(TShop.Instance.Config), typeof(T));
             }
             catch
             {
                 try
                 {
                     // ReSharper disable PossibleNullReferenceException
-                    return (T)Convert.ChangeType(TShop.Instance.Config.GetType().GetProperty(VariableName).GetValue(TShop.Instance.Config), typeof(T));
+                    return (T)Convert.ChangeType(TShop.Instance.Config.GetType().GetProperty(variableName).GetValue(TShop.Instance.Config), typeof(T));
                     // ReSharper restore PossibleNullReferenceException
                 }
                 catch
                 {
-                    TShop.Logger.LogError($"Failed to get '{VariableName}' variable!");
+                    TShop.Logger.LogError($"Failed to get '{variableName}' variable!");
                     return default;
                 }
             }

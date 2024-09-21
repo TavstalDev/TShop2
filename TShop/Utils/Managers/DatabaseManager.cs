@@ -71,8 +71,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<bool> AddProductAsync(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, bool enableperm, string permission)
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.AddTableRowAsync(tableName: _pluginConfig.Database.DatabaseTable_Products, new Product(id, isVehicle, vehicleColor, buycost, sellcost, enableperm, permission, false, 0));
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.AddTableRowAsync(tableName: _pluginConfig.Database.DatabaseTable_Products, new Product(id, isVehicle, vehicleColor, buycost, sellcost, enableperm, permission, false, 0));
         }
 
         /// <summary>
@@ -85,8 +85,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<bool> RemoveProductAsync(ushort id, bool isVehicle)
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.RemoveTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", null);
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.RemoveTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", null);
         }
 
         /// <summary>
@@ -103,8 +103,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool enablepermission, string permission)
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
             {
                 SqlParameter.Get<Product>(x => x.BuyCost, buycost),
                 SqlParameter.Get<Product>(x => x.SellCost, sellcost),
@@ -125,8 +125,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, bool isdiscounted, decimal percent)
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
             {
                 SqlParameter.Get<Product>(x => x.IsDiscounted, isdiscounted),
                 SqlParameter.Get<Product>(x => x.DiscountPercent, percent)
@@ -143,8 +143,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<bool> UpdateProductAsync(ushort id, string vehicleColor)
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{true}'", new List<SqlParameter>
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{true}'", new List<SqlParameter>
             {
                 SqlParameter.Get<Product>(x => x.VehicleColor, vehicleColor)
             });
@@ -158,8 +158,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<List<Product>> GetProductsAsync()
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: string.Empty, null);
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: string.Empty, null);
         }
 
         /// <summary>
@@ -170,8 +170,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<List<Product>> GetItemsAsync()
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{false}'", null);
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{false}'", null);
         }
 
         /// <summary>
@@ -322,8 +322,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<List<Product>> GetVehiclesAsync()
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{true}'", null);
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{true}'", null);
         }
 
         /// <summary>
@@ -360,8 +360,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<Product> FindItemAsync(ushort id)
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{false}'", null);
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{false}'", null);
         }
 
         /// <summary>
@@ -373,8 +373,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<Product> FindVehicleAsync(ushort id)
         {
-            MySqlConnection MySQLConnection = CreateConnection();
-            return await MySQLConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{true}'", null);
+            MySqlConnection mySqlConnection = CreateConnection();
+            return await mySqlConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{true}'", null);
         }
 
         #region Zaup
@@ -422,9 +422,9 @@ namespace Tavstal.TShop.Utils.Managers
             List<ZaupProduct> i = new List<ZaupProduct>();
             try
             {
-                MySqlConnection MySQLConnection = CreateConnection();
-                MySqlCommand MySQLCommand = MySQLConnection.CreateCommand();
-                await MySQLConnection.OpenSafeAsync();
+                MySqlConnection mySqlConnection = CreateConnection();
+                MySqlCommand MySQLCommand = mySqlConnection.CreateCommand();
+                await mySqlConnection.OpenSafeAsync();
 
                 // Get Items
                 MySQLCommand.CommandText = "SELECT * FROM " + itemTable;
@@ -460,7 +460,7 @@ namespace Tavstal.TShop.Utils.Managers
                     }
                     i.Add(prod);
                 }
-                await MySQLConnection.CloseAsync();
+                await mySqlConnection.CloseAsync();
             }
             catch (Exception ex)
             {

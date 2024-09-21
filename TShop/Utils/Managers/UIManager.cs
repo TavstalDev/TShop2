@@ -4,6 +4,7 @@ using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rocket.API;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Helpers.Unturned;
@@ -112,7 +113,7 @@ namespace Tavstal.TShop.Utils.Managers
         public static void Show(UnturnedPlayer player, bool handleCursor = true)
         {
             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", true);
-            player.GetComponent<TShopComponent>().IsUIOpened = true;
+            player.GetComponent<ShopComponent>().IsUIOpened = true;
             if (handleCursor)
                 player.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, true);
         }
@@ -125,7 +126,7 @@ namespace Tavstal.TShop.Utils.Managers
         public static void Hide(UnturnedPlayer player, bool handleCursor = true)
         {
             EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", false);
-            player.GetComponent<TShopComponent>().IsUIOpened = false;
+            player.GetComponent<ShopComponent>().IsUIOpened = false;
             if (handleCursor)
                 player.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, false);
         }
@@ -138,7 +139,7 @@ namespace Tavstal.TShop.Utils.Managers
         {
             try
             {
-                TShopComponent comp = player.GetComponent<TShopComponent>();
+                ShopComponent comp = player.GetComponent<ShopComponent>();
 
                 int page;
                 int arrayIndex = 0;
@@ -155,8 +156,21 @@ namespace Tavstal.TShop.Utils.Managers
 
                 int itemPerPage = 10;
 
-                ITransportConnection playerTC = player.SteamPlayer().transportConnection;
-                List<Product> products = await (comp.IsVehiclePage ? TShop.Database.GetVehiclesAsync(comp.VehicleFilter) : TShop.Database.GetItemsAsync(comp.ItemFilter));
+                ITransportConnection playerTc = player.SteamPlayer().transportConnection;
+                List<Product> productList = await (comp.IsVehiclePage ? TShop.Database.GetVehiclesAsync(comp.VehicleFilter) : TShop.Database.GetItemsAsync(comp.ItemFilter));
+                List<Product> products = new List<Product>();
+                foreach (Product product in productList)
+                {
+                    if (!comp.ProductSearch.IsNullOrEmpty() && !product.DisplayName.ContainsIgnoreCase(comp.ProductSearch))
+                        continue;
+                    
+                    if (product.HasPermission && !player.HasPermission(product.Permission))
+                        continue;
+                    
+                    products.Add(product);
+                        
+                }
+                
                 if (!comp.ProductSearch.IsNullOrEmpty())
                     products = products.FindAll(x => x.DisplayName.ContainsIgnoreCase(comp.ProductSearch));
                 
@@ -166,12 +180,12 @@ namespace Tavstal.TShop.Utils.Managers
                     default:
                     case ESortType.Featured:
                         break;
-                    case ESortType.NameAZ:
+                    case ESortType.NameAz:
                     {
                         products = products.OrderBy(x => x.DisplayName).ToList();
                         break;
                     }
-                    case ESortType.NameZA:
+                    case ESortType.NameZa:
                     {
                         products = products.OrderByDescending(x => x.DisplayName).ToList();
                         break;
@@ -189,23 +203,23 @@ namespace Tavstal.TShop.Utils.Managers
                 }
 
                 string stateKey = comp.SortType == ESortType.Featured ? "ui_sort_selected" : "ui_sort_unselected";
-                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#featured", 
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, "tb_products#sort#featured", 
                     TShop.Instance.Localize(stateKey, TShop.Instance.Localize("ui_sort_featured")));
                 
-                stateKey = comp.SortType == ESortType.NameAZ ? "ui_sort_selected" : "ui_sort_unselected";
-                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#nameaz", 
+                stateKey = comp.SortType == ESortType.NameAz ? "ui_sort_selected" : "ui_sort_unselected";
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, "tb_products#sort#nameaz", 
                     TShop.Instance.Localize(stateKey, TShop.Instance.Localize("ui_sort_az")));
                 
-                stateKey = comp.SortType == ESortType.NameZA ? "ui_sort_selected" : "ui_sort_unselected";
-                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#nameza", 
+                stateKey = comp.SortType == ESortType.NameZa ? "ui_sort_selected" : "ui_sort_unselected";
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, "tb_products#sort#nameza", 
                     TShop.Instance.Localize(stateKey,TShop.Instance.Localize("ui_sort_za")));
                 
                 stateKey = comp.SortType == ESortType.PriceAscending ? "ui_sort_selected" : "ui_sort_unselected";
-                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#priceasc", 
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, "tb_products#sort#priceasc", 
                     TShop.Instance.Localize(stateKey,TShop.Instance.Localize("ui_sort_price_ascending")));
                 
                 stateKey = comp.SortType == ESortType.PriceDescending ? "ui_sort_selected" : "ui_sort_unselected";
-                EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, "tb_products#sort#pricedesc", 
+                EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, "tb_products#sort#pricedesc", 
                     TShop.Instance.Localize(stateKey,TShop.Instance.Localize("ui_sort_price_descending")));
                 #endregion
                 
@@ -218,7 +232,7 @@ namespace Tavstal.TShop.Utils.Managers
                     int uiIndex = i + 1;
                     if (!products.IsValidIndex(index))
                     {
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}", false);
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}", false);
                         continue;
                     }
 
@@ -229,16 +243,16 @@ namespace Tavstal.TShop.Utils.Managers
                         if (vehicle == null)
                         {
                             TShop.Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}", false);
                             continue;
                         }
 
-                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", true);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", false);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", false);
+                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:1", true);
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:2", false);
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#2:1", false);
 
-                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_product#{uiIndex}#name", vehicle.vehicleName);
+                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_product#{uiIndex}#name", vehicle.vehicleName);
 
                     }
                     else
@@ -246,47 +260,47 @@ namespace Tavstal.TShop.Utils.Managers
                         ItemAsset item = UAssetHelper.FindItemAsset(product.UnturnedId);
                         if (item == null)
                         {
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}", false);
                             continue;
                         }
 
                         #region Update Icon
                         if (item.size_x == item.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", true);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", false);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", false);
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:1", true);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:2", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#2:1", false);
                         }
                         else if (item.size_x > item.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", false);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", false);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", true);
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#2:1", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:1", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:2", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#2:1", true);
                         }
                         else
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:1", false);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#1:2", true);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_product#{uiIndex}#2:1", false);
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:2", comp.IsVehiclePage ? UnturnedHelper.GetVehicleIcon(product.UnturnedId) : UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:1", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#1:2", true);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_product#{uiIndex}#2:1", false);
                         }
                         #endregion
 
-                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_product#{uiIndex}#name", item.itemName);
+                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_product#{uiIndex}#name", item.itemName);
                     }
 
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}#buycost", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
-                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_product#{uiIndex}", true);
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}#buycost", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}", true);
                     validCount++;
                 }
 
-                EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tb_tshop_products#empty", validCount == 0);
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tb_tshop_products#empty", validCount == 0);
                 #endregion
 
-                UEffectHelper.UpdatePagination<TShopComponent>(Config.EffectID, player, "tshop_products", arrayIndex, page, maxPage);
+                UEffectHelper.UpdatePagination<ShopComponent>(Config.EffectID, player, "tshop_products", arrayIndex, page, maxPage);
             }
             catch (Exception ex)
             {
@@ -301,7 +315,7 @@ namespace Tavstal.TShop.Utils.Managers
         /// <param name="player">The Unturned player for which to update the basket page.</param>
         public static void UpdateBasketPage(UnturnedPlayer player)
         {
-            TShopComponent comp = player.GetComponent<TShopComponent>();
+            ShopComponent comp = player.GetComponent<ShopComponent>();
 
             try
             {
@@ -312,7 +326,7 @@ namespace Tavstal.TShop.Utils.Managers
 
                 int itemPerPage = 12;
 
-                ITransportConnection playerTC = player.SteamPlayer().transportConnection;
+                ITransportConnection playerTc = player.SteamPlayer().transportConnection;
                 int maxPage = MathHelper.Clamp(comp.Basket.Count / itemPerPage, 1, int.MaxValue);
 
                 #region LeftBox
@@ -324,7 +338,7 @@ namespace Tavstal.TShop.Utils.Managers
                     int uiIndex = i + 1;
                     if (!comp.Basket.IsValidIndex(index))
                     {
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", false);
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_basket#product#{uiIndex}", false);
                         continue;
                     }
 
@@ -336,16 +350,16 @@ namespace Tavstal.TShop.Utils.Managers
                         if (vehicle == null)
                         {
                             TShop.Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_basket#product#{uiIndex}", false);
                             continue;
                         }
 
-                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", UnturnedHelper.GetVehicleIcon(product.UnturnedId));
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", true);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
-                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
+                        EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:1", UnturnedHelper.GetVehicleIcon(product.UnturnedId));
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:1", true);
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
+                        EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
 
-                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#product#{uiIndex}#name", vehicle.vehicleName);
+                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#product#{uiIndex}#name", vehicle.vehicleName);
 
                     }
                     else
@@ -353,48 +367,48 @@ namespace Tavstal.TShop.Utils.Managers
                         ItemAsset item = UAssetHelper.FindItemAsset(product.UnturnedId);
                         if (item == null)
                         {
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_basket#product#{uiIndex}", false);
                             continue;
                         }
 
                         #region Update Icon
                         if (item.size_x == item.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", UnturnedHelper.GetItemIcon(product.UnturnedId));
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", true);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:1", UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:1", true);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
                         }
                         else if (item.size_x > item.size_y)
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", UnturnedHelper.GetItemIcon(product.UnturnedId));
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", false);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", true);
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#2:1", UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:1", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:2", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#2:1", true);
                         }
                         else
                         {
-                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2",  UnturnedHelper.GetItemIcon(product.UnturnedId));
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:1", false);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#1:2", true);
-                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
+                            EffectManager.sendUIEffectImageURL((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:2",  UnturnedHelper.GetItemIcon(product.UnturnedId));
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:1", false);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#1:2", true);
+                            EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"img_tshop_basket#product#{uiIndex}#2:1", false);
                         }
                         #endregion
 
-                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#product#{uiIndex}#name", item.itemName);
+                        EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#product#{uiIndex}#name", item.itemName);
                     }
 
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#product#{uiIndex}#price", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"inputf_tshop_basket#product#{uiIndex}#amt", amount.ToString());
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#product#{uiIndex}#price", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"inputf_tshop_basket#product#{uiIndex}#amt", amount.ToString());
                     //EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
-                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}", true);
+                    EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_basket#product#{uiIndex}", true);
                     validCount++;
                 }
 
-                EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#empty", validCount == 0);
+                EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#empty", validCount == 0);
                 #endregion
 
-                UEffectHelper.UpdatePagination<TShopComponent>(Config.EffectID, player, "tshop_basket", 2, page, maxPage);
+                UEffectHelper.UpdatePagination<ShopComponent>(Config.EffectID, player, "tshop_basket", 2, page, maxPage);
                 #endregion
 
                 UpdateBasketPayment(player);
@@ -412,8 +426,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// <param name="player">The Unturned player for which to update the basket payment information.</param>
         public static void UpdateBasketPayment(UnturnedPlayer player)
         {
-            TShopComponent comp = player.GetComponent<TShopComponent>();
-            ITransportConnection playerTC = player.SteamPlayer().transportConnection;
+            ShopComponent comp = player.GetComponent<ShopComponent>();
+            ITransportConnection playerTc = player.SteamPlayer().transportConnection;
             decimal subtotalBuyPrice = 0;
             decimal discountBuyPrice = 0;
             decimal totalBuyPrice = 0;
@@ -433,12 +447,12 @@ namespace Tavstal.TShop.Utils.Managers
                     totalBuyPrice += elem.Value * elem.Key.BuyCost;
             }
 
-            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#buy#subtotal", TShop.Instance.Localize("ui_product_buycost", subtotalBuyPrice));
-            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#buy#discount", TShop.Instance.Localize("ui_product_discount", discountBuyPrice));
-            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#buy#total", TShop.Instance.Localize("ui_product_buycost", totalBuyPrice));
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#buy#subtotal", TShop.Instance.Localize("ui_product_buycost", subtotalBuyPrice));
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#buy#discount", TShop.Instance.Localize("ui_product_discount", discountBuyPrice));
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#buy#total", TShop.Instance.Localize("ui_product_buycost", totalBuyPrice));
 
-            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#sell#subtotal", TShop.Instance.Localize("ui_product_sellcost", subtotalSellPrice));
-            EffectManager.sendUIEffectText((short)Config.EffectID, playerTC, true, $"tb_tshop_basket#sell#total", TShop.Instance.Localize("ui_product_sellcost", subtotalSellPrice));
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#sell#subtotal", TShop.Instance.Localize("ui_product_sellcost", subtotalSellPrice));
+            EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#sell#total", TShop.Instance.Localize("ui_product_sellcost", subtotalSellPrice));
 
         } 
     }
