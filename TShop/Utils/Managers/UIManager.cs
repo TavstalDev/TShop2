@@ -168,11 +168,7 @@ namespace Tavstal.TShop.Utils.Managers
                         continue;
                     
                     products.Add(product);
-                        
                 }
-                
-                if (!comp.ProductSearch.IsNullOrEmpty())
-                    products = products.FindAll(x => x.DisplayName.ContainsIgnoreCase(comp.ProductSearch));
                 
                 #region Sort
                 switch (comp.SortType)
@@ -201,6 +197,7 @@ namespace Tavstal.TShop.Utils.Managers
                         break;
                     }
                 }
+                comp.ProductsCache = products;
 
                 string stateKey = comp.SortType == ESortType.Featured ? "ui_sort_selected" : "ui_sort_unselected";
                 EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, "tb_products#sort#featured", 

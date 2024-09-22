@@ -509,12 +509,10 @@ namespace Tavstal.TShop.Utils.Handlers
                 else if (button.StartsWith("bt_tshop_product#"))
                 {
                     int index = (Convert.ToInt32(button.Replace("bt_tshop_product#", "")) - 1) + 10 * ((comp.IsVehiclePage ? comp.PageVehicle : comp.PageItem) - 1);
-                    List<Product> products = await (comp.IsVehiclePage ? TShop.Database.GetVehiclesAsync(comp.VehicleFilter) : TShop.Database.GetItemsAsync(comp.ItemFilter));
-
-                    if (!products.IsValidIndex(index))
+                    if (!comp.ProductsCache.IsValidIndex(index))
                         return;
 
-                    Product item = products[index];
+                    Product item = comp.ProductsCache[index];
                     if (comp.Basket.Any(x => x.Key.UnturnedId == item.UnturnedId && x.Key.IsVehicle == item.IsVehicle))
                     {
                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_contains_product_already", item.GetName()));

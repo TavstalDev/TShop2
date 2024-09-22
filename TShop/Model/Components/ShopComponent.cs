@@ -30,6 +30,7 @@ namespace Tavstal.TShop.Model.Components
         public int PageVehicle { get; set; } = 1;
         public bool IsVehiclePage { get; set; }
         public int PageBasket { get; set; } = 1;
+        public List<Product> ProductsCache { get; set; } = new List<Product>();
         public Dictionary<Product, int> Basket = new Dictionary<Product, int>();
         public bool HasActiveNotify { get; set; }
         public int[][] PageIndexes { get; set; } = new int[3][];
