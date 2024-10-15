@@ -29,7 +29,7 @@ namespace Tavstal.TShop.Model.Hooks
         private object _pluginInstance { get; set; }
         private object _teconomyConfig { get; set; }
 
-        public TEconomyHook() : base(TShop.Instance, "teconomy_tshop", false) { }
+        public TEconomyHook() : base(TShop.Instance, "thook_teconomy", false) { }
 
         public override void OnLoad()
         {

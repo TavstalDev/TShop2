@@ -25,7 +25,7 @@ namespace Tavstal.TShop.Model.Hooks
         private object _uconomyConfig;
 
 
-        public UconomyHook() : base(TShop.Instance, "uconomy_tshop", true) { }
+        public UconomyHook() : base(TShop.Instance, "thook_uconomy", true) { }
 
         public override void OnLoad()
         {

@@ -11,7 +11,7 @@ namespace Tavstal.TShop.Model.Hooks
 {
     public class ExpEconomyHook : Hook, IEconomyProvider
     {
-        public ExpEconomyHook() : base(TShop.Instance, "expeconomy_tshop", true) { }
+        public ExpEconomyHook() : base(TShop.Instance, "thook_expconomy", true) { }
 
         public override void OnLoad()
         {
