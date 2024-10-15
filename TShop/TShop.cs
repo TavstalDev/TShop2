@@ -109,7 +109,7 @@ namespace Tavstal.TShop
             Logger.LogLateInit();
             Logger.LogWarning("# Searching for economy plugin...");
             HookManager = new HookManager(this);
-            HookManager.LoadAll(Assembly);
+            HookManager.LoadAll(Assembly, true);
 
             if (Config.ExpMode)
             {
