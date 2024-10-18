@@ -31,7 +31,7 @@ namespace Tavstal.TShop.Commands
                 if (asset.id == 0)
                     continue;
 
-                await TShop.Database.AddProductAsync(asset.id, false, null, 1, 1, false, "");
+                await TShop.DatabaseManager.AddProductAsync(asset.id, false, null, 1, 1, false, "");
                 count++;
             }
 
@@ -45,7 +45,7 @@ namespace Tavstal.TShop.Commands
                 if (asset.id == 0)
                     continue;
 
-                await TShop.Database.AddProductAsync(asset.id, true,  null,1, 1, false, "");
+                await TShop.DatabaseManager.AddProductAsync(asset.id, true,  null,1, 1, false, "");
                 count++;
             }
         }

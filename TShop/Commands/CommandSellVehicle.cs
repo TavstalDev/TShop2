@@ -42,7 +42,7 @@ namespace Tavstal.TShop.Commands
                     return;
                 }
 
-                Product item = await TShop.Database.FindVehicleAsync(vehicle.id);
+                Product item = await TShop.DatabaseManager.FindVehicleAsync(vehicle.id);
                 if (item == null)
                 {
                     TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);

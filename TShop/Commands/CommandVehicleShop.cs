@@ -61,7 +61,7 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
 
-                    Product item = await TShop.Database.FindVehicleAsync(id);
+                    Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item != null)
                     {
                         TShop.Instance.SendCommandReply(caller,  "error_vehicle_already_added", asset.vehicleName, id);
@@ -102,7 +102,7 @@ namespace Tavstal.TShop.Commands
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (await TShop.Database.AddProductAsync(id, true, vehicleColor, buycost, sellcost, permission != null, permission))
+                    if (await TShop.DatabaseManager.AddProductAsync(id, true, vehicleColor, buycost, sellcost, permission != null, permission))
                         TShop.Instance.SendCommandReply(caller, "success_vehicle_added", asset.vehicleName, id);
                     else
                         TShop.Instance.SendCommandReply(caller,  "error_vehicle_added", asset.vehicleName);
@@ -141,14 +141,14 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
 
-                    Product item = await TShop.Database.FindVehicleAsync(id);
+                    Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
                         TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_added", args[0]);
                         return;
                     }
 
-                    if (await TShop.Database.RemoveProductAsync(id, true))
+                    if (await TShop.DatabaseManager.RemoveProductAsync(id, true))
                         TShop.Instance.SendCommandReply(caller, "success_vehicle_removed", asset.vehicleName);
                     else
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_removed", asset.vehicleName);
@@ -187,7 +187,7 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
 
-                    Product item = await TShop.Database.FindVehicleAsync(id);
+                    Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_not_added", asset.vehicleName);
@@ -216,7 +216,7 @@ namespace Tavstal.TShop.Commands
                     if (permission != null && (permission.ContainsIgnoreCase("null") || permission.ContainsIgnoreCase("none") || permission.Length == 0))
                         permission = null;
 
-                    if (await TShop.Database.UpdateProductAsync(id, true, buycost, sellcost, permission != null, permission))
+                    if (await TShop.DatabaseManager.UpdateProductAsync(id, true, buycost, sellcost, permission != null, permission))
                         TShop.Instance.SendCommandReply(caller,  "success_vehicle_updated", asset.vehicleName, id);
                     else
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_updated", asset.vehicleName);
@@ -254,7 +254,7 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
 
-                    Product item = await TShop.Database.FindVehicleAsync(id);
+                    Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_not_added", asset.vehicleName);
@@ -267,7 +267,7 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
                     
-                    if (await TShop.Database.UpdateProductAsync(id, args[1]))
+                    if (await TShop.DatabaseManager.UpdateProductAsync(id, args[1]))
                         TShop.Instance.SendCommandReply(caller,  "success_vehicle_updated", asset.vehicleName, id);
                     else
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_updated", asset.vehicleName);

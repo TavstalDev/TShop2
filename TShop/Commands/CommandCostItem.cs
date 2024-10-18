@@ -42,7 +42,7 @@ namespace Tavstal.TShop.Commands
                 }
                 id = asset.id;
 
-                Product item = await TShop.Database.FindItemAsync(id);
+                Product item = await TShop.DatabaseManager.FindItemAsync(id);
                 if (item == null)
                 {
                     TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_item_not_added", args[0]);

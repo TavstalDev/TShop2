@@ -71,7 +71,7 @@ namespace Tavstal.TShop.Utils.Helpers
         /// </returns>
         public static string GetItemsInJson()
         {
-            return JArray.FromObject(TShop.Database.GetItemsAsync()).ToString(Formatting.None);
+            return JArray.FromObject(TShop.DatabaseManager.GetItemsAsync()).ToString(Formatting.None);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Tavstal.TShop.Utils.Helpers
         /// </returns>
         public static string GetVehiclesInJson()
         {
-            return JArray.FromObject(TShop.Database.GetVehiclesAsync()).ToString(Formatting.None);
+            return JArray.FromObject(TShop.DatabaseManager.GetVehiclesAsync()).ToString(Formatting.None);
         }
     }
 }

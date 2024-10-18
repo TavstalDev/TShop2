@@ -22,7 +22,7 @@ namespace Tavstal.TShop.Commands
                 try
                 {
                     TShop.Logger.LogRichWarning("Started migrating the zaup db...");
-                    List<ZaupProduct> products = await TShop.Database.GetZaupProductsAsync(args[0], args[1]);
+                    List<ZaupProduct> products = await TShop.DatabaseManager.GetZaupProductsAsync(args[0], args[1]);
 
                     TShop.Logger.LogRichWarning("Migrating items...");
                     int successCount = 0;
@@ -35,7 +35,7 @@ namespace Tavstal.TShop.Commands
                             continue;
                         }
 
-                        await TShop.Database.AddProductAsync(product.UnturnedId, false, null, product.BuyCost, product.SellCost, false, "");
+                        await TShop.DatabaseManager.AddProductAsync(product.UnturnedId, false, null, product.BuyCost, product.SellCost, false, "");
                         successCount++;
                     }
                     TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6items have been successfully migrated to TShop's table.");
@@ -51,7 +51,7 @@ namespace Tavstal.TShop.Commands
                             continue;
                         }
 
-                        await TShop.Database.AddProductAsync(product.UnturnedId, true, null, product.BuyCost, product.SellCost, false, "");
+                        await TShop.DatabaseManager.AddProductAsync(product.UnturnedId, true, null, product.BuyCost, product.SellCost, false, "");
                         successCount++;
                     }
                     TShop.Logger.LogRich($"&a{successCount}&6/&2{productsToCheck.Count} &6vehicles have been successfully migrated to TShop's table.");

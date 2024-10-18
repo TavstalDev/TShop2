@@ -21,8 +21,8 @@ namespace Tavstal.TShop
     /// <typeparam>The type of configuration used by TShop.</typeparam>
     public class TShop : PluginBase<TShopConfiguration>
     {
-        public new static TShop Instance { get; private set; }
-        public static DatabaseManager Database { get; private set; }
+        public static TShop Instance { get; private set; }
+        public static DatabaseManager DatabaseManager { get; private set; }
         public static IEconomyProvider EconomyProvider { get; private set; }
         public static bool IsConnectionAuthFailed { get; set; }
         private bool _isLateInited { get; set; }
@@ -52,7 +52,7 @@ namespace Tavstal.TShop
             Logger.Log("#########################################");
             try
             {
-                Database = new DatabaseManager(Config);
+                DatabaseManager = new DatabaseManager(Config);
 
                 UnturnedEventHandler.Attach();
                
@@ -152,10 +152,10 @@ namespace Tavstal.TShop
                 if (IsConnectionAuthFailed || !_isLateInited)
                     return;
 
-                List<Product> products = await Database.GetProductsAsync();
+                List<Product> products = await DatabaseManager.GetProductsAsync();
                 // Remove the current discounts
                 foreach (Product item in products.FindAll(x => x.IsDiscounted))
-                    await Database.UpdateProductAsync(item.UnturnedId, item.IsVehicle, false, 0);
+                    await DatabaseManager.UpdateProductAsync(item.UnturnedId, item.IsVehicle, false, 0);
 
                 // Shuffle the product list
                 if (products.Count > 2)
@@ -166,7 +166,7 @@ namespace Tavstal.TShop
                 for (int i = 0; i < Config.ItemCountToDiscount; i++)
                 {
                     if (items.IsValidIndex(i))
-                        await Database.UpdateProductAsync(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
+                        await DatabaseManager.UpdateProductAsync(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
                 }
 
                 // Vehicles
@@ -174,7 +174,7 @@ namespace Tavstal.TShop
                 for (int i = 0; i < Config.VehicleCountToDiscount; i++)
                 {
                     if (vehs.IsValidIndex(i))
-                        await Database.UpdateProductAsync(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
+                        await DatabaseManager.UpdateProductAsync(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
                 }
             }
             catch

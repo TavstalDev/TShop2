@@ -157,7 +157,7 @@ namespace Tavstal.TShop.Utils.Managers
                 int itemPerPage = 10;
 
                 ITransportConnection playerTc = player.SteamPlayer().transportConnection;
-                List<Product> productList = await (comp.IsVehiclePage ? TShop.Database.GetVehiclesAsync(comp.VehicleFilter) : TShop.Database.GetItemsAsync(comp.ItemFilter));
+                List<Product> productList = await (comp.IsVehiclePage ? TShop.DatabaseManager.GetVehiclesAsync(comp.VehicleFilter) : TShop.DatabaseManager.GetItemsAsync(comp.ItemFilter));
                 List<Product> products = new List<Product>();
                 foreach (Product product in productList)
                 {
