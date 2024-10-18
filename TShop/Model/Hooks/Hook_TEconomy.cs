@@ -12,22 +12,24 @@ using Tavstal.TLibrary.Extensions;
 
 namespace Tavstal.TShop.Model.Hooks
 {
+    // ReSharper disable once InconsistentNaming
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class TEconomyHook : Hook, IEconomyProvider
     {
-        private MethodInfo _getBalanceByCurrencyMethod { get; set; }
-        private MethodInfo _increaseBalanceByCurrencyMethod { get; set; }
-        private MethodInfo _addTransactionMethod { get; set; }
-        private MethodInfo _getTransactionsMethod { get; set; }
-        //private MethodInfo _findTransactionMethod { get; set; }
-        private MethodInfo _addBankCard { get; set; }
-        private MethodInfo _updateBankCard { get; set; }
-        private MethodInfo _removeBankCard { get; set; }
-        private MethodInfo _getBankCard { get; set; }
-        private MethodInfo _getBankCards { get; set; }
-        private MethodInfo _getTranslation { get; set; }
-        private object _databaseInstance { get; set; }
-        private object _pluginInstance { get; set; }
-        private object _teconomyConfig { get; set; }
+        private MethodInfo _getBalanceByCurrencyMethod;
+        private MethodInfo _increaseBalanceByCurrencyMethod;
+        private MethodInfo _addTransactionMethod;
+
+        private MethodInfo _getTransactionsMethod;
+        private MethodInfo _addBankCard;
+        private MethodInfo _updateBankCard;
+        private MethodInfo _removeBankCard;
+        private MethodInfo _getBankCard;
+        private MethodInfo _getBankCards;
+        private MethodInfo _getTranslation;
+        private object _databaseInstance;
+        private object _pluginInstance;
+        private object _pluginConfig;
 
         public TEconomyHook() : base(TShop.Instance, "thook_teconomy", false) { }
 
@@ -35,18 +37,28 @@ namespace Tavstal.TShop.Model.Hooks
         {
             try
             {
-                // ReSharper disable PossibleNullReferenceException
                 TShop.Logger.Log("Loading TEconomy hook...");
 
-                var teconomyPlugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("teconomy"));
-                var teconomyType = teconomyPlugin.GetType().Assembly.GetType("Tavstal.TEconomy.TEconomy");
+                var plugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("teconomy"));
+                if (plugin == null)
+                    throw new Exception("Could not find plugin.");
+                
+                var pluginType = plugin.GetType().Assembly.GetType("Tavstal.TEconomy.TEconomy");
+                if (pluginType == null)
+                    throw new Exception("Could not get plugin type.");
 
                 _pluginInstance =
-                    teconomyType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(teconomyPlugin);
+                    pluginType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public)?.GetValue(plugin);
+                if (_pluginInstance == null)
+                    throw new Exception("Could not get plugin instance.");
 
-                var uconomyConfigInst = teconomyType.GetProperty("Configuration").GetValue(teconomyPlugin);
-                _teconomyConfig = uconomyConfigInst.GetType().GetProperty("Instance").GetValue(uconomyConfigInst);
-                _databaseInstance = _pluginInstance.GetType().GetProperty("Database").GetValue(_pluginInstance);
+                _pluginConfig = _pluginInstance.GetType().GetProperty("Config")?.GetValue(_pluginInstance);
+                if (_pluginConfig == null)
+                    throw new Exception("Could not get plugin configuration.");
+                
+                _databaseInstance = _pluginInstance.GetType().GetProperty("DatabaseManager")?.GetValue(_pluginInstance);
+                if (_databaseInstance == null)
+                    throw new Exception("Failed to get the plugin database instance.");
                 Type databaseType = _databaseInstance.GetType();
 
                 _getBalanceByCurrencyMethod = databaseType.GetMethod(
@@ -60,9 +72,6 @@ namespace Tavstal.TShop.Model.Hooks
 
                 _getTransactionsMethod = databaseType.GetMethod(
                     "GetTransactionsByParticipant", new [] { typeof(ulong) });
-
-                /*_findTransactionMethod = databaseType.GetMethod(
-                    "FindTransaction", new[] { typeof(Guid) });*/
 
                 _addBankCard = databaseType.GetMethod(
                     "AddBankCard", new[] { typeof(string), typeof(string), typeof(string), typeof(ulong), typeof(decimal), typeof(decimal), typeof(DateTime) } );
@@ -80,7 +89,6 @@ namespace Tavstal.TShop.Model.Hooks
                     "GetBankCards", new[] { typeof(ulong) });
 
                 _getTranslation = _pluginInstance.GetType().GetMethod("Localize", new[] { typeof(bool), typeof(string), typeof(object[]) });
-                // ReSharper restore PossibleNullReferenceException
                 TShop.Logger.Log("TEconomy hook loaded.");
             }
             catch (Exception e)
@@ -99,23 +107,21 @@ namespace Tavstal.TShop.Model.Hooks
 
 
         #region IPluginProvider
-        public T GetConfigValue<T>(string VariableName)
+        public T GetConfigValue<T>(string variableName)
         {
             try
             {
-                return (T)Convert.ChangeType(_teconomyConfig.GetType().GetField(VariableName).GetValue(_teconomyConfig), typeof(T));
+                return (T)Convert.ChangeType(_pluginConfig.GetType().GetField(variableName).GetValue(_pluginConfig), typeof(T));
             }
             catch
             {
                 try
                 {
-                    // ReSharper disable PossibleNullReferenceException
-                    return (T)Convert.ChangeType(_teconomyConfig.GetType().GetProperty(VariableName).GetValue(_teconomyConfig), typeof(T));
-                    // ReSharper restore PossibleNullReferenceException
+                    return (T)Convert.ChangeType(_pluginConfig.GetType().GetProperty(variableName)?.GetValue(_pluginConfig), typeof(T));
                 }
                 catch
                 {
-                    TShop.Logger.LogError($"Failed to get '{VariableName}' variable!");
+                    TShop.Logger.LogError($"Failed to get '{variableName}' variable!");
                     return default;
                 }
             }
@@ -125,7 +131,7 @@ namespace Tavstal.TShop.Model.Hooks
         {
             try
             {
-                return JObject.FromObject(_teconomyConfig.GetType());
+                return JObject.FromObject(_pluginConfig.GetType());
             }
             catch
             {

@@ -13,6 +13,7 @@ using Tavstal.TLibrary.Extensions;
 
 namespace Tavstal.TShop.Model.Hooks
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class UconomyHook : Hook, IEconomyProvider
     {
         private MethodInfo _getBalanceMethod;
@@ -23,53 +24,50 @@ namespace Tavstal.TShop.Model.Hooks
         private object _databaseInstance;
         private object _pluginInstance;
         private object _uconomyConfig;
-
-
+        
         public UconomyHook() : base(TShop.Instance, "thook_uconomy", true) { }
 
         public override void OnLoad()
         {
             try
             {
-                // ReSharper disable PossibleNullReferenceException
+
                 TShop.Logger.Log("Loading Uconomy hook...");
+                IRocketPlugin plugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("uconomy"));
+                if (plugin == null)
+                    throw new Exception("Could not find plugin.");
 
-                TShop.Logger.LogDebug("UconomyHook #1: Searching for IRocketPlugin");
-                IRocketPlugin uconomyPlugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("uconomy"));
+                Type pluginType = plugin.GetType().Assembly.GetType("fr34kyn01535.Uconomy.Uconomy");
+                if (pluginType == null)
+                    throw new Exception("Could not get plugin type.");
                 
-                TShop.Logger.LogDebug($"UconomyHook #2: Searching for plugin type. IRocketPlugin valid?: {uconomyPlugin != null}");
-                
-                Type uconomyType = uconomyPlugin.GetType().Assembly.GetType("fr34kyn01535.Uconomy.Uconomy");
-                
-
-                TShop.Logger.LogDebug($"UconomyHook #3: Searching for plugin instance. Plugin type valid?: {uconomyType != null}");
-                _pluginInstance = uconomyType.GetField("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(uconomyPlugin);
-
-
-                TShop.Logger.LogDebug($"UconomyHook #4: Searching for plugin instance type. Plugin instance valid?: {_pluginInstance != null}");
+                _pluginInstance = pluginType.GetField("Instance", BindingFlags.Static | BindingFlags.Public)?.GetValue(plugin);
+                if (_pluginInstance == null)
+                    throw new Exception("Could not get plugin instance.");
                 Type pluginInstanceType = _pluginInstance.GetType();
+                
+                object uconomyConfigInst = pluginType.GetProperty("Configuration")?.GetValue(plugin);
+                if (uconomyConfigInst == null)
+                    throw new Exception("Could not get plugin configuration field.");
 
-                TShop.Logger.LogDebug($"UconomyHook #5: Searching for plugin configuration. Plugin instance type valid?: {pluginInstanceType != null}");
-                object uconomyConfigInst = uconomyType.GetProperty("Configuration").GetValue(uconomyPlugin);
-
-                _uconomyConfig = uconomyConfigInst.GetType().GetProperty("Instance").GetValue(uconomyConfigInst);
-
-                TShop.Logger.LogDebug($"UconomyHook #6: Searching for plugin database. Plugin config valid?: {_uconomyConfig != null}");
+                _uconomyConfig = uconomyConfigInst.GetType().GetProperty("Instance")?.GetValue(uconomyConfigInst);
+                if (_uconomyConfig == null)
+                    throw new Exception("Could not get plugin configuration instance.");
+                
                 _databaseInstance = pluginInstanceType.GetField("Database").GetValue(_pluginInstance);
+                if (_databaseInstance == null)
+                    throw new Exception("Failed to get the plugin database instance.");
 
-                TShop.Logger.LogDebug($"UconomyHook #7: Getting database methods. Database instance valid?: {_databaseInstance != null}");
                 _getBalanceMethod = _databaseInstance.GetType().GetMethod(
                     "GetBalance", new[] { typeof(string) });
 
                 _increaseBalanceMethod = _databaseInstance.GetType().GetMethod(
                     "IncreaseBalance", new[] { typeof(string), typeof(decimal) });
-                TShop.Logger.LogDebug($"UconomyHook #8: Getting translation method");
                 if (pluginInstanceType.GetMethods().Any(x => x.Name == "Localize"))
                     _getTranslation = pluginInstanceType.GetMethod("Localize", new[] { typeof(string), typeof(object[]) });
                 else
                     _getTranslation = pluginInstanceType.GetMethod("Translate", new[] { typeof(string), typeof(object[]) });
-                TShop.Logger.LogDebug($"UconomyHook #9: Searching for events");
-                // ReSharper restore PossibleNullReferenceException
+                
                 #region Create Event Delegates
                 /* Added because it might be needed in the future
                 var parentPlugin = TShop.Instance;
