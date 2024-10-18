@@ -25,7 +25,7 @@ namespace Tavstal.TShop
         public static DatabaseManager DatabaseManager { get; private set; }
         public static IEconomyProvider EconomyProvider { get; private set; }
         public static bool IsConnectionAuthFailed { get; set; }
-        private bool _isLateInited { get; set; }
+        private bool _isLateInited;
 
         /// <summary>
         /// Called when the plugin is loaded.
