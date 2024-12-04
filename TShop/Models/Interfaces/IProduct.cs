@@ -1,4 +1,4 @@
-﻿namespace Tavstal.TShop.Model.Interfaces
+﻿namespace Tavstal.TShop.Models.Interfaces
 {
     public interface IProduct
     {

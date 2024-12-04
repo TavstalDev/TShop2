@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Model.Classes;
-using Tavstal.TShop.Model.Enums;
+using Tavstal.TShop.Components;
+using Tavstal.TShop.Models;
+using Tavstal.TShop.Models.Enums;
 using Tavstal.TShop.Utils.Managers;
-using Tavstal.TShop.Model.Components;
 
 namespace Tavstal.TShop.Utils.Handlers
 {

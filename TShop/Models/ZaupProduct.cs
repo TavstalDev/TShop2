@@ -1,6 +1,6 @@
-﻿using Tavstal.TShop.Model.Interfaces;
+﻿using Tavstal.TShop.Models.Interfaces;
 
-namespace Tavstal.TShop.Model.Classes
+namespace Tavstal.TShop.Models
 {
     public class ZaupProduct : IProduct
     {

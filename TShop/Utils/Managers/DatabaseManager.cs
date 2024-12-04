@@ -9,8 +9,8 @@ using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Managers;
-using Tavstal.TShop.Model.Classes;
-using Tavstal.TShop.Model.Enums;
+using Tavstal.TShop.Models;
+using Tavstal.TShop.Models.Enums;
 
 namespace Tavstal.TShop.Utils.Managers
 {

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
-using Tavstal.TShop.Model.Classes;
+using Tavstal.TShop.Models;
 
 namespace Tavstal.TShop.Utils.Helpers
 {

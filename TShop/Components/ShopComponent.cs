@@ -1,17 +1,17 @@
-﻿using Rocket.Unturned.Player;
-using SDG.NetTransport;
-using SDG.Unturned;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rocket.Unturned.Player;
+using SDG.NetTransport;
+using SDG.Unturned;
+using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Models.Plugin;
-using Tavstal.TLibrary.Extensions;
-using Tavstal.TShop.Model.Classes;
-using Tavstal.TShop.Model.Enums;
+using Tavstal.TShop.Models;
+using Tavstal.TShop.Models.Enums;
 using UnityEngine.Serialization;
 
-namespace Tavstal.TShop.Model.Components
+namespace Tavstal.TShop.Components
 {
     public class ShopComponent : UnturnedPlayerComponent, IPlayerComponent
     {

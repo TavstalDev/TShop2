@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 using Tavstal.TLibrary.Models.Database;
 
-namespace Tavstal.TShop.Model.Classes
+namespace Tavstal.TShop.Models
 {
     [Serializable]
     public class DatabaseData : DatabaseSettingsBase

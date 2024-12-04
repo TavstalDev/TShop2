@@ -1,17 +1,17 @@
-﻿using Newtonsoft.Json.Linq;
-using Rocket.API;
-using Rocket.Core;
-using Steamworks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Tavstal.TLibrary.Models.Hooks;
-using Tavstal.TLibrary.Models.Economy;
+using Newtonsoft.Json.Linq;
+using Rocket.API;
+using Rocket.Core;
+using Steamworks;
 using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Models.Economy;
+using Tavstal.TLibrary.Models.Hooks;
 
-namespace Tavstal.TShop.Model.Hooks
+namespace Tavstal.TShop.Models.Hooks
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class UconomyHook : Hook, IEconomyProvider

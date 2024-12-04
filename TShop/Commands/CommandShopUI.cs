@@ -1,8 +1,8 @@
 ﻿using Rocket.API;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
+using Tavstal.TShop.Components;
 using Tavstal.TShop.Utils.Managers;
-using Tavstal.TShop.Model.Components;
 
 namespace Tavstal.TShop.Commands
 {

@@ -6,7 +6,7 @@ using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Model.Classes;
+using Tavstal.TShop.Models;
 using UnityEngine;
 
 // ReSharper disable AsyncVoidLambda

@@ -8,10 +8,10 @@ using Rocket.API;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Model.Classes;
+using Tavstal.TShop.Components;
+using Tavstal.TShop.Models;
+using Tavstal.TShop.Models.Enums;
 using Tavstal.TShop.Utils.Helpers;
-using Tavstal.TShop.Model.Components;
-using Tavstal.TShop.Model.Enums;
 
 namespace Tavstal.TShop.Utils.Managers
 {

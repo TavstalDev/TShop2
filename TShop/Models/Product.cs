@@ -1,12 +1,12 @@
-﻿using SDG.Unturned;
-using System;
+﻿using System;
+using SDG.Unturned;
 using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Models.Database.Attributes;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Model.Interfaces;
+using Tavstal.TLibrary.Models.Database.Attributes;
+using Tavstal.TShop.Models.Interfaces;
 using UnityEngine;
 
-namespace Tavstal.TShop.Model.Classes
+namespace Tavstal.TShop.Models
 {
     [Serializable]
     public class Product : IProduct

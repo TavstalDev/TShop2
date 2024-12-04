@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Tavstal.TLibrary.Models.Plugin;
-using Tavstal.TShop.Model.Classes;
+using Tavstal.TShop.Models;
 
 namespace Tavstal.TShop
 {

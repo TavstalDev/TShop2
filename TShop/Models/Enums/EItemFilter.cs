@@ -1,4 +1,4 @@
-﻿namespace Tavstal.TShop.Model.Enums
+﻿namespace Tavstal.TShop.Models.Enums
 {
     public enum EItemFilter
     {

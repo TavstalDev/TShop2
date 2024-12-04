@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TShop.Model.Classes;
-using Tavstal.TShop.Model.Components;
+using Tavstal.TShop.Components;
+using Tavstal.TShop.Models;
 
 namespace Tavstal.TShop.Commands
 {

@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
-using Rocket.Unturned.Player;
-using Steamworks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tavstal.TLibrary.Models.Hooks;
+using Newtonsoft.Json.Linq;
+using Rocket.Unturned.Player;
+using Steamworks;
 using Tavstal.TLibrary.Models.Economy;
+using Tavstal.TLibrary.Models.Hooks;
 
-namespace Tavstal.TShop.Model.Hooks
+namespace Tavstal.TShop.Models.Hooks
 {
     public class ExpEconomyHook : Hook, IEconomyProvider
     {
