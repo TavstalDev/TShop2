@@ -19,7 +19,8 @@ namespace Tavstal.TShop.Utils.Managers
     /// </summary>
     public class DatabaseManager : DatabaseManagerBase
     {
-        private static TShopConfiguration _pluginConfig => TShop.Instance.Config;
+        // ReSharper disable once InconsistentNaming
+        private static ShopConfiguration _pluginConfig => TShop.Instance.Config;
 
         public DatabaseManager(IConfigurationBase configuration) : base(TShop.Instance, configuration)
         {
@@ -40,10 +41,10 @@ namespace Tavstal.TShop.Utils.Managers
                         throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
 
                     //Item Shop
-                    if (await connection.DoesTableExistAsync<Product>(_pluginConfig.Database.DatabaseTable_Products))
-                        await connection.CheckTableAsync<Product>(_pluginConfig.Database.DatabaseTable_Products);
+                    if (await connection.DoesTableExistAsync<Product>(_pluginConfig.Database.ProductsTable))
+                        await connection.CheckTableAsync<Product>(_pluginConfig.Database.ProductsTable);
                     else
-                        await connection.CreateTableAsync<Product>(_pluginConfig.Database.DatabaseTable_Products);
+                        await connection.CreateTableAsync<Product>(_pluginConfig.Database.ProductsTable);
 
                     if (connection.State != System.Data.ConnectionState.Closed)
                         await connection.CloseAsync();
@@ -72,7 +73,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<bool> AddProductAsync(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, bool enableperm, string permission)
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.AddTableRowAsync(tableName: _pluginConfig.Database.DatabaseTable_Products, new Product(id, isVehicle, vehicleColor, buycost, sellcost, enableperm, permission, false, 0));
+            return await mySqlConnection.AddTableRowAsync(tableName: _pluginConfig.Database.ProductsTable, new Product(id, isVehicle, vehicleColor, buycost, sellcost, enableperm, permission, false, 0));
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<bool> RemoveProductAsync(ushort id, bool isVehicle)
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.RemoveTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", null);
+            return await mySqlConnection.RemoveTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", null);
         }
 
         /// <summary>
@@ -104,7 +105,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool enablepermission, string permission)
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
+            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
             {
                 SqlParameter.Get<Product>(x => x.BuyCost, buycost),
                 SqlParameter.Get<Product>(x => x.SellCost, sellcost),
@@ -126,7 +127,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, bool isdiscounted, decimal percent)
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
+            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
             {
                 SqlParameter.Get<Product>(x => x.IsDiscounted, isdiscounted),
                 SqlParameter.Get<Product>(x => x.DiscountPercent, percent)
@@ -144,7 +145,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<bool> UpdateProductAsync(ushort id, string vehicleColor)
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, $"UnturnedId='{id}' AND IsVehicle='{true}'", new List<SqlParameter>
+            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, $"UnturnedId='{id}' AND IsVehicle='{true}'", new List<SqlParameter>
             {
                 SqlParameter.Get<Product>(x => x.VehicleColor, vehicleColor)
             });
@@ -159,7 +160,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<List<Product>> GetProductsAsync()
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: string.Empty, null);
+            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: string.Empty, null);
         }
 
         /// <summary>
@@ -171,7 +172,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<List<Product>> GetItemsAsync()
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{false}'", null);
+            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: $"IsVehicle='{false}'", null);
         }
 
         /// <summary>
@@ -323,7 +324,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<List<Product>> GetVehiclesAsync()
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"IsVehicle='{true}'", null);
+            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: $"IsVehicle='{true}'", null);
         }
 
         /// <summary>
@@ -361,7 +362,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<Product> FindItemAsync(ushort id)
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{false}'", null);
+            return await mySqlConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: $"UnturnedId='{id}' AND IsVehicle='{false}'", null);
         }
 
         /// <summary>
@@ -374,7 +375,7 @@ namespace Tavstal.TShop.Utils.Managers
         public async Task<Product> FindVehicleAsync(ushort id)
         {
             MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.DatabaseTable_Products, whereClause: $"UnturnedId='{id}' AND IsVehicle='{true}'", null);
+            return await mySqlConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: $"UnturnedId='{id}' AND IsVehicle='{true}'", null);
         }
 
         #region Zaup
@@ -423,40 +424,40 @@ namespace Tavstal.TShop.Utils.Managers
             try
             {
                 MySqlConnection mySqlConnection = CreateConnection();
-                MySqlCommand MySQLCommand = mySqlConnection.CreateCommand();
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 await mySqlConnection.OpenSafeAsync();
 
                 // Get Items
-                MySQLCommand.CommandText = "SELECT * FROM " + itemTable;
-                var Reader = await MySQLCommand.ExecuteReaderAsync();
-                while (await Reader.ReadAsync())
+                mySqlCommand.CommandText = "SELECT * FROM " + itemTable;
+                var reader = await mySqlCommand.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     ZaupProduct prod;
                     try
                     {
-                        prod = new ZaupProduct(Reader.GetUInt16("id"), false, Reader.GetDecimal("cost"), Reader.GetDecimal("buyback"));
+                        prod = new ZaupProduct(reader.GetUInt16("id"), false, reader.GetDecimal("cost"), reader.GetDecimal("buyback"));
                     }
                     catch (OverflowException) {
-                        uint id = Reader.GetUInt32("id");
-                        prod = new ZaupProduct((ushort)id, false, Reader.GetDecimal("cost"), Reader.GetDecimal("buyback"));
+                        uint id = reader.GetUInt32("id");
+                        prod = new ZaupProduct((ushort)id, false, reader.GetDecimal("cost"), reader.GetDecimal("buyback"));
                     }
                     i.Add(prod);
                 }
-                Reader.Close();
+                reader.Close();
 
                 // Get Vehicles
-                MySQLCommand.CommandText = "SELECT * FROM " + vehicleTable;
-                Reader = await MySQLCommand.ExecuteReaderAsync();
-                while (await Reader.ReadAsync())
+                mySqlCommand.CommandText = "SELECT * FROM " + vehicleTable;
+                reader = await mySqlCommand.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     ZaupProduct prod;
                     try
                     {
-                        prod = new ZaupProduct(Reader.GetUInt16("id"), true, Reader.GetDecimal("cost"), 0);
+                        prod = new ZaupProduct(reader.GetUInt16("id"), true, reader.GetDecimal("cost"), 0);
                     }
                     catch (OverflowException) {
-                        uint id = Reader.GetUInt32("id");
-                        prod = new ZaupProduct((ushort)id, true, Reader.GetDecimal("cost"), 0);
+                        uint id = reader.GetUInt32("id");
+                        prod = new ZaupProduct((ushort)id, true, reader.GetDecimal("cost"), 0);
                     }
                     i.Add(prod);
                 }

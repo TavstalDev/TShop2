@@ -49,11 +49,11 @@ namespace Tavstal.TShop.Utils.Helpers
             string voidName = "GetIcon";
             try
             {
-                FileServerFolder GithubElement = TShop.Instance.Config.VehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
-                if (GithubElement == null)
+                FileServerFolder githubElement = TShop.Instance.Config.VehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
+                if (githubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";
-                return GithubElement.FolderLink + filename;
+                return githubElement.FolderLink + filename;
             }
             catch (Exception e)
             {

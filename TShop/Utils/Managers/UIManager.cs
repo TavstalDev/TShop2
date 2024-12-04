@@ -20,7 +20,7 @@ namespace Tavstal.TShop.Utils.Managers
     /// </summary>
     public static class UIManager
     {
-        private static TShopConfiguration Config => TShop.Instance.Config;
+        private static ShopConfiguration Config => TShop.Instance.Config;
 
         /// <summary>
         /// Initializes the HUD for the specified Unturned player.

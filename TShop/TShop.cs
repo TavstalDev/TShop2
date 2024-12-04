@@ -19,7 +19,8 @@ namespace Tavstal.TShop
     /// Represents the TShop plugin with the specified configuration.
     /// </summary>
     /// <typeparam>The type of configuration used by TShop.</typeparam>
-    public class TShop : PluginBase<TShopConfiguration>
+    // ReSharper disable once InconsistentNaming
+    public class TShop : PluginBase<ShopConfiguration>
     {
         public static TShop Instance { get; private set; }
         public static DatabaseManager DatabaseManager { get; private set; }

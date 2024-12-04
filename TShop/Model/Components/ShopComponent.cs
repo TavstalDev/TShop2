@@ -9,7 +9,7 @@ using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TShop.Model.Classes;
 using Tavstal.TShop.Model.Enums;
-using Tavstal.TShop.Utils.Managers;
+using UnityEngine.Serialization;
 
 namespace Tavstal.TShop.Model.Components
 {
@@ -31,11 +31,12 @@ namespace Tavstal.TShop.Model.Components
         public bool IsVehiclePage { get; set; }
         public int PageBasket { get; set; } = 1;
         public List<Product> ProductsCache { get; set; } = new List<Product>();
-        public Dictionary<Product, int> Basket = new Dictionary<Product, int>();
+        public readonly Dictionary<Product, int> Basket = new Dictionary<Product, int>();
         public bool HasActiveNotify { get; set; }
         public int[][] PageIndexes { get; set; } = new int[3][];
 
-        public List<string> NotifiesOnQueue = new List<string>();
+        [FormerlySerializedAs("NotifiesOnQueue")] 
+        public List<string> notifiesOnQueue = new List<string>();
 
         public ShopComponent()
         {
@@ -48,7 +49,7 @@ namespace Tavstal.TShop.Model.Components
         {
             try
             {
-                NotifiesOnQueue.Add(message);
+                notifiesOnQueue.Add(message);
 
                 if (!HasActiveNotify)
                 {
@@ -66,13 +67,13 @@ namespace Tavstal.TShop.Model.Components
         {
             try
             {
-                if (!NotifiesOnQueue.IsValidIndex(0))
+                if (!notifiesOnQueue.IsValidIndex(0))
                 {
                     HasActiveNotify = false;
                     return;
                 }
 
-                string notify = NotifiesOnQueue.ElementAt(0);
+                string notify = notifiesOnQueue.ElementAt(0);
                 if (notify != null)
                 {
                     EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, TransportConnection, true, "tb_notification#1#text", notify);
@@ -83,7 +84,7 @@ namespace Tavstal.TShop.Model.Components
                         EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", false);
                         SendNotify();
                     });
-                    NotifiesOnQueue.RemoveAt(0);
+                    notifiesOnQueue.RemoveAt(0);
                 }
                 else
                     HasActiveNotify = false;

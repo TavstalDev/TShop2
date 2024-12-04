@@ -8,6 +8,6 @@ namespace Tavstal.TShop.Model.Classes
     public class DatabaseData : DatabaseSettingsBase
     {
         [JsonProperty(Order = 7)]
-        public string DatabaseTable_Products { get; set; }
+        public string ProductsTable { get; set; }
     }
 }

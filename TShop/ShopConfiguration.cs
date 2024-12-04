@@ -7,7 +7,7 @@ using Tavstal.TShop.Model.Classes;
 namespace Tavstal.TShop
 {
     [Serializable]
-    public class TShopConfiguration : ConfigurationBase
+    public class ShopConfiguration : ConfigurationBase
     {
         [JsonProperty(Order = 3)]
         public DatabaseData Database { get; set; }
@@ -47,7 +47,7 @@ namespace Tavstal.TShop
             DownloadLocalePacks = true;
             Database = new DatabaseData()
             {
-                DatabaseTable_Products = "tshop_products"
+                ProductsTable = "tshop_products"
             };
             UIButtonDelay = 0.45f;
             UseQuality = true;
@@ -71,11 +71,11 @@ namespace Tavstal.TShop
             };
         }
         
-        public TShopConfiguration(string filename, string path) : base(filename, path)
+        public ShopConfiguration(string filename, string path) : base(filename, path)
         {
         }
 
-        public TShopConfiguration()
+        public ShopConfiguration()
         {
         }
     }
