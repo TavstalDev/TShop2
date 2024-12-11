@@ -1,25 +1,30 @@
 ﻿using Rocket.API;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Tavstal.TLibrary.Helpers.Unturned;
+using Tavstal.TLibrary.Models.Commands;
+using Tavstal.TLibrary.Models.Plugin;
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandShopFill : IRocketCommand
+    public class CommandShopFill : CommandBase
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Both;
-        public string Name => "shopfill";
-        public string Help => "Fills the shop with items. Used for debug";
-        public string Syntax => "";
-        public List<string> Aliases => new List<string> { "shfill" };
-        public List<string> Permissions => new List<string> { "tshop.shopfill", "tshop.commands.shopfill" };
+        protected override IPlugin Plugin => TShop.Instance;
+        public override AllowedCaller AllowedCaller => AllowedCaller.Both;
+        public override string Name => "shopfill";
+        public override string Help => "Fills the shop with items. Used for debug";
+        public override string Syntax => "";
+        public override List<string> Aliases => new List<string> { "shfill" };
+        public override List<string> Permissions => new List<string> { "tshop.shopfill", "tshop.commands.shopfill" };
+        protected override List<SubCommand> SubCommands => new List<SubCommand>();
 
-        public async void Execute(IRocketPlayer caller, string[] args)
+        protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
         {
             if (!TShop.Instance.Config.DebugMode)
             {
                 TShop.Instance.SendPlainCommandReply(caller,"&cYou must enable debugMode to use 'shopfill'.");
-                return;
+                return true;
             }
 
             int count = 0;
@@ -48,6 +53,7 @@ namespace Tavstal.TShop.Commands
                 await TShop.DatabaseManager.AddProductAsync(asset.id, true,  null,1, 1, false, "");
                 count++;
             }
+            return true;
         }
     }
 }

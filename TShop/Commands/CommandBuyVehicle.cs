@@ -3,92 +3,114 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Tavstal.TLibrary;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Helpers.Unturned;
+using Tavstal.TLibrary.Models.Commands;
+using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandBuyVehicle : IRocketCommand
+    public class CommandBuyVehicle : CommandBase
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Player;
-        public string Name => "buyvehicle";
-        public string Help => "Buys a specific vehicle";
-        public string Syntax => "[vehicleID]";
-        public List<string> Aliases => new List<string> { "buyv" };
-        public List<string> Permissions => new List<string> { "tshop.buy.vehicle", "tshop.commands.buy.vehicle" };
+        protected override IPlugin Plugin => TShop.Instance;
+        public override AllowedCaller AllowedCaller => AllowedCaller.Player;
+        public override string Name => "buyvehicle";
+        public override string Help => "Buys a specific vehicle";
+        public override string Syntax => "[vehicleID]";
+        public override List<string> Aliases => new List<string> { "buyv" };
+        public override List<string> Permissions => new List<string> { "tshop.buy.vehicle", "tshop.commands.buy.vehicle" };
+        protected override List<SubCommand> SubCommands => new List<SubCommand>();
 
-        public async void Execute(IRocketPlayer caller, string[] args)
+        protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
             ShopComponent comp = callerPlayer.GetComponent<ShopComponent>();
 
-            if (args.Length == 1)
+            if (args.Length != 1)
             {
-                ushort id = 0;
-                try
-                {
-                    ushort.TryParse(args[0], out id);
-                }
-                catch { /* ignore */ }
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_buyvehicle_args");
+                return true;
+            }
 
-                VehicleAsset asset;
-                if (id > 0)
-                    asset = UAssetHelper.FindVehicleAsset(id);
-                else
-                {
-                    asset = UAssetHelper.FindVehicleAsset(args[0]);
-                    if (asset != null)
-                        id = asset.id;
-                }
+            ushort id = 0;
+            try
+            {
+                ushort.TryParse(args[0], out id);
+            }
+            catch
+            {
+                /* ignore */
+            }
 
-                if (asset == null)
-                {
-                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_not_exists", args[0]);
-                    return;
-                }
+            VehicleAsset asset;
+            if (id > 0)
+                asset = UAssetHelper.FindVehicleAsset(id);
+            else
+            {
+                asset = UAssetHelper.FindVehicleAsset(args[0]);
+                if (asset != null)
+                    id = asset.id;
+            }
 
-                Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
-                if (item == null)
-                {
-                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_not_added", args[0]);
-                    return;
-                }
-                
-                if (item.HasPermission && !callerPlayer.HasPermission(item.Permission))
-                {
-                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_no_permission");
-                    return;
-                }
+            if (asset == null)
+            {
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_exists", args[0]);
+                return true;
+            }
 
-                decimal cost = item.GetBuyCost();
+            Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
+            if (item == null)
+            {
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_added", args[0]);
+                return true;
+            }
 
-                if (await TShop.EconomyProvider.GetBalanceAsync(callerPlayer.CSteamID) < cost)
-                {
-                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_balance_not_enough", cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName());
-                    return;
-                }
+            if (item.HasPermission && !callerPlayer.HasPermission(item.Permission))
+            {
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_no_permission");
+                return true;
+            }
 
-                if (cost == 0)
-                {
-                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_vehicle_buy_error");
-                    return;
-                }
+            decimal cost = item.GetBuyCost();
 
-                await TShop.EconomyProvider.WithdrawAsync(callerPlayer.CSteamID, cost);
-                InteractableVehicle vehicle = VehicleManager.spawnLockedVehicleForPlayerV2(id, callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation, callerPlayer.Player);
-                
+            if (await TShop.EconomyProvider.GetBalanceAsync(callerPlayer.CSteamID) < cost)
+            {
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_balance_not_enough",
+                    cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName());
+                return true;
+            }
+
+            if (cost == 0)
+            {
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_buy_error");
+                return true;
+            }
+
+            await TShop.EconomyProvider.WithdrawAsync(callerPlayer.CSteamID, cost);
+            await MainThreadDispatcher.RunOnMainThreadAsync(() =>
+            {
+                InteractableVehicle vehicle = VehicleManager.spawnLockedVehicleForPlayerV2(id,
+                    callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation,
+                    callerPlayer.Player);
+
                 if (!item.VehicleColor.IsNullOrEmpty())
                     vehicle.ServerSetPaintColor(item.GetVehicleColor());
-                    
-                if (TShop.EconomyProvider.HasTransactionSystem())
-                    await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID, new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "success_vehicle_buy", asset.vehicleName, cost, TShop.EconomyProvider.GetCurrencyName());
-            }
-            else
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(),  "error_command_buyvehicle_args");
+            });
+
+            if (TShop.EconomyProvider.HasTransactionSystem())
+                await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID,
+                    new Transaction(Guid.NewGuid(), ETransaction.PURCHASE, comp.PaymentMethod,
+                        TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost,
+                        DateTime.Now));
+            TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_buy", asset.vehicleName, cost,
+                TShop.EconomyProvider.GetCurrencyName());
+
+            return true;
         }
     }
 }
