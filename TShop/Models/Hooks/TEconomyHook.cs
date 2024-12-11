@@ -249,7 +249,7 @@ namespace Tavstal.TShop.Models.Hooks
 
         public void AddBankCard(CSteamID steamID, IBankCard newCard)
         {
-            _addBankCard.Invoke(_databaseInstance, new object[] { newCard.Id, newCard.SecurityCode, newCard.PinCode, newCard.HolderId, newCard.BalanceUse, newCard.BalanceLimit, newCard.ExpireDate });
+            _addBankCard.Invoke(_databaseInstance, new object[] { newCard.Iban, newCard.Cvc, newCard.PinCode, newCard.HolderId, newCard.BalanceUsed, newCard.BalanceLimit, newCard.ExpireDate });
         }
 
         public void UpdateBankCard(string cardId, decimal limitUsed, bool isActive)
@@ -286,7 +286,7 @@ namespace Tavstal.TShop.Models.Hooks
 
         public async Task AddBankCardAsync(CSteamID steamID, IBankCard newCard)
         {
-            Task task = (Task)_addBankCard.Invoke(_databaseInstance, new object[] { newCard.Id, newCard.SecurityCode, newCard.PinCode, newCard.HolderId, newCard.BalanceUse, newCard.BalanceLimit, newCard.ExpireDate });
+            Task task = (Task)_addBankCard.Invoke(_databaseInstance, new object[] { newCard.Iban, newCard.Cvc, newCard.PinCode, newCard.HolderId, newCard.BalanceUsed, newCard.BalanceLimit, newCard.ExpireDate });
             await task;
         }
 

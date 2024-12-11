@@ -112,7 +112,7 @@ namespace Tavstal.TShop.Commands
 
             if (TShop.EconomyProvider.HasTransactionSystem())
                 await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID,
-                    new Transaction(Guid.NewGuid(), ETransaction.SALE, comp.PaymentMethod,
+                    new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE, comp.PaymentMethod,
                         TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost,
                         DateTime.Now));
             TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_item_sell", asset.itemName, amount,
