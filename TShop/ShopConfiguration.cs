@@ -45,10 +45,7 @@ namespace Tavstal.TShop
             DebugMode = false;
             Locale = "en";
             DownloadLocalePacks = true;
-            Database = new DatabaseData()
-            {
-                ProductsTable = "tshop_products"
-            };
+            Database = new DatabaseData("tshop_products");
             UIButtonDelay = 0.45f;
             UseQuality = true;
             ExpMode = false;

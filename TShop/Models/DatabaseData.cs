@@ -9,5 +9,10 @@ namespace Tavstal.TShop.Models
     {
         [JsonProperty(Order = 7)]
         public string ProductsTable { get; set; }
+
+        public DatabaseData(string productsTable)
+        {
+            ProductsTable = productsTable;
+        }
     }
 }
