@@ -2,6 +2,7 @@
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Models.Hooks;
 using Tavstal.TLibrary.Extensions;
@@ -146,37 +147,40 @@ namespace Tavstal.TShop
         /// <summary>
         /// Asynchronously checks for any available discounts and updates them.
         /// </summary>
-        private async void CheckDiscount()
+        private void CheckDiscount()
         {
             try
             {
                 if (IsConnectionAuthFailed || !_isLateInited)
                     return;
-
-                List<Product> products = await DatabaseManager.GetProductsAsync();
-                // Remove the current discounts
-                foreach (Product item in products.FindAll(x => x.IsDiscounted))
-                    await DatabaseManager.UpdateProductAsync(item.UnturnedId, item.IsVehicle, false, 0);
-
-                // Shuffle the product list
-                if (products.Count > 2)
-                    products.Shuffle();
-
-                // Items
-                List<Product> items = products.FindAll(x => !x.IsVehicle);
-                for (int i = 0; i < Config.ItemCountToDiscount; i++)
+                
+                Task.Run(async () =>
                 {
-                    if (items.IsValidIndex(i))
-                        await DatabaseManager.UpdateProductAsync(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
-                }
+                    List<Product> products = await DatabaseManager.GetProductsAsync();
+                    // Remove the current discounts
+                    foreach (Product item in products.FindAll(x => x.IsDiscounted))
+                        await DatabaseManager.UpdateProductAsync(item.UnturnedId, item.IsVehicle, false, 0);
 
-                // Vehicles
-                List<Product> vehs = products.FindAll(x => x.IsVehicle);
-                for (int i = 0; i < Config.VehicleCountToDiscount; i++)
-                {
-                    if (vehs.IsValidIndex(i))
-                        await DatabaseManager.UpdateProductAsync(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
-                }
+                    // Shuffle the product list
+                    if (products.Count > 2)
+                        products.Shuffle();
+
+                    // Items
+                    List<Product> items = products.FindAll(x => !x.IsVehicle);
+                    for (int i = 0; i < Config.ItemCountToDiscount; i++)
+                    {
+                        if (items.IsValidIndex(i))
+                            await DatabaseManager.UpdateProductAsync(items[i].UnturnedId, false, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
+                    }
+
+                    // Vehicles
+                    List<Product> vehs = products.FindAll(x => x.IsVehicle);
+                    for (int i = 0; i < Config.VehicleCountToDiscount; i++)
+                    {
+                        if (vehs.IsValidIndex(i))
+                            await DatabaseManager.UpdateProductAsync(vehs[i].UnturnedId, true, true, Math.Round((decimal)MathHelper.Next(Config.MinDiscount, Config.MaxDiscount), 2));
+                    }
+                });
             }
             catch
             {

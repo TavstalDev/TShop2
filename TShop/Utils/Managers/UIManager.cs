@@ -4,6 +4,7 @@ using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Rocket.API;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.General;
@@ -135,7 +136,7 @@ namespace Tavstal.TShop.Utils.Managers
         /// Asynchronously updates the product page for the specified Unturned player.
         /// </summary>
         /// <param name="player">The Unturned player for which to update the product page.</param>
-        public static async void UpdateProductPage(UnturnedPlayer player)
+        public static async Task UpdateProductPage(UnturnedPlayer player)
         {
             try
             {

@@ -4,6 +4,8 @@ using SDG.Unturned;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Tavstal.TLibrary;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
@@ -81,11 +83,11 @@ namespace Tavstal.TShop.Utils.Handlers
                 if (comp.ProductSearch.EqualsIgnoreCase(text)) 
                     return;
                 comp.ProductSearch = text;
-                UIManager.UpdateProductPage(uPlayer);
+                Task.Run(async () => await UIManager.UpdateProductPage(uPlayer));
             }
         }
 
-        private static async void Event_OnButtonClick(Player player, string button)
+        private static void Event_OnButtonClick(Player player, string button)
         {
             try
             {
@@ -97,124 +99,138 @@ namespace Tavstal.TShop.Utils.Handlers
                     return;
 
                 comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UIButtonDelay);
-
-                switch (button.ToLower())
+                Task.Run(async () =>
                 {
-                    case "bt_nav_tshop_items":
+
+
+                    switch (button.ToLower())
+                    {
+                        case "bt_nav_tshop_items":
                         {
                             if (comp.MenuCategory == EMenuCategory.ProductItems)
                                 return;
 
                             comp.MenuCategory = EMenuCategory.ProductItems;
                             comp.IsVehiclePage = false;
-                            UIManager.UpdateProductPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_products", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_basket", false);
+                            await UIManager.UpdateProductPage(uPlayer);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "tshop_products", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "tshop_basket", false);
                             return;
                         }
-                    case "bt_nav_tshop_vehicles":
+                        case "bt_nav_tshop_vehicles":
                         {
                             if (comp.MenuCategory == EMenuCategory.ProductVehicles)
                                 return;
 
                             comp.MenuCategory = EMenuCategory.ProductVehicles;
                             comp.IsVehiclePage = true;
-                            UIManager.UpdateProductPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_products", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_basket", false);
+                            await UIManager.UpdateProductPage(uPlayer);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "tshop_products", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "tshop_basket", false);
                             return;
                         }
-                    case "bt_nav_tshop_basket":
+                        case "bt_nav_tshop_basket":
                         {
                             if (comp.MenuCategory == EMenuCategory.Basket)
                                 return;
 
                             comp.MenuCategory = EMenuCategory.Basket;
                             UIManager.UpdateBasketPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_products", false);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true, "tshop_basket", true);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "tshop_products", false);
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "tshop_basket", true);
                             return;
                         }
-                    case "bt_nav_tshop_logout":
+                        case "bt_nav_tshop_logout":
                         {
                             UIManager.Hide(uPlayer);
                             return;
                         }
-                    case "bt_tshop_products#page#prev":
+                        case "bt_tshop_products#page#prev":
                         {
                             if (comp.IsVehiclePage && comp.PageVehicle > 1)
                                 comp.PageVehicle--;
                             if (!comp.IsVehiclePage && comp.PageItem > 1)
                                 comp.PageItem--;
 
-                            UIManager.UpdateProductPage(uPlayer);
+                            await UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
-                    case "bt_product#search":
+                        case "bt_product#search":
                         {
                             if (!comp.IsProductSearchDirty)
                                 return;
-                            
-                            UIManager.UpdateProductPage(uPlayer);
+
+                            await UIManager.UpdateProductPage(uPlayer);
                             comp.IsProductSearchDirty = false;
                             break;
                         }
-                    case "bt_products#sort#featured":
-                    {
-                        if (comp.SortType != ESortType.Featured)
+                        case "bt_products#sort#featured":
                         {
-                            comp.SortType = ESortType.Featured;
-                            UIManager.UpdateProductPage(uPlayer);
+                            if (comp.SortType != ESortType.Featured)
+                            {
+                                comp.SortType = ESortType.Featured;
+                                await UIManager.UpdateProductPage(uPlayer);
+                            }
+
+                            break;
                         }
-                        break;
-                    }
-                    case "bt_products#sort#nameaz":
-                    {
-                        if (comp.SortType != ESortType.NameAz)
+                        case "bt_products#sort#nameaz":
                         {
-                            comp.SortType = ESortType.NameAz;
-                            UIManager.UpdateProductPage(uPlayer);
+                            if (comp.SortType != ESortType.NameAz)
+                            {
+                                comp.SortType = ESortType.NameAz;
+                                await UIManager.UpdateProductPage(uPlayer);
+                            }
+
+                            break;
                         }
-                        break;
-                    }
-                    case "bt_products#sort#nameza":
-                    {
-                        if (comp.SortType != ESortType.NameZa)
+                        case "bt_products#sort#nameza":
                         {
-                            comp.SortType = ESortType.NameZa;
-                            UIManager.UpdateProductPage(uPlayer);
+                            if (comp.SortType != ESortType.NameZa)
+                            {
+                                comp.SortType = ESortType.NameZa;
+                                await UIManager.UpdateProductPage(uPlayer);
+                            }
+
+                            break;
                         }
-                        break;
-                    }
-                    case "bt_products#sort#priceasc":
-                    {
-                        if (comp.SortType != ESortType.PriceAscending)
+                        case "bt_products#sort#priceasc":
                         {
-                            comp.SortType = ESortType.PriceAscending;
-                            UIManager.UpdateProductPage(uPlayer);
+                            if (comp.SortType != ESortType.PriceAscending)
+                            {
+                                comp.SortType = ESortType.PriceAscending;
+                                await UIManager.UpdateProductPage(uPlayer);
+                            }
+
+                            break;
                         }
-                        break;
-                    }
-                    case "bt_products#sort#pricedesc":
-                    {
-                        if (comp.SortType != ESortType.PriceDescending)
+                        case "bt_products#sort#pricedesc":
                         {
-                            comp.SortType = ESortType.PriceDescending;
-                            UIManager.UpdateProductPage(uPlayer);
+                            if (comp.SortType != ESortType.PriceDescending)
+                            {
+                                comp.SortType = ESortType.PriceDescending;
+                                await UIManager.UpdateProductPage(uPlayer);
+                            }
+
+                            break;
                         }
-                        break;
-                    }
-                    case "bt_tshop_products#page#next":
+                        case "bt_tshop_products#page#next":
                         {
                             if (comp.IsVehiclePage)
                                 comp.PageVehicle++;
                             else
                                 comp.PageItem++;
 
-                            UIManager.UpdateProductPage(uPlayer);
+                            await UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
-                    case "bt_tshop_basket#page#prev":
+                        case "bt_tshop_basket#page#prev":
                         {
                             if (comp.PageBasket > 1)
                                 comp.PageBasket--;
@@ -222,27 +238,27 @@ namespace Tavstal.TShop.Utils.Handlers
                             UIManager.UpdateBasketPage(uPlayer);
                             return;
                         }
-                    case "bt_tshop_basket#page#next":
+                        case "bt_tshop_basket#page#next":
                         {
                             comp.PageBasket++;
 
                             UIManager.UpdateBasketPage(uPlayer);
                             return;
                         }
-                    case "bt_product#category#item#all":
-                    case "bt_product#category#item#cloth":
-                    case "bt_product#category#item#food":
-                    case "bt_product#category#item#medical":
-                    case "bt_product#category#item#tool":
-                    case "bt_product#category#item#barricade":
-                    case "bt_product#category#item#structure":
-                    case "bt_product#category#item#electronic":
-                    case "bt_product#category#item#vehicle":
-                    case "bt_product#category#item#fuel":
-                    case "bt_product#category#item#melee":
-                    case "bt_product#category#item#gun":
-                    case "bt_product#category#item#attachment":
-                    case "bt_product#category#item#misc":
+                        case "bt_product#category#item#all":
+                        case "bt_product#category#item#cloth":
+                        case "bt_product#category#item#food":
+                        case "bt_product#category#item#medical":
+                        case "bt_product#category#item#tool":
+                        case "bt_product#category#item#barricade":
+                        case "bt_product#category#item#structure":
+                        case "bt_product#category#item#electronic":
+                        case "bt_product#category#item#vehicle":
+                        case "bt_product#category#item#fuel":
+                        case "bt_product#category#item#melee":
+                        case "bt_product#category#item#gun":
+                        case "bt_product#category#item#attachment":
+                        case "bt_product#category#item#misc":
                         {
                             if (button.EndsWith("all"))
                                 comp.ItemFilter = null;
@@ -274,16 +290,16 @@ namespace Tavstal.TShop.Utils.Handlers
                                 comp.ItemFilter = EItemFilter.Misc;
 
                             comp.PageItem = 1;
-                            UIManager.UpdateProductPage(uPlayer);
+                            await UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
-                    case "bt_product#category#vehicle#all":
-                    case "bt_product#category#vehicle#car":
-                    case "bt_product#category#vehicle#plane":
-                    case "bt_product#category#vehicle#heli":
-                    case "bt_product#category#vehicle#blimp":
-                    case "bt_product#category#vehicle#boat":
-                    case "bt_product#category#vehicle#train":
+                        case "bt_product#category#vehicle#all":
+                        case "bt_product#category#vehicle#car":
+                        case "bt_product#category#vehicle#plane":
+                        case "bt_product#category#vehicle#heli":
+                        case "bt_product#category#vehicle#blimp":
+                        case "bt_product#category#vehicle#boat":
+                        case "bt_product#category#vehicle#train":
                         {
                             if (button.EndsWith("all"))
                                 comp.VehicleFilter = null;
@@ -301,10 +317,10 @@ namespace Tavstal.TShop.Utils.Handlers
                                 comp.VehicleFilter = EEngine.TRAIN;
 
                             comp.PageVehicle = 1;
-                            UIManager.UpdateProductPage(uPlayer);
+                            await UIManager.UpdateProductPage(uPlayer);
                             return;
                         }
-                    case "bt_tshop_basket#buy":
+                        case "bt_tshop_basket#buy":
                         {
                             List<KeyValuePair<Product, int>> toRemove = new List<KeyValuePair<Product, int>>();
                             foreach (var prod in comp.Basket)
@@ -315,13 +331,15 @@ namespace Tavstal.TShop.Utils.Handlers
                                     VehicleAsset asset = UAssetHelper.FindVehicleAsset(prod.Key.UnturnedId);
                                     if (asset == null)
                                     {
-                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_exists", prod.Key.UnturnedId));
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_exists",
+                                            prod.Key.UnturnedId));
                                         continue;
                                     }
 
                                     if (await TShop.EconomyProvider.GetBalanceAsync(uPlayer.CSteamID) < cost)
                                     {
-                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough", cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName()));
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough",
+                                            cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName()));
                                         continue;
                                     }
 
@@ -332,14 +350,23 @@ namespace Tavstal.TShop.Utils.Handlers
                                     }
 
                                     await TShop.EconomyProvider.WithdrawAsync(uPlayer.CSteamID, cost);
-                                    InteractableVehicle vehicle = VehicleManager.spawnLockedVehicleForPlayerV2(prod.Key.UnturnedId, uPlayer.Position + new UnityEngine.Vector3(0, 0, 5), uPlayer.Player.transform.rotation, uPlayer.Player);
+                                    await MainThreadDispatcher.RunOnMainThreadAsync(() =>
+                                    {
+                                        InteractableVehicle vehicle = VehicleManager.spawnLockedVehicleForPlayerV2(prod.Key.UnturnedId,
+                                            uPlayer.Position + new UnityEngine.Vector3(0, 0, 5),
+                                            uPlayer.Player.transform.rotation, uPlayer.Player);
+
+                                        if (!prod.Key.VehicleColor.IsNullOrEmpty())
+                                            vehicle.ServerSetPaintColor(prod.Key.GetVehicleColor());
+                                    });
                                     
-                                    if (!prod.Key.VehicleColor.IsNullOrEmpty())
-                                        vehicle.ServerSetPaintColor(prod.Key.GetVehicleColor());
-                                    
+
                                     if (TShop.EconomyProvider.HasTransactionSystem())
-                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid().ToString(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_buy", asset.vehicleName, prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
+                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid().ToString(), ETransaction.PURCHASE,
+                                                comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"),
+                                                uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_buy",
+                                        asset.vehicleName, prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
                                     toRemove.Add(prod);
                                 }
                                 else
@@ -347,13 +374,15 @@ namespace Tavstal.TShop.Utils.Handlers
                                     ItemAsset asset = UAssetHelper.FindItemAsset(prod.Key.UnturnedId);
                                     if (asset == null)
                                     {
-                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_found", prod.Key.UnturnedId));
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_found",
+                                            prod.Key.UnturnedId));
                                         continue;
                                     }
 
                                     if (await TShop.EconomyProvider.GetBalanceAsync(uPlayer.CSteamID) < cost)
                                     {
-                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough", cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName()));
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_balance_not_enough",
+                                            cost.ToString("0.00"), TShop.EconomyProvider.GetCurrencyName()));
                                         continue;
                                     }
 
@@ -364,14 +393,23 @@ namespace Tavstal.TShop.Utils.Handlers
                                     }
 
                                     await TShop.EconomyProvider.WithdrawAsync(uPlayer.CSteamID, cost);
-                                    for (int i = 0; i < prod.Value; i++)
+                                    await MainThreadDispatcher.RunOnMainThreadAsync(() =>
                                     {
-                                        if (!uPlayer.Inventory.tryAddItem(new Item(prod.Key.UnturnedId, true), false))
-                                            ItemManager.dropItem(new Item(prod.Key.UnturnedId, true), uPlayer.Position, true, true, false);
-                                    }
+                                        for (int i = 0; i < prod.Value; i++)
+                                        {
+                                            if (!uPlayer.Inventory.tryAddItem(new Item(prod.Key.UnturnedId, true), false))
+                                                ItemManager.dropItem(new Item(prod.Key.UnturnedId, true), uPlayer.Position,
+                                                    true, true, false);
+                                        }
+                                    });
+
                                     if (TShop.EconomyProvider.HasTransactionSystem())
-                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid().ToString(), ETransaction.PURCHASE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
-                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_buy", asset.itemName, prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
+                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID,
+                                            new Transaction(Guid.NewGuid().ToString(), ETransaction.PURCHASE,
+                                                comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"),
+                                                uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_buy", asset.itemName,
+                                        prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
                                     toRemove.Add(prod);
                                 }
                             }
@@ -382,9 +420,10 @@ namespace Tavstal.TShop.Utils.Handlers
                                     comp.Basket.Remove(elem.Key);
                                 UIManager.UpdateBasketPage(uPlayer);
                             }
+
                             break;
                         }
-                    case "bt_tshop_basket#sell":
+                        case "bt_tshop_basket#sell":
                         {
                             List<KeyValuePair<Product, int>> toRemove = new List<KeyValuePair<Product, int>>();
 
@@ -396,31 +435,34 @@ namespace Tavstal.TShop.Utils.Handlers
                                 decimal cost = prod.Key.GetSellCost(prod.Value);
                                 if (prod.Key.IsVehicle)
                                 {
-                                    VehicleAsset asset = null;
                                     InteractableVehicle vehicle = uPlayer.CurrentVehicle;
                                     if (vehicle == null)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_sell_null"));
                                         continue;
                                     }
-                                    
+
                                     if (vehicle.lockedOwner != uPlayer.CSteamID || !vehicle.isLocked || vehicle.isDead)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_sell_owner"));
                                         continue;
                                     }
-                                    
+
                                     if (vehicle.id != prod.Key.UnturnedId)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_found"));
                                         continue;
                                     }
-                                    
+
                                     VehicleManager.askVehicleDestroy(vehicle);
                                     await TShop.EconomyProvider.DepositAsync(uPlayer.CSteamID, cost);
                                     if (TShop.EconomyProvider.HasTransactionSystem())
-                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_sell", asset.vehicleName, 1, cost, TShop.EconomyProvider.GetCurrencyName()));
+                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID,
+                                            new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE,
+                                                comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0,
+                                                uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_sell",
+                                        vehicle.asset.vehicleName, 1, cost, TShop.EconomyProvider.GetCurrencyName()));
                                 }
                                 else
                                 {
@@ -428,11 +470,13 @@ namespace Tavstal.TShop.Utils.Handlers
 
                                     if (asset == null)
                                     {
-                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_found", prod.Key.UnturnedId));
+                                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_found",
+                                            prod.Key.UnturnedId));
                                         continue;
                                     }
 
-                                    List<InventorySearch> search = uPlayer.Inventory.search(prod.Key.UnturnedId, true, true);
+                                    List<InventorySearch> search =
+                                        uPlayer.Inventory.search(prod.Key.UnturnedId, true, true);
                                     if (search.Count < prod.Value)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_enough"));
@@ -448,11 +492,18 @@ namespace Tavstal.TShop.Utils.Handlers
                                     await TShop.EconomyProvider.DepositAsync(uPlayer.CSteamID, cost);
                                     for (int i = 0; i < prod.Value; i++)
                                     {
-                                        uPlayer.Inventory.removeItem(search[i].page, uPlayer.Inventory.getIndex(search[i].page, search[i].jar.x, search[i].jar.y));
+                                        uPlayer.Inventory.removeItem(search[i].page,
+                                            uPlayer.Inventory.getIndex(search[i].page, search[i].jar.x,
+                                                search[i].jar.y));
                                     }
+
                                     if (TShop.EconomyProvider.HasTransactionSystem())
-                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE, comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0, uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
-                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_sell", asset.itemName, prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
+                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID,
+                                            new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE,
+                                                comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0,
+                                                uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_sell",
+                                        asset.itemName, prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
                                     toRemove.Add(prod);
                                 }
                             }
@@ -463,87 +514,95 @@ namespace Tavstal.TShop.Utils.Handlers
                                     comp.Basket.Remove(elem.Key);
                                 UIManager.UpdateBasketPage(uPlayer);
                             }
+
                             break;
                         }
-                }
-
-                if (button.StartsWith("bt_tshop_products#page#"))
-                {
-                    if (button.Contains("dots"))
-                        return;
-
-                    int btIndex = int.Parse(button.Replace("bt_tshop_products#page#", "")) - 1;
-                    int arrayIndex = comp.IsVehiclePage ? 1 : 0;
-
-                    int page = comp.PageIndexes[arrayIndex][btIndex];
-
-                    if (page != -1)
-                    {
-                        if (comp.IsVehiclePage)
-                            comp.PageVehicle = page;
-                        else
-                            comp.PageItem = page;
-
-                        UIManager.UpdateProductPage(uPlayer);
                     }
-                    //return;
-                }
-                else if (button.StartsWith("bt_tshop_basket#page#"))
-                {
-                    if (button.Contains("dots"))
-                        return;
-
-                    int btIndex = int.Parse(button.Replace("bt_tshop_basket#page#", "")) - 1;
-                    int page = comp.PageIndexes[2][btIndex];
-
-                    if (page != -1)
-                    {
-                        comp.PageBasket = page;
-
-                        UIManager.UpdateBasketPage(uPlayer);
-                    }
-                    //return;
-                }
-                else if (button.StartsWith("bt_tshop_product#"))
-                {
-                    int index = (Convert.ToInt32(button.Replace("bt_tshop_product#", "")) - 1) + 10 * ((comp.IsVehiclePage ? comp.PageVehicle : comp.PageItem) - 1);
-                    if (!comp.ProductsCache.IsValidIndex(index))
-                        return;
-
-                    Product item = comp.ProductsCache[index];
-                    if (comp.Basket.Any(x => x.Key.UnturnedId == item.UnturnedId && x.Key.IsVehicle == item.IsVehicle))
-                    {
-                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_contains_product_already", item.GetName()));
-                        return;
-                    }
-
-                    if (item.IsVehicle && comp.Basket.Any(x => x.Key.IsVehicle))
-                    {
-                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_contains_vehicle_already", item.GetName()));
-                        return;
-                    }
-
-                    comp.Basket.Add(item, 1);
-                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_product_added", item.GetName()));
                     
-                    UIManager.UpdateBasketPage(uPlayer);
-                }
-                else if (button.StartsWith("bt_tshop_basket#product#"))
-                {
-                    if (button.EndsWith("#delete"))
+                    if (button.StartsWith("bt_tshop_products#page#"))
                     {
-                        int buttonIndex = Convert.ToInt32(button.Replace("bt_tshop_basket#product#", "").Replace("#delete", "")) - 1;
-
-                        int elementIndex = (comp.PageBasket - 1) * 12 + buttonIndex;
-                        if (!comp.Basket.IsValidIndex(elementIndex))
+                        if (button.Contains("dots"))
                             return;
 
-                        var key = comp.Basket.Keys.ElementAt(elementIndex);
-                        comp.Basket.Remove(key);
+                        int btIndex = int.Parse(button.Replace("bt_tshop_products#page#", "")) - 1;
+                        int arrayIndex = comp.IsVehiclePage ? 1 : 0;
+
+                        int page = comp.PageIndexes[arrayIndex][btIndex];
+
+                        if (page != -1)
+                        {
+                            if (comp.IsVehiclePage)
+                                comp.PageVehicle = page;
+                            else
+                                comp.PageItem = page;
+
+                            await UIManager.UpdateProductPage(uPlayer);
+                        }
+                        //return;
+                    }
+                    else if (button.StartsWith("bt_tshop_basket#page#"))
+                    {
+                        if (button.Contains("dots"))
+                            return;
+
+                        int btIndex = int.Parse(button.Replace("bt_tshop_basket#page#", "")) - 1;
+                        int page = comp.PageIndexes[2][btIndex];
+
+                        if (page != -1)
+                        {
+                            comp.PageBasket = page;
+
+                            UIManager.UpdateBasketPage(uPlayer);
+                        }
+                        //return;
+                    }
+                    else if (button.StartsWith("bt_tshop_product#"))
+                    {
+                        int index = (Convert.ToInt32(button.Replace("bt_tshop_product#", "")) - 1) +
+                                    10 * ((comp.IsVehiclePage ? comp.PageVehicle : comp.PageItem) - 1);
+                        if (!comp.ProductsCache.IsValidIndex(index))
+                            return;
+
+                        Product item = comp.ProductsCache[index];
+                        if (comp.Basket.Any(x =>
+                                x.Key.UnturnedId == item.UnturnedId && x.Key.IsVehicle == item.IsVehicle))
+                        {
+                            comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_contains_product_already",
+                                item.GetName()));
+                            return;
+                        }
+
+                        if (item.IsVehicle && comp.Basket.Any(x => x.Key.IsVehicle))
+                        {
+                            comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_contains_vehicle_already",
+                                item.GetName()));
+                            return;
+                        }
+
+                        comp.Basket.Add(item, 1);
+                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_product_added", item.GetName()));
 
                         UIManager.UpdateBasketPage(uPlayer);
                     }
-                }
+                    else if (button.StartsWith("bt_tshop_basket#product#"))
+                    {
+                        if (button.EndsWith("#delete"))
+                        {
+                            int buttonIndex =
+                                Convert.ToInt32(button.Replace("bt_tshop_basket#product#", "").Replace("#delete", "")) -
+                                1;
+
+                            int elementIndex = (comp.PageBasket - 1) * 12 + buttonIndex;
+                            if (!comp.Basket.IsValidIndex(elementIndex))
+                                return;
+
+                            var key = comp.Basket.Keys.ElementAt(elementIndex);
+                            comp.Basket.Remove(key);
+
+                            UIManager.UpdateBasketPage(uPlayer);
+                        }
+                    }
+                });
             }
             catch (Exception ex)
             {
