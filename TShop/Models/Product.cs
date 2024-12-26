@@ -12,7 +12,7 @@ namespace Tavstal.TShop.Models
     public class Product : IProduct
     {
         [SqlMember(isPrimaryKey: true, isUnsigned: true, shouldAutoIncrement: true)]
-        public ushort Id { get; set; }
+        public ulong Id { get; set; }
         [SqlMember(isUnsigned: true)]
         public ushort UnturnedId { get; set; }
         [SqlMember(columnType:"varchar(255)")]
@@ -36,9 +36,9 @@ namespace Tavstal.TShop.Models
 
         public Product() { }
 
-        public Product(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, string perm)
+        public Product(ushort unturnedId, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, string perm)
         {
-            UnturnedId = id;
+            UnturnedId = unturnedId;
             IsVehicle = isVehicle;
             VehicleColor = vehicleColor;
             BuyCost = buycost;
@@ -48,9 +48,9 @@ namespace Tavstal.TShop.Models
             DisplayName = GetName();
         }
 
-        public Product(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost)
+        public Product(ushort unturnedId, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost)
         {
-            UnturnedId = id;
+            UnturnedId = unturnedId;
             IsVehicle = isVehicle;
             VehicleColor = vehicleColor;
             BuyCost = buycost;
@@ -60,9 +60,9 @@ namespace Tavstal.TShop.Models
             DisplayName = GetName();
         }
 
-        public Product(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, bool hasperm, string perm, bool isdiscount, decimal discount)
+        public Product(ushort unturnedId, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, bool hasperm, string perm, bool isdiscount, decimal discount)
         {
-            UnturnedId = id;
+            UnturnedId = unturnedId;
             IsVehicle = isVehicle;
             VehicleColor = vehicleColor;
             BuyCost = buycost;
