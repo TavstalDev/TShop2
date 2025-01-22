@@ -133,3 +133,10 @@ An user-friendly item and vehicle shop plugin supporting async (mysql) database.
 <br>
 <b>Permission(s):</b>  tshop.commands.migratezaupdb
 </details>
+
+<details>
+<summary>/removeinvalidproducts</summary>
+<b>Description:</b> Removes all invalid products from the database.
+<br>
+<b>Permission(s):</b>  tshop.commands.removeinvalidproducts
+</details>

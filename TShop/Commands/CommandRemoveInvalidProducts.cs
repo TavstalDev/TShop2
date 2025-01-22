@@ -13,11 +13,11 @@ namespace Tavstal.TShop.Commands
     {
         protected override IPlugin Plugin => TShop.Instance;
         public override AllowedCaller AllowedCaller => AllowedCaller.Both;
-        public override string Name => "RemoveInvalidProducts ";
+        public override string Name => "RemoveInvalidProducts";
         public override string Help => "Removes all invalid products from the database.";
         public override string Syntax => "";
         public override List<string> Aliases => new List<string> { "rminvalidproducts", "rminvalidprods", "deleteinvalidproducts", "delinvalidprods" };
-        public override List<string> Permissions => new List<string> { "tshop.commands.removeinvalidproducts " };
+        public override List<string> Permissions => new List<string> { "tshop.commands.removeinvalidproducts" };
         protected override List<SubCommand> SubCommands => new List<SubCommand>();
 
         protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
