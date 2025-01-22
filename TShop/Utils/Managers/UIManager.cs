@@ -290,7 +290,7 @@ namespace Tavstal.TShop.Utils.Managers
                     }
 
                     EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}#buycost", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
-                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
+                    EffectManager.sendUIEffectText((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.SellCost.ToString("0.00")));
                     EffectManager.sendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}", true);
                     validCount++;
                 }
