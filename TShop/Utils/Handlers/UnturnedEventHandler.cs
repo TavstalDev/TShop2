@@ -70,7 +70,7 @@ namespace Tavstal.TShop.Utils.Handlers
                     {
                         comp.Basket[key] = 1;
                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_vehicle_quantity_change_prevent"));
-                        EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, uPlayer.SteamPlayer().transportConnection, true, button, "1");
+                        UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID, uPlayer.SteamPlayer().transportConnection, true, button, "1");
                     }
                     else
                         comp.Basket[key] = v;
@@ -113,9 +113,9 @@ namespace Tavstal.TShop.Utils.Handlers
                             comp.MenuCategory = EMenuCategory.ProductItems;
                             comp.IsVehiclePage = false;
                             await UIManager.UpdateProductPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
                                 "tshop_products", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
                                 "tshop_basket", false);
                             return;
                         }
@@ -127,9 +127,9 @@ namespace Tavstal.TShop.Utils.Handlers
                             comp.MenuCategory = EMenuCategory.ProductVehicles;
                             comp.IsVehiclePage = true;
                             await UIManager.UpdateProductPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
                                 "tshop_products", true);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
                                 "tshop_basket", false);
                             return;
                         }
@@ -140,9 +140,9 @@ namespace Tavstal.TShop.Utils.Handlers
 
                             comp.MenuCategory = EMenuCategory.Basket;
                             UIManager.UpdateBasketPage(uPlayer);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
                                 "tshop_products", false);
-                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
                                 "tshop_basket", true);
                             return;
                         }

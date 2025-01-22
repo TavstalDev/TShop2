@@ -5,6 +5,7 @@ using Rocket.Unturned.Player;
 using SDG.NetTransport;
 using SDG.Unturned;
 using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Models;
@@ -76,12 +77,12 @@ namespace Tavstal.TShop.Components
                 string notify = notifiesOnQueue.ElementAt(0);
                 if (notify != null)
                 {
-                    EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, TransportConnection, true, "tb_notification#1#text", notify);
-                    EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", true);
+                    UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID, TransportConnection, true, "tb_notification#1#text", notify);
+                    UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", true);
 
                     TShop.Instance.InvokeAction(2f, () =>
                     {
-                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", false);
+                        UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", false);
                         SendNotify();
                     });
                     notifiesOnQueue.RemoveAt(0);

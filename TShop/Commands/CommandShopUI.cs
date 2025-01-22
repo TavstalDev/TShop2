@@ -2,6 +2,7 @@
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tavstal.TLibrary;
 using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
@@ -22,17 +23,16 @@ namespace Tavstal.TShop.Commands
 
         protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
         {
-            UnturnedPlayer p = (UnturnedPlayer)caller;
-            ShopComponent comp = p.GetComponent<ShopComponent>();
+            UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
+            ShopComponent comp = callerPlayer.GetComponent<ShopComponent>();
             if (comp.IsUIOpened)
             {
-                UIManager.Hide(p);
+                UIManager.Hide(callerPlayer);
+                return true;
             }
-            else
-            {
-                UIManager.Show(p);
-                await UIManager.UpdateProductPage(p);
-            }
+
+            UIManager.Show(callerPlayer);
+            await UIManager.UpdateProductPage(callerPlayer);
             return true;
         }
     }
