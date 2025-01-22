@@ -27,6 +27,7 @@ namespace Tavstal.TShop
         public static DatabaseManager DatabaseManager { get; private set; }
         public static IEconomyProvider EconomyProvider { get; private set; }
         public static bool IsConnectionAuthFailed { get; set; }
+        public static bool IsCleanupInProgress { get; set; }
         private bool _isLateInited;
 
         /// <summary>
@@ -215,10 +216,7 @@ namespace Tavstal.TShop
                 { "error_command_vehicleshop_add_args", "&6Usage: /vshop add [vehicle name | id] [buycost] [sellcost] <permission>" },
                 { "error_command_vehicleshop_update_args", "&6Usage: /vshop update [vehicle name | id] [buycost] [sellcost] <permission>" },
                 { "error_command_vehicleshop_color_args", "&aUsage: /vshop color [vehicle name | id] [vehicleColor]" },
-                { "success_command_page", "&6Next page: /shoplist {0} {1}." },
                 { "error_command_page", "&6That page doesn't exist." },
-                { "success_command_page_end", "&aYou have reached the end of the {0} shop list." },
-                { "success_command_page_info", "- {0} (ID: {1}, buy price: {2}, sell price: {3} and Permission: {4})" },
                 { "error_balance_not_enough", "&6You don't have enough money. You need {0} to be able to buy." },
                 { "error_item_already_added", "&6The {0} (ID: {1}) is already added to the shop." },
                 { "error_item_not_added", "&6This item isn't added to the shop. ({0})" },
@@ -243,6 +241,10 @@ namespace Tavstal.TShop
                 { "error_vehicle_updated", "&6Failed to update {0} in the vehicle store." },
                 { "error_vehicle_color_not_hex", "&6Failed to parse the {0} value to hex color." },
                 { "error_migrate_console", "&6Failed to migrate, please check the console." },
+                { "error_command_removeinvalidproducts_cleanup_in_progress", "&6Cleanup is already in progress." },
+                { "success_command_page", "&6Next page: /shoplist {0} {1}." },
+                { "success_command_page_end", "&aYou have reached the end of the {0} shop list." },
+                { "success_command_page_info", "- {0} (ID: {1}, buy price: {2}, sell price: {3} and Permission: {4})" },
                 { "success_item_buy", "&aYou have successfully bought {1}x {0} for {3}{2}." },
                 { "success_item_sell", "&aYou have successfully sold {1}x {0} for {3}{2}." },
                 { "success_item_cost", "&a- {0}'s buycost: {3}{1} sellcost: {3}{2}." },
@@ -258,6 +260,8 @@ namespace Tavstal.TShop
                 { "success_migrate", "&aYou have successfully migrated the data of ZaupShop. Please check the console for detailed information." },
                 { "success_pruchase", "&aYou have successfully bought {0} item(s)." },
                 { "success_sell", "&aYou have successfully sold {0} item(s)." },
+                { "command_removeinvalidproducts_cleanup_started", "&aStarted removing invalid products from the database... Please be patient." },
+                { "command_removeinvalidproducts_cleanup_finished", "&aCleanup finished. Removed {0} invalid products out of {1} products." },
                 { "ui_product_free", "Free" },
                 { "ui_product_notavailable", "N/A" },
                 { "ui_product_buycost", "${0}" },
