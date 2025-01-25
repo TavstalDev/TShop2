@@ -16,10 +16,16 @@ using Tavstal.TShop.Utils.Managers;
 
 namespace Tavstal.TShop.Utils.Handlers
 {
+    /// <summary>
+    /// Handles various Unturned events related to the TShop.
+    /// </summary>
     internal static class UnturnedEventHandler
     {
         private static bool _isAttached;
 
+        /// <summary>
+        /// Attaches event handlers to Unturned events.
+        /// </summary>
         public static void Attach()
         {
             if (_isAttached)
@@ -31,7 +37,10 @@ namespace Tavstal.TShop.Utils.Handlers
             U.Events.OnPlayerConnected += Event_OnPlayerJoin;
         }
 
-        public static void Unattach()
+        /// <summary>
+        /// Detaches event handlers from Unturned events.
+        /// </summary>
+        public static void Detach()
         {
             if (!_isAttached)
                 return;
@@ -42,11 +51,23 @@ namespace Tavstal.TShop.Utils.Handlers
             U.Events.OnPlayerConnected -= Event_OnPlayerJoin;
         }
 
+        /// <summary>
+        /// Event handler for player join event.
+        /// Initializes the UI for the player.
+        /// </summary>
+        /// <param name="player">The player who joined.</param>
         private static void Event_OnPlayerJoin(UnturnedPlayer player)
         {
             UIManager.Init(player);
         }
 
+        /// <summary>
+        /// Event handler for input field edit event.
+        /// Handles various input field edits in the TShop UI.
+        /// </summary>
+        /// <param name="player">The player who edited the input field.</param>
+        /// <param name="button">The button identifier.</param>
+        /// <param name="text">The text entered in the input field.</param>
         private static void Event_OnInputFieldEdit(Player player, string button, string text)
         {
             UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
@@ -54,31 +75,35 @@ namespace Tavstal.TShop.Utils.Handlers
 
             if (button.StartsWith("inputf_tshop_basket#product#"))
             {
-                int buttonIndex = Convert.ToInt32(button.Replace("inputf_tshop_basket#product#", "").Replace("#amt", "")) - 1;
+                int buttonIndex =
+                    Convert.ToInt32(button.Replace("inputf_tshop_basket#product#", "").Replace("#amt", "")) - 1;
 
                 int elementIndex = (comp.PageBasket - 1) * 12 + buttonIndex;
                 if (!comp.Basket.IsValidIndex(elementIndex))
                     return;
 
-                if (int.TryParse(text, out int v))
+                if (!int.TryParse(text, out int v))
+                    return;
+                if (v > 100 || v < 1)
+                    return;
+
+                var key = comp.Basket.Keys.ElementAt(elementIndex);
+                if (key.IsVehicle)
                 {
-                    if (v > 100 || v < 1)
-                        return;
-
-                    var key = comp.Basket.Keys.ElementAt(elementIndex);
-                    if (key.IsVehicle)
-                    {
-                        comp.Basket[key] = 1;
-                        comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_vehicle_quantity_change_prevent"));
-                        UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID, uPlayer.SteamPlayer().transportConnection, true, button, "1");
-                    }
-                    else
-                        comp.Basket[key] = v;
-
-                    UIManager.UpdateBasketPayment(uPlayer);
+                    comp.Basket[key] = 1;
+                    comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_vehicle_quantity_change_prevent"));
+                    UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID,
+                        uPlayer.SteamPlayer().transportConnection, true, button, "1");
                 }
+                else
+                    comp.Basket[key] = v;
+
+                UIManager.UpdateBasketPayment(uPlayer);
+
+                return;
             }
-            else if (button.EqualsIgnoreCase("inputf_product_search"))
+
+            if (button.EqualsIgnoreCase("inputf_product_search"))
             {
                 if (comp.ProductSearch.EqualsIgnoreCase(text)) 
                     return;
@@ -87,6 +112,12 @@ namespace Tavstal.TShop.Utils.Handlers
             }
         }
 
+        /// <summary>
+        /// Event handler for button click event.
+        /// Handles various button clicks in the TShop UI.
+        /// </summary>
+        /// <param name="player">The player who clicked the button.</param>
+        /// <param name="button">The button identifier.</param>
         private static void Event_OnButtonClick(Player player, string button)
         {
             try
@@ -101,8 +132,6 @@ namespace Tavstal.TShop.Utils.Handlers
                 comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UIButtonDelay);
                 Task.Run(async () =>
                 {
-
-
                     switch (button.ToLower())
                     {
                         case "bt_nav_tshop_items":
@@ -538,9 +567,9 @@ namespace Tavstal.TShop.Utils.Handlers
 
                             await UIManager.UpdateProductPage(uPlayer);
                         }
-                        //return;
+                        return;
                     }
-                    else if (button.StartsWith("bt_tshop_basket#page#"))
+                    if (button.StartsWith("bt_tshop_basket#page#"))
                     {
                         if (button.Contains("dots"))
                             return;
@@ -554,9 +583,9 @@ namespace Tavstal.TShop.Utils.Handlers
 
                             UIManager.UpdateBasketPage(uPlayer);
                         }
-                        //return;
+                        return;
                     }
-                    else if (button.StartsWith("bt_tshop_product#"))
+                    if (button.StartsWith("bt_tshop_product#"))
                     {
                         int index = (Convert.ToInt32(button.Replace("bt_tshop_product#", "")) - 1) +
                                     10 * ((comp.IsVehiclePage ? comp.PageVehicle : comp.PageItem) - 1);
@@ -583,8 +612,10 @@ namespace Tavstal.TShop.Utils.Handlers
                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_product_added", item.GetName()));
 
                         UIManager.UpdateBasketPage(uPlayer);
+                        return;
                     }
-                    else if (button.StartsWith("bt_tshop_basket#product#"))
+
+                    if (button.StartsWith("bt_tshop_basket#product#"))
                     {
                         if (button.EndsWith("#delete"))
                         {

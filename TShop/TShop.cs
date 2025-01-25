@@ -82,7 +82,7 @@ namespace Tavstal.TShop
         /// </summary>
         public override void OnUnLoad()
         {
-            UnturnedEventHandler.Unattach();
+            UnturnedEventHandler.Detach();
             Level.onPostLevelLoaded -= Event_OnPluginsLoaded;
             _isLateInited = false;
             foreach (SteamPlayer steamPlayer in Provider.clients)
