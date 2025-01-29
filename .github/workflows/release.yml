@@ -1,0 +1,162 @@
+# GitHub Actions workflow for building and releasing a DLL
+name: Build and Release DLL
+
+on:
+  push:
+    branches:
+      - 'stable' # Trigger on push to any branch
+
+permissions:
+  contents: write  # Grant write permissions to contents
+  
+
+env:
+  SLN_NAME: TShop.sln # Solution file name
+  DLL_NAME: TShop.dll # DLL file name
+  LIBRARY_PATH: ./TShop/bin/Release/net48/TLibrary.dll # Path to the library DLL
+  DLL_PATH: ./TShop/bin/Release/net48/TShop.dll # Path to the main DLL
+  COMMIT_EXTRA_DESC: |
+    Libraries can be found [here](https://github.com/TavstalDev/TLibrary/releases/tag/VERSION_PLACEHOLDER).
+
+jobs:
+  # Job 1.
+  build:
+    runs-on: windows-latest # Use the latest Windows runner
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Step 2: Setup MSBuild for building .NET Framework
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+      
+    # Step 3: Setup NuGet
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: latest  # Use the latest version of NuGet
+
+    # Step 4: Restore dependencies using NuGet
+    - name: Restore Dependencies
+      run: nuget restore ${{ env.SLN_NAME }}
+
+    # Step 5: Build the solution using MSBuild
+    - name: Build Solution
+      run: msbuild ${{ env.SLN_NAME }} /p:Configuration=Release
+
+    # Step 6: Extract DLL Version
+    - name: Extract DLL Version
+      id: extract_version
+      run: |
+        if (Test-Path ${{ env.DLL_PATH }}) {
+            Write-Output "DLL found: ${{ env.DLL_PATH }}"
+            $version = (Get-Item ${{ env.DLL_PATH }}).VersionInfo.FileVersion
+    
+            if ($version) {
+                Write-Output "Extracted version: $version"
+                echo "Setting DLL_VERSION=$version in GITHUB_ENV"
+                Add-Content -Path $env:GITHUB_ENV -Value "DLL_VERSION=$version"
+            } else {
+                Write-Output "FileVersion not found in the DLL metadata."
+                exit 1
+            }
+        } else {
+            Write-Output "DLL not found at path: $dllPath"
+            exit 1
+        }
+        
+        if (Test-Path ${{ env.LIBRARY_PATH }}) {
+            Write-Output "Library DLL found: ${{ env.LIBRARY_PATH }}"
+            $libraryVersion = (Get-Item ${{ env.LIBRARY_PATH }}).VersionInfo.FileVersion
+
+            if ($libraryVersion) {
+                Write-Output "Extracted library version: $libraryVersion"
+                echo "Setting LIBRARY_VERSION=$libraryVersion in GITHUB_ENV"
+        
+                $commitDesc="${{ env.COMMIT_EXTRA_DESC }}"
+                echo "Debug 1: $commitDesc"
+                # Replace the placeholder
+                $updatedCommitDesc=$(echo "$commitDesc" | sed "s/VERSION_PLACEHOLDER/$libraryVersion/")
+                echo "Debug 2: $updatedCommitDesc"
+                echo "Debug 3: $COMMIT_EXTRA_DESC"
+                Add-Content -Path $env:GITHUB_ENV -Value "COMMIT_EXTRA_DESC=$updatedCommitDesc"
+            }
+        }
+      shell: powershell
+        
+    # Step 7: Get the latest tag
+    - name: Get latest tag
+      id: get_latest_tag
+      run: |
+        try {
+          git fetch --tags
+          $latest_tag = git tag -l | sort -V | tail -n 1
+          if (-not $latest_tag) {
+            $latest_tag = "none"
+          }
+        } catch {
+          $latest_tag = "none"
+        }
+        Write-Output "Latest tag: $latest_tag"
+        Add-Content -Path $env:GITHUB_ENV -Value "LATEST_TAG=$latest_tag"
+        # Force the step to exit with a success status (0)
+        exit 0
+      shell: powershell
+      
+    # Step 8: Get commit logs since the latest tag
+    - name: Get commit logs since the latest tag
+      id: get_commits
+      run: |
+        # Fetch all history
+        git fetch --unshallow
+        
+        if ($env:LATEST_TAG -eq "none") {
+          Write-Output "No previous tag found, listing all commits."
+          $commits = git log HEAD --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%h) - %s"
+        } else {
+          Write-Output "Getting commits since tag: $env:LATEST_TAG"
+          # Fetch commits since the latest tag, and format them properly
+          $commits = @()
+          git log "$env:LATEST_TAG..HEAD" --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%h) - %s" | ForEach-Object { $commits += "$_" }
+        }
+        
+        # Log the full output of the git log command
+        Write-Output "Full commit log:"
+        Write-Output $commits
+        Write-Output "commits=$commits" >> $GITHUB_ENV
+        $localCommit = $commits -join "`n" 
+        Add-Content -Path $env:GITHUB_ENV -Value @"
+        COMMITS<<EOF
+        $localCommit
+        EOF
+        "@
+        exit 0
+      
+    # Step 9: Create a GitHub release (or update an existing one)
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.DLL_VERSION }} # Use the extracted DLL version
+        release_name: Build ${{ env.DLL_VERSION }}
+        draft: false
+        prerelease: true
+        body: |
+          ## Changelog
+          ${{ env.COMMIT_EXTRA_DESC }}
+          Changes pushed to branch `${{ github.ref_name }}`
+          ${{ env.COMMITS}}
+      
+    # Step 10: Upload the DLL to the release
+    - name: Upload DLL to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.DLL_PATH }}
+        asset_name: ${{ env.DLL_NAME }}
+        asset_content_type: application/octet-stream
