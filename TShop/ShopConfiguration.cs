@@ -32,7 +32,7 @@ namespace Tavstal.TShop
         public int DiscountInterval { get; set; }
         [JsonProperty(Order = 13)]
         public string DefaultProductIconUrl { get; set; }
-        [JsonProperty(PropertyName = "ItemFolders", Order = 14)]
+        [JsonProperty(Order = 14)]
         public SerializableVector3 VehicleSpawnModifier { get; set; }
         [JsonProperty(PropertyName = "ItemFolders", Order = 15)]
         public List<FileServerFolder> ItemFolders { get; set; }
