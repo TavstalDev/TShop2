@@ -13,6 +13,7 @@ using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Utils.Helpers;
+using UnityEngine;
 
 namespace Tavstal.TShop.Commands
 {
@@ -95,10 +96,7 @@ namespace Tavstal.TShop.Commands
             await TShop.EconomyProvider.WithdrawAsync(callerPlayer.CSteamID, cost);
             await MainThreadDispatcher.RunOnMainThreadAsync(() =>
             {
-                InteractableVehicle vehicle = VehicleManager.spawnLockedVehicleForPlayerV2(id,
-                    callerPlayer.Position + UnturnedHelper.GetVehicleSpawnModifier(), callerPlayer.Player.transform.rotation,
-                    callerPlayer.Player);
-
+                InteractableVehicle vehicle = UnturnedHelper.SpawnOwnedVehicle(id, callerPlayer);
                 if (!item.VehicleColor.IsNullOrEmpty())
                     vehicle.ServerSetPaintColor(item.GetVehicleColor());
             });

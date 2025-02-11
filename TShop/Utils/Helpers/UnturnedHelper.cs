@@ -2,6 +2,8 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using Rocket.Unturned.Player;
+using SDG.Unturned;
 using Tavstal.TShop.Models;
 using UnityEngine;
 
@@ -99,7 +101,7 @@ namespace Tavstal.TShop.Utils.Helpers
         /// <exception cref="Exception">
         /// Logs an error if there is an issue retrieving the vehicle spawn modifier.
         /// </exception>
-        public static Vector3 GetVehicleSpawnModifier()
+        private static Vector3 GetVehicleSpawnModifier()
         {
             try
             {
@@ -110,7 +112,23 @@ namespace Tavstal.TShop.Utils.Helpers
                 TShop.Logger.LogError("Failed to get vehicle spawn modifier. Using default value...");
             }
 
-            return new Vector3(0, 5, 0);
+            return new Vector3(0, 5, 5);
+        }
+
+        /// <summary>
+        /// Spawns a vehicle owned by the specified player at the player's current position,
+        /// rotated to match the direction the player is looking.
+        /// </summary>
+        /// <param name="id">The ID of the vehicle to spawn.</param>
+        /// <param name="owner">The player who will own the spawned vehicle.</param>
+        /// <returns>
+        /// The spawned <see cref="InteractableVehicle"/> instance.
+        /// </returns>
+        public static InteractableVehicle SpawnOwnedVehicle(ushort id, UnturnedPlayer owner)
+        {
+            Quaternion playerRotation = Quaternion.LookRotation(owner.Player.look.aim.forward);
+            Vector3 spawnPosition =  owner.Position + (playerRotation * GetVehicleSpawnModifier());
+            return VehicleManager.spawnLockedVehicleForPlayerV2(id, spawnPosition, owner.Player.transform.rotation, owner.Player);
         }
     }
 }
