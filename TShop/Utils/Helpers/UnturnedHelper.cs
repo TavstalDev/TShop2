@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using Tavstal.TShop.Models;
+using UnityEngine;
 
 namespace Tavstal.TShop.Utils.Helpers
 {
@@ -83,6 +84,33 @@ namespace Tavstal.TShop.Utils.Helpers
         public static string GetVehiclesInJson()
         {
             return JArray.FromObject(TShop.DatabaseManager.GetVehiclesAsync()).ToString(Formatting.None);
+        }
+
+        /// <summary>
+        /// Retrieves the vehicle spawn modifier from the configuration.
+        /// </summary>
+        /// <returns>
+        /// A Vector3 representing the vehicle spawn modifier.
+        /// </returns>
+        /// <remarks>
+        /// If the vehicle spawn modifier cannot be retrieved from the configuration,
+        /// a default value of (0, 5, 0) is returned.
+        /// </remarks>
+        /// <exception cref="Exception">
+        /// Logs an error if there is an issue retrieving the vehicle spawn modifier.
+        /// </exception>
+        public static Vector3 GetVehicleSpawnModifier()
+        {
+            try
+            {
+                return TShop.Instance.Config.VehicleSpawnModifier.GetVector3();
+            }
+            catch (Exception e)
+            {
+                TShop.Logger.LogError("Failed to get vehicle spawn modifier. Using default value...");
+            }
+
+            return new Vector3(0, 5, 0);
         }
     }
 }

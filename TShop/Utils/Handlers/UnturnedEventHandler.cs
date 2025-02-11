@@ -12,6 +12,7 @@ using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Models.Enums;
+using Tavstal.TShop.Utils.Helpers;
 using Tavstal.TShop.Utils.Managers;
 
 namespace Tavstal.TShop.Utils.Handlers
@@ -382,7 +383,7 @@ namespace Tavstal.TShop.Utils.Handlers
                                     await MainThreadDispatcher.RunOnMainThreadAsync(() =>
                                     {
                                         InteractableVehicle vehicle = VehicleManager.spawnLockedVehicleForPlayerV2(prod.Key.UnturnedId,
-                                            uPlayer.Position + new UnityEngine.Vector3(0, 0, 5),
+                                            uPlayer.Position + UnturnedHelper.GetVehicleSpawnModifier(),
                                             uPlayer.Player.transform.rotation, uPlayer.Player);
 
                                         if (!prod.Key.VehicleColor.IsNullOrEmpty())

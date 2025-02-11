@@ -12,6 +12,7 @@ using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
+using Tavstal.TShop.Utils.Helpers;
 
 namespace Tavstal.TShop.Commands
 {
@@ -95,7 +96,7 @@ namespace Tavstal.TShop.Commands
             await MainThreadDispatcher.RunOnMainThreadAsync(() =>
             {
                 InteractableVehicle vehicle = VehicleManager.spawnLockedVehicleForPlayerV2(id,
-                    callerPlayer.Position + new UnityEngine.Vector3(0, 0, 5), callerPlayer.Player.transform.rotation,
+                    callerPlayer.Position + UnturnedHelper.GetVehicleSpawnModifier(), callerPlayer.Player.transform.rotation,
                     callerPlayer.Player);
 
                 if (!item.VehicleColor.IsNullOrEmpty())

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using Tavstal.TLibrary.Models;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Models;
 
@@ -32,8 +33,10 @@ namespace Tavstal.TShop
         [JsonProperty(Order = 13)]
         public string DefaultProductIconUrl { get; set; }
         [JsonProperty(PropertyName = "ItemFolders", Order = 14)]
+        public SerializableVector3 VehicleSpawnModifier { get; set; }
+        [JsonProperty(PropertyName = "ItemFolders", Order = 15)]
         public List<FileServerFolder> ItemFolders { get; set; }
-        [JsonProperty(PropertyName = "VehicleFolders", Order = 15)]
+        [JsonProperty(PropertyName = "VehicleFolders", Order = 16)]
         public List<FileServerFolder> VehicleFolders { get; set; }
         [JsonIgnore]
         public readonly string MessageIcon = "https://raw.githubusercontent.com/TavstalDev/Icons/master/Plugins/icon_plugin_tshop.png";
@@ -56,6 +59,7 @@ namespace Tavstal.TShop
             VehicleCountToDiscount = 5;
             DiscountInterval = 1800;
             DefaultProductIconUrl = "https://raw.githubusercontent.com/TavstalDev/Icons/master/noimage.png";
+            VehicleSpawnModifier = new SerializableVector3(0, 5, 0);
             ItemFolders = new List<FileServerFolder>
             {
                 new FileServerFolder("0-2000", "https://raw.githubusercontent.com/TavstalDev/Icons/master/Vanilla/", 0, 2000),
