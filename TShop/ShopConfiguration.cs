@@ -59,7 +59,7 @@ namespace Tavstal.TShop
             VehicleCountToDiscount = 5;
             DiscountInterval = 1800;
             DefaultProductIconUrl = "https://raw.githubusercontent.com/TavstalDev/Icons/master/noimage.png";
-            VehicleSpawnModifier = new SerializableVector3(0, 5, 0);
+            VehicleSpawnModifier = new SerializableVector3(0, 5, 5);
             ItemFolders = new List<FileServerFolder>
             {
                 new FileServerFolder("0-2000", "https://raw.githubusercontent.com/TavstalDev/Icons/master/Vanilla/", 0, 2000),
