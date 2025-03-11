@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TShop", "TShop\TShop.csproj", "{4FA5F492-5DD8-464A-99A6-42A4D242A76D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityUI", "ShopUI\UnityUI.csproj", "{B89FF049-4218-3E16-455B-D4071680243F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "..\..\Unity\Unturned\UnityUI-TShop\Assembly-CSharp.csproj", "{B89FF049-4218-3E16-455B-D4071680243F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
