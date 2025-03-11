@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: b3df0639c55773149a4725b009b9ae68
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Font Awesome 6 Free
+  fontNames:
+  - Font Awesome 6 Free
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 29bcd2487ac42524ca8a6bc6efc6610d, type: 3}
+  - {fileID: 12800000, guid: f850d9d9ebd083649a07e3275b32e697, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
