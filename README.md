@@ -1,5 +1,11 @@
 # TShop
 
+![Release (latest by date)](https://img.shields.io/github/v/release/TavstalDev/TShop2?style=plastic-square)
+![Workflow Status](https://img.shields.io/github/actions/workflow/status/TavstalDev/TShop2/release.yml?branch=stable&label=build&style=plastic-square)
+![License](https://img.shields.io/github/license/TavstalDev/TShop2?style=plastic-square)
+![Downloads](https://img.shields.io/github/downloads/TavstalDev/TShop2/total?style=plastic-square)
+![Isues](https://img.shields.io/github/issues/TavstalDev/TShop2?style=plastic-square)
+
 ### What is this?
 This is the source code of a .NETFramework library written in C#. This library is a plugin made for Unturned 3.24.x+ servers. 
 
