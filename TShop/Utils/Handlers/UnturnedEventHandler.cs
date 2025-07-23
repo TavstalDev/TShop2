@@ -382,7 +382,7 @@ namespace Tavstal.TShop.Utils.Handlers
                                     await TShop.EconomyProvider.WithdrawAsync(uPlayer.CSteamID, cost);
                                     await MainThreadDispatcher.RunOnMainThreadAsync(() =>
                                     {
-                                        InteractableVehicle vehicle = UnturnedHelper.SpawnOwnedVehicle(prod.Key.UnturnedId, uPlayer);;
+                                        InteractableVehicle vehicle = UnturnedHelper.SpawnOwnedVehicle(prod.Key.UnturnedId, uPlayer);
 
                                         if (!prod.Key.VehicleColor.IsNullOrEmpty())
                                             vehicle.ServerSetPaintColor(prod.Key.GetVehicleColor());

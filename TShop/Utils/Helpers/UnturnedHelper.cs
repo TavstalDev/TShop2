@@ -107,9 +107,10 @@ namespace Tavstal.TShop.Utils.Helpers
             {
                 return TShop.Instance.Config.VehicleSpawnModifier.GetVector3();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 TShop.Logger.LogError("Failed to get vehicle spawn modifier. Using default value...");
+                TShop.Logger.LogError(ex);
             }
 
             return new Vector3(0, 5, 5);
