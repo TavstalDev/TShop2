@@ -11,6 +11,7 @@ using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
+using Tavstal.TShop.Utils.Helpers;
 
 namespace Tavstal.TShop.Commands
 {
@@ -73,13 +74,9 @@ namespace Tavstal.TShop.Commands
                 return true;
             }
 
-            await MainThreadDispatcher.RunOnMainThreadAsync(() => VehicleManager.askVehicleDestroy(vehicle));
-            await TShop.EconomyProvider.DepositAsync(callerPlayer.CSteamID, cost);
-            if (TShop.EconomyProvider.HasTransactionSystem())
-                await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID,
-                    new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE, comp.PaymentMethod,
-                        TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost,
-                        DateTime.Now));
+            if (!await ShopHelper.SellVehicleAsync(callerPlayer, vehicle, cost, comp.PaymentMethod))
+                return true;
+            
             TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_sell", asset.vehicleName, cost,
                 TShop.EconomyProvider.GetCurrencyName());
 

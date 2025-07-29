@@ -11,6 +11,7 @@ using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
+using Tavstal.TShop.Utils.Helpers;
 
 namespace Tavstal.TShop.Commands
 {
@@ -37,7 +38,7 @@ namespace Tavstal.TShop.Commands
             }
 
             ushort id = 0;
-            int amount = 1;
+            byte amount = 1;
             try
             {
                 ushort.TryParse(args[0], out id);
@@ -51,7 +52,7 @@ namespace Tavstal.TShop.Commands
             {
                 try
                 {
-                    int.TryParse(args[1], out amount);
+                    byte.TryParse(args[1], out amount);
                 }
                 catch
                 {
@@ -87,37 +88,17 @@ namespace Tavstal.TShop.Commands
             }
 
             decimal cost = item.GetSellCost(amount);
-            List<InventorySearch> search = callerPlayer.Inventory.search(asset.id, true, true);
-            if (search.Count < amount)
-            {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_not_enough");
-                return true;
-            }
-
             if (cost == 0)
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_sell_error");
                 return true;
             }
 
-            await TShop.EconomyProvider.DepositAsync(callerPlayer.CSteamID, cost);
-            await MainThreadDispatcher.RunOnMainThreadAsync(() =>
-            {
-                for (int i = 0; i < amount; i++)
-                {
-                    callerPlayer.Inventory.removeItem(search[i].page,
-                        callerPlayer.Inventory.getIndex(search[i].page, search[i].jar.x, search[i].jar.y));
-                }
-            });
-
-            if (TShop.EconomyProvider.HasTransactionSystem())
-                await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID,
-                    new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE, comp.PaymentMethod,
-                        TShop.Instance.Localize(true, "ui_shopname"), 0, callerPlayer.CSteamID.m_SteamID, cost,
-                        DateTime.Now));
+            if (!await ShopHelper.SellItemAsync(callerPlayer, id, cost, amount, comp.PaymentMethod))
+                return true;
+            
             TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_item_sell", asset.itemName, amount,
                 cost, TShop.EconomyProvider.GetCurrencyName());
-
             return true;
         }
     }

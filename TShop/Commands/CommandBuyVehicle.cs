@@ -92,19 +92,9 @@ namespace Tavstal.TShop.Commands
                 return true;
             }
 
-            await TShop.EconomyProvider.WithdrawAsync(callerPlayer.CSteamID, cost);
-            await MainThreadDispatcher.RunOnMainThreadAsync(() =>
-            {
-                InteractableVehicle vehicle = UnturnedHelper.SpawnOwnedVehicle(id, callerPlayer);
-                if (!item.VehicleColor.IsNullOrEmpty())
-                    vehicle.ServerSetPaintColor(item.GetVehicleColor());
-            });
+            if (!await ShopHelper.BuyVehicleAsync(callerPlayer, id, item.GetVehicleColor(), cost, comp.PaymentMethod))
+                return true;
 
-            if (TShop.EconomyProvider.HasTransactionSystem())
-                await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID,
-                    new Transaction(Guid.NewGuid().ToString(), ETransaction.PURCHASE, comp.PaymentMethod,
-                        TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost,
-                        DateTime.Now));
             TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_buy", asset.vehicleName, cost,
                 TShop.EconomyProvider.GetCurrencyName());
 

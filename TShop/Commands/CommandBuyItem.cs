@@ -11,6 +11,7 @@ using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
+using Tavstal.TShop.Utils.Helpers;
 
 namespace Tavstal.TShop.Commands
 {
@@ -37,7 +38,7 @@ namespace Tavstal.TShop.Commands
             }
 
             ushort id = 0;
-            int amount = 1;
+            byte amount = 1;
             // Get ID
             try
             {
@@ -53,7 +54,7 @@ namespace Tavstal.TShop.Commands
             {
                 try
                 {
-                    int.TryParse(args[1], out amount);
+                    byte.TryParse(args[1], out amount);
                 }
                 catch
                 {
@@ -89,7 +90,6 @@ namespace Tavstal.TShop.Commands
             }
 
             decimal cost = item.GetBuyCost(amount);
-
             if (await TShop.EconomyProvider.GetBalanceAsync(callerPlayer.CSteamID) < cost)
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_balance_not_enough",
@@ -103,23 +103,9 @@ namespace Tavstal.TShop.Commands
                 return true;
             }
 
-            await TShop.EconomyProvider.WithdrawAsync(callerPlayer.CSteamID, cost);
-            await MainThreadDispatcher.RunOnMainThreadAsync(() =>
-            {
-                for (int i = 0; i < amount; i++)
-                {
-                    if (!callerPlayer.Inventory.tryAddItem(new Item(asset.id, true), false))
-                        ItemManager.dropItem(new Item(asset.id, true), callerPlayer.Position, true, true, false);
-                }
-            });
+            if (!await ShopHelper.BuyItemAsync(callerPlayer, asset.id, cost, amount, comp.PaymentMethod))
+                return true;
             
-
-            if (TShop.EconomyProvider.HasTransactionSystem())
-                await TShop.EconomyProvider.AddTransactionAsync(callerPlayer.CSteamID,
-                    new Transaction(Guid.NewGuid().ToString(), ETransaction.PURCHASE, comp.PaymentMethod,
-                        TShop.Instance.Localize(true, "ui_shopname"), callerPlayer.CSteamID.m_SteamID, 0, cost,
-                        DateTime.Now
-                        ));
             TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_item_buy", asset.itemName, amount,
                 cost, TShop.EconomyProvider.GetCurrencyName());
             return true;
