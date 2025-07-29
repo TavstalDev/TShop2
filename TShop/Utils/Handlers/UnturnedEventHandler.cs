@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Rocket.Unturned.Events;
 using Tavstal.TLibrary;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Extensions;
@@ -33,9 +34,10 @@ namespace Tavstal.TShop.Utils.Handlers
                 return;
 
             _isAttached = true;
-            EffectManager.onEffectTextCommitted += Event_OnInputFieldEdit;
-            EffectManager.onEffectButtonClicked += Event_OnButtonClick;
-            U.Events.OnPlayerConnected += Event_OnPlayerJoin;
+            EffectManager.onEffectTextCommitted += OnInputFieldEdit;
+            EffectManager.onEffectButtonClicked += OnButtonClick;
+            U.Events.OnPlayerConnected += OnPlayerJoin;
+            U.Events.OnPlayerDisconnected += OnPlayerLeft;
         }
 
         /// <summary>
@@ -47,9 +49,10 @@ namespace Tavstal.TShop.Utils.Handlers
                 return;
 
             _isAttached = false;
-            EffectManager.onEffectTextCommitted -= Event_OnInputFieldEdit;
-            EffectManager.onEffectButtonClicked -= Event_OnButtonClick;
-            U.Events.OnPlayerConnected -= Event_OnPlayerJoin;
+            EffectManager.onEffectTextCommitted -= OnInputFieldEdit;
+            EffectManager.onEffectButtonClicked -= OnButtonClick;
+            U.Events.OnPlayerConnected -= OnPlayerJoin;
+            U.Events.OnPlayerDisconnected -= OnPlayerLeft;
         }
 
         /// <summary>
@@ -57,19 +60,52 @@ namespace Tavstal.TShop.Utils.Handlers
         /// Initializes the UI for the player.
         /// </summary>
         /// <param name="player">The player who joined.</param>
-        private static void Event_OnPlayerJoin(UnturnedPlayer player)
+        private static void OnPlayerJoin(UnturnedPlayer player)
         {
             UIManager.Init(player);
+            player.Player.equipment.onEquipRequested += OnPlayerEquipResuested;
         }
 
+        /// <summary>
+        /// Event handler for when a player leaves the server.
+        /// Removes the event listener for equipment requests.
+        /// </summary>
+        /// <param name="player">The player who left the server.</param>
+        private static void OnPlayerLeft(UnturnedPlayer player)
+        {
+            // Unsubscribe from the equipment request event for the player.
+            player.Player.equipment.onEquipRequested -= OnPlayerEquipResuested;
+        }
+
+        /// <summary>
+        /// Event handler for when a player attempts to equip an item.
+        /// Prevents equipping if a transaction is in progress.
+        /// </summary>
+        /// <param name="equipment">The player's equipment instance.</param>
+        /// <param name="jar">The item jar containing the item being equipped.</param>
+        /// <param name="asset">The item asset being equipped.</param>
+        /// <param name="shouldAllow">A reference to a boolean indicating whether the equip action should be allowed.</param>
+        private static void OnPlayerEquipResuested(PlayerEquipment equipment, ItemJar jar, ItemAsset asset, ref bool shouldAllow)
+        {
+            // Get the UnturnedPlayer instance from the equipment's player.
+            UnturnedPlayer player = UnturnedPlayer.FromPlayer(equipment.player);
+
+            // Retrieve the ShopComponent associated with the player.
+            ShopComponent comp = player.GetComponent<ShopComponent>();
+    
+            // Prevent equipping if a transaction is currently in progress.
+            if (comp.IsTransactionInProgress || comp.IsUIOpened)
+                shouldAllow = false;
+        }
+        
         /// <summary>
         /// Event handler for input field edit event.
         /// Handles various input field edits in the TShop UI.
         /// </summary>
         /// <param name="player">The player who edited the input field.</param>
         /// <param name="button">The button identifier.</param>
-        /// <param name="text">The text entered in the input field.</param>
-        private static void Event_OnInputFieldEdit(Player player, string button, string text)
+        /// <param name="text">The text entered the input field.</param>
+        private static void OnInputFieldEdit(Player player, string button, string text)
         {
             UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
             ShopComponent comp = player.GetComponent<ShopComponent>();
@@ -119,7 +155,7 @@ namespace Tavstal.TShop.Utils.Handlers
         /// </summary>
         /// <param name="player">The player who clicked the button.</param>
         /// <param name="button">The button identifier.</param>
-        private static void Event_OnButtonClick(Player player, string button)
+        private static void OnButtonClick(Player player, string button)
         {
             try
             {
@@ -127,7 +163,7 @@ namespace Tavstal.TShop.Utils.Handlers
                 ShopComponent comp = player.GetComponent<ShopComponent>();
                 var playerTc = uPlayer.SteamPlayer().transportConnection;
 
-                if (comp.LastButtonClick > DateTime.Now)
+                if (comp.LastButtonClick > DateTime.Now || comp.IsTransactionInProgress)
                     return;
 
                 comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UIButtonDelay);
@@ -353,6 +389,8 @@ namespace Tavstal.TShop.Utils.Handlers
                         case "bt_tshop_basket#buy":
                         {
                             List<KeyValuePair<Product, int>> toRemove = new List<KeyValuePair<Product, int>>();
+                            comp.IsTransactionInProgress = true;
+                            player.equipment.dequip();
                             foreach (var prod in comp.Basket)
                             {
                                 decimal cost = prod.Key.GetBuyCost(prod.Value);
@@ -448,13 +486,14 @@ namespace Tavstal.TShop.Utils.Handlers
                                     comp.Basket.Remove(elem.Key);
                                 UIManager.UpdateBasketPage(uPlayer);
                             }
-
+                            comp.IsTransactionInProgress = false;
                             break;
                         }
                         case "bt_tshop_basket#sell":
                         {
                             List<KeyValuePair<Product, int>> toRemove = new List<KeyValuePair<Product, int>>();
-
+                            comp.IsTransactionInProgress = true;
+                            player.equipment.dequip();
                             foreach (var prod in comp.Basket)
                             {
                                 if (prod.Key.SellCost <= 0)
@@ -542,7 +581,7 @@ namespace Tavstal.TShop.Utils.Handlers
                                     comp.Basket.Remove(elem.Key);
                                 UIManager.UpdateBasketPage(uPlayer);
                             }
-
+                            comp.IsTransactionInProgress = false;
                             break;
                         }
                     }

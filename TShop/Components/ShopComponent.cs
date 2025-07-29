@@ -17,6 +17,7 @@ namespace Tavstal.TShop.Components
     public class ShopComponent : UnturnedPlayerComponent, IPlayerComponent
     {
         public bool IsUIOpened {  get; set; }
+        public bool IsTransactionInProgress { get; set; }
         public DateTime LastButtonClick = DateTime.Now;
         public DateTime ProductRefreshTime = DateTime.Now;
         public ITransportConnection TransportConnection => Player.SteamPlayer().transportConnection;
