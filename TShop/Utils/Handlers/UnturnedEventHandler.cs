@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Rocket.Unturned.Events;
 using Tavstal.TLibrary;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Extensions;
@@ -63,7 +62,7 @@ namespace Tavstal.TShop.Utils.Handlers
         private static void OnPlayerJoin(UnturnedPlayer player)
         {
             UIManager.Init(player);
-            player.Player.equipment.onEquipRequested += OnPlayerEquipResuested;
+            player.Player.equipment.onEquipRequested += OnPlayerEquipRequested;
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace Tavstal.TShop.Utils.Handlers
         private static void OnPlayerLeft(UnturnedPlayer player)
         {
             // Unsubscribe from the equipment request event for the player.
-            player.Player.equipment.onEquipRequested -= OnPlayerEquipResuested;
+            player.Player.equipment.onEquipRequested -= OnPlayerEquipRequested;
         }
 
         /// <summary>
@@ -85,7 +84,7 @@ namespace Tavstal.TShop.Utils.Handlers
         /// <param name="jar">The item jar containing the item being equipped.</param>
         /// <param name="asset">The item asset being equipped.</param>
         /// <param name="shouldAllow">A reference to a boolean indicating whether the equip action should be allowed.</param>
-        private static void OnPlayerEquipResuested(PlayerEquipment equipment, ItemJar jar, ItemAsset asset, ref bool shouldAllow)
+        private static void OnPlayerEquipRequested(PlayerEquipment equipment, ItemJar jar, ItemAsset asset, ref bool shouldAllow)
         {
             // Get the UnturnedPlayer instance from the equipment's player.
             UnturnedPlayer player = UnturnedPlayer.FromPlayer(equipment.player);
