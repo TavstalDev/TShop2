@@ -33,7 +33,7 @@ namespace Tavstal.TShop.Components
         public bool IsVehiclePage { get; set; }
         public int PageBasket { get; set; } = 1;
         public List<Product> ProductsCache { get; set; } = new List<Product>();
-        public readonly Dictionary<Product, int> Basket = new Dictionary<Product, int>();
+        public readonly Dictionary<Product, byte> Basket = new Dictionary<Product, byte>();
         public bool HasActiveNotify { get; set; }
         public int[][] PageIndexes { get; set; } = new int[3][];
 
