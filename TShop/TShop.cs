@@ -52,6 +52,7 @@ namespace Tavstal.TShop
             Logger.Log("#########################################");
             Logger.Log($"# Build Version: {Version}");
             Logger.Log($"# Build Date: {BuildDate}");
+            Logger.Log($"# TLibrary Version: {LibraryVersion}");
             Logger.Log("#########################################");
             try
             {
