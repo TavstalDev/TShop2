@@ -118,7 +118,7 @@ namespace Tavstal.TShop.Utils.Handlers
                 if (!comp.Basket.IsValidIndex(elementIndex))
                     return;
 
-                if (!int.TryParse(text, out int v))
+                if (!byte.TryParse(text, out var v))
                     return;
                 if (v > 100 || v < 1)
                     return;
@@ -387,7 +387,7 @@ namespace Tavstal.TShop.Utils.Handlers
                         }
                         case "bt_tshop_basket#buy":
                         {
-                            List<KeyValuePair<Product, int>> toRemove = new List<KeyValuePair<Product, int>>();
+                            List<KeyValuePair<Product, byte>> toRemove = new List<KeyValuePair<Product, byte>>();
                             comp.IsTransactionInProgress = true;
                             player.equipment.dequip();
                             foreach (var prod in comp.Basket)
@@ -416,20 +416,9 @@ namespace Tavstal.TShop.Utils.Handlers
                                         continue;
                                     }
 
-                                    await TShop.EconomyProvider.WithdrawAsync(uPlayer.CSteamID, cost);
-                                    await MainThreadDispatcher.RunOnMainThreadAsync(() =>
-                                    {
-                                        InteractableVehicle vehicle = UnturnedHelper.SpawnOwnedVehicle(prod.Key.UnturnedId, uPlayer);
-
-                                        if (!prod.Key.VehicleColor.IsNullOrEmpty())
-                                            vehicle.ServerSetPaintColor(prod.Key.GetVehicleColor());
-                                    });
+                                    if (!await ShopHelper.BuyVehicleAsync(uPlayer, prod.Key.UnturnedId, prod.Key.GetVehicleColor(), cost, comp.PaymentMethod))
+                                        continue;
                                     
-
-                                    if (TShop.EconomyProvider.HasTransactionSystem())
-                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID, new Transaction(Guid.NewGuid().ToString(), ETransaction.PURCHASE,
-                                                comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"),
-                                                uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_buy",
                                         asset.vehicleName, prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
                                     toRemove.Add(prod);
@@ -457,22 +446,9 @@ namespace Tavstal.TShop.Utils.Handlers
                                         continue;
                                     }
 
-                                    await TShop.EconomyProvider.WithdrawAsync(uPlayer.CSteamID, cost);
-                                    await MainThreadDispatcher.RunOnMainThreadAsync(() =>
-                                    {
-                                        for (int i = 0; i < prod.Value; i++)
-                                        {
-                                            if (!uPlayer.Inventory.tryAddItem(new Item(prod.Key.UnturnedId, true), false))
-                                                ItemManager.dropItem(new Item(prod.Key.UnturnedId, true), uPlayer.Position,
-                                                    true, true, false);
-                                        }
-                                    });
-
-                                    if (TShop.EconomyProvider.HasTransactionSystem())
-                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID,
-                                            new Transaction(Guid.NewGuid().ToString(), ETransaction.PURCHASE,
-                                                comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"),
-                                                uPlayer.CSteamID.m_SteamID, 0, cost, DateTime.Now));
+                                    if (!await ShopHelper.BuyItemAsync(uPlayer, prod.Key.UnturnedId, cost, prod.Value, comp.PaymentMethod))
+                                        continue;
+                                    
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_buy", asset.itemName,
                                         prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
                                     toRemove.Add(prod);
@@ -490,7 +466,7 @@ namespace Tavstal.TShop.Utils.Handlers
                         }
                         case "bt_tshop_basket#sell":
                         {
-                            List<KeyValuePair<Product, int>> toRemove = new List<KeyValuePair<Product, int>>();
+                            List<KeyValuePair<Product, byte>> toRemove = new List<KeyValuePair<Product, byte>>();
                             comp.IsTransactionInProgress = true;
                             player.equipment.dequip();
                             foreach (var prod in comp.Basket)
@@ -519,14 +495,10 @@ namespace Tavstal.TShop.Utils.Handlers
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_found"));
                                         continue;
                                     }
-
-                                    VehicleManager.askVehicleDestroy(vehicle);
-                                    await TShop.EconomyProvider.DepositAsync(uPlayer.CSteamID, cost);
-                                    if (TShop.EconomyProvider.HasTransactionSystem())
-                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID,
-                                            new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE,
-                                                comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0,
-                                                uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                                    
+                                    if (!await ShopHelper.SellVehicleAsync(uPlayer, vehicle, cost, comp.PaymentMethod))
+                                        continue;
+                                    
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_vehicle_sell",
                                         vehicle.asset.vehicleName, 1, cost, TShop.EconomyProvider.GetCurrencyName()));
                                 }
@@ -555,19 +527,9 @@ namespace Tavstal.TShop.Utils.Handlers
                                         continue;
                                     }
 
-                                    await TShop.EconomyProvider.DepositAsync(uPlayer.CSteamID, cost);
-                                    for (int i = 0; i < prod.Value; i++)
-                                    {
-                                        uPlayer.Inventory.removeItem(search[i].page,
-                                            uPlayer.Inventory.getIndex(search[i].page, search[i].jar.x,
-                                                search[i].jar.y));
-                                    }
-
-                                    if (TShop.EconomyProvider.HasTransactionSystem())
-                                        await TShop.EconomyProvider.AddTransactionAsync(uPlayer.CSteamID,
-                                            new Transaction(Guid.NewGuid().ToString(), ETransaction.SALE,
-                                                comp.PaymentMethod, TShop.Instance.Localize(true, "ui_shopname"), 0,
-                                                uPlayer.CSteamID.m_SteamID, cost, DateTime.Now));
+                                    if (!await ShopHelper.SellItemAsync(uPlayer, prod.Key.UnturnedId, cost, prod.Value, comp.PaymentMethod))
+                                        continue;
+                                    
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_sell",
                                         asset.itemName, prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
                                     toRemove.Add(prod);
