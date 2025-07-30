@@ -28,7 +28,7 @@ namespace Tavstal.TShop.Commands
                 {
                     ushort id = 0;
                     ItemAsset asset;
-
+                    
                     if (args.Length < 3 || args.Length > 4)
                     {
                         await ExecuteHelp(caller, true, "add", args);

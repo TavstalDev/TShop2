@@ -247,7 +247,7 @@ namespace Tavstal.TShop.Utils.Managers
                         VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
                         if (vehicle == null)
                         {
-                            TShop.Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
+                            TShop.Logger.Warning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
                             UEffectHelper.SendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}", false);
                             continue;
                         }
@@ -309,8 +309,8 @@ namespace Tavstal.TShop.Utils.Managers
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogException("Error in HUDManager: ");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Exception("Error in HUDManager: ");
+                TShop.Logger.Error(ex);
             }
         }
 
@@ -354,7 +354,7 @@ namespace Tavstal.TShop.Utils.Managers
                         VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
                         if (vehicle == null)
                         {
-                            TShop.Logger.LogWarning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
+                            TShop.Logger.Warning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
                             UEffectHelper.SendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_basket#product#{uiIndex}", false);
                             continue;
                         }
@@ -420,8 +420,8 @@ namespace Tavstal.TShop.Utils.Managers
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogException("Error in HUDManager: ");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Exception("Error in HUDManager: ");
+                TShop.Logger.Error(ex);
             }
         }
 

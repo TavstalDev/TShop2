@@ -44,7 +44,7 @@ namespace Tavstal.TShop.Commands
                     }
                     catch { /* ignore */ }
 
-                    TShop.Logger.LogDebug($"Id > 0 ?: {id > 0}");
+                    TShop.Logger.Debug($"Id > 0 ?: {id > 0}");
                     if (id > 0)
                         asset = UAssetHelper.FindVehicleAsset(id);
                     else

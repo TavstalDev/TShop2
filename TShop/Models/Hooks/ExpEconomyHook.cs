@@ -19,14 +19,14 @@ namespace Tavstal.TShop.Models.Hooks
             {
                 TShop.Logger.Log("Loading ExpEconomy hook...");
 
-                TShop.Logger.LogException("Currency Name >> " + GetCurrencyName());
-                TShop.Logger.LogException("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance"));
+                TShop.Logger.Exception("Currency Name >> " + GetCurrencyName());
+                TShop.Logger.Exception("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance"));
                 TShop.Logger.Log("ExpEconomy hook loaded.");
             }
             catch (Exception e)
             {
-                TShop.Logger.LogError("Failed to load ExpEconomy hook");
-                TShop.Logger.LogError(e.ToString());
+                TShop.Logger.Error("Failed to load ExpEconomy hook");
+                TShop.Logger.Error(e.ToString());
             }
         }
 
@@ -54,7 +54,7 @@ namespace Tavstal.TShop.Models.Hooks
                 }
                 catch
                 {
-                    TShop.Logger.LogError($"Failed to get '{variableName}' variable!");
+                    TShop.Logger.Error($"Failed to get '{variableName}' variable!");
                     return default;
                 }
             }
@@ -68,7 +68,7 @@ namespace Tavstal.TShop.Models.Hooks
             }
             catch
             {
-                TShop.Logger.LogError($"Failed to get config jobj.");
+                TShop.Logger.Error($"Failed to get config jobj.");
                 return null;
             }
         }

@@ -34,8 +34,8 @@ namespace Tavstal.TShop.Utils.Helpers
             }
             catch (Exception e)
             {
-                TShop.Logger.LogException("Error in " + voidName + "(): ");
-                TShop.Logger.LogError(e);
+                TShop.Logger.Exception("Error in " + voidName + "(): ");
+                TShop.Logger.Error(e);
             }
             return TShop.Instance.Config.DefaultProductIconUrl;
         }
@@ -60,8 +60,8 @@ namespace Tavstal.TShop.Utils.Helpers
             }
             catch (Exception e)
             {
-                TShop.Logger.LogException("Error in " + voidName + "(): ");
-                TShop.Logger.LogError(e);
+                TShop.Logger.Exception("Error in " + voidName + "(): ");
+                TShop.Logger.Error(e);
             }
             return TShop.Instance.Config.DefaultProductIconUrl;
         }
@@ -109,8 +109,8 @@ namespace Tavstal.TShop.Utils.Helpers
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogError("Failed to get vehicle spawn modifier. Using default value...");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Error("Failed to get vehicle spawn modifier. Using default value...");
+                TShop.Logger.Error(ex);
             }
 
             return new Vector3(0, 5, 5);

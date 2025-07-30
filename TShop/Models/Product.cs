@@ -94,8 +94,8 @@ namespace Tavstal.TShop.Models
             catch (Exception ex)
             {
                 string type = IsVehicle ? "vehicle" : "item";
-                TShop.Logger.LogWarning($"Failed to get the asset name for '{type}' with {UnturnedId} id. Exception:");
-                TShop.Logger.LogException(ex);
+                TShop.Logger.Warning($"Failed to get the asset name for '{type}' with {UnturnedId} id. Exception:");
+                TShop.Logger.Exception(ex);
                 return "unknown_name";
             }
         }
@@ -107,7 +107,7 @@ namespace Tavstal.TShop.Models
             
             if (ColorUtility.TryParseHtmlString(VehicleColor, out var newCol))
                 return newCol;
-            TShop.Logger.LogError("Failed to parse the product's vehicle color. Please fix its database value to html HEX color.");
+            TShop.Logger.Error("Failed to parse the product's vehicle color. Please fix its database value to html HEX color.");
             return default;
         }
 

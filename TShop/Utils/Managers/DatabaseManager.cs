@@ -52,8 +52,8 @@ namespace Tavstal.TShop.Utils.Managers
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogException("Error in checkSchema:");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Exception("Error in checkSchema:");
+                TShop.Logger.Error(ex);
             }
         }
 
@@ -405,7 +405,7 @@ namespace Tavstal.TShop.Utils.Managers
             }
             catch (Exception exception)
             {
-                TShop.Logger.LogException(exception);
+                TShop.Logger.Exception(exception);
             }
             return mySqlConnection;
         }
@@ -465,8 +465,8 @@ namespace Tavstal.TShop.Utils.Managers
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogWarning("This error might be caused by the database because it does not use ushort (uint16) as itemId, or decimal as price.");
-                TShop.Logger.LogException(ex);
+                TShop.Logger.Warning("This error might be caused by the database because it does not use ushort (uint16) as itemId, or decimal as price.");
+                TShop.Logger.Exception(ex);
             }
             return i;
         }

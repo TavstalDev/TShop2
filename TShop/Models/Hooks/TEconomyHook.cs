@@ -93,8 +93,8 @@ namespace Tavstal.TShop.Models.Hooks
             }
             catch (Exception e)
             {
-                TShop.Logger.LogError("Failed to load TEconomy hook");
-                TShop.Logger.LogError(e.ToString());
+                TShop.Logger.Error("Failed to load TEconomy hook");
+                TShop.Logger.Error(e.ToString());
             }
         }
 
@@ -121,7 +121,7 @@ namespace Tavstal.TShop.Models.Hooks
                 }
                 catch
                 {
-                    TShop.Logger.LogError($"Failed to get '{variableName}' variable!");
+                    TShop.Logger.Error($"Failed to get '{variableName}' variable!");
                     return default;
                 }
             }
@@ -135,7 +135,7 @@ namespace Tavstal.TShop.Models.Hooks
             }
             catch
             {
-                TShop.Logger.LogError($"Failed to get config jobj.");
+                TShop.Logger.Error($"Failed to get config jobj.");
                 return null;
             }
         }
@@ -242,7 +242,7 @@ namespace Tavstal.TShop.Models.Hooks
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogError("Error in GetTransactions(): " + ex);
+                TShop.Logger.Error("Error in GetTransactions(): " + ex);
                 return new List<ITransaction>();
             }
         }

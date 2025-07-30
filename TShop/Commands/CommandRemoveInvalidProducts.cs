@@ -31,19 +31,19 @@ namespace Tavstal.TShop.Commands
             TShop.IsCleanupInProgress = true;
             Plugin.SendCommandReply(caller, "command_removeinvalidproducts_cleanup_started");
             var logger = Plugin.GetLogger();
-            logger.LogDebug("Removing invalid products from the database...");
+            logger.Debug("Removing invalid products from the database...");
             List<Product> products = await TShop.DatabaseManager.GetProductsAsync();
             List<Product> productsToRemove = products
                 .FindAll(x => Assets.find(x.IsVehicle ? EAssetType.VEHICLE : EAssetType.ITEM, x.UnturnedId) == null);
 
             foreach (var product in productsToRemove)
             {
-                logger.LogDebug($"Removing invalid product: {product.DisplayName} ({product.UnturnedId})");
+                logger.Debug($"Removing invalid product: {product.DisplayName} ({product.UnturnedId})");
                 await TShop.DatabaseManager.RemoveProductAsync(product.UnturnedId, product.IsVehicle);
             }
             
-            logger.LogDebug($"There were {productsToRemove.Count} invalid products out from {products.Count}.");
-            logger.LogDebug("Invalid products removed from the database. Cleanup finished.");
+            logger.Debug($"There were {productsToRemove.Count} invalid products out from {products.Count}.");
+            logger.Debug("Invalid products removed from the database. Cleanup finished.");
             Plugin.SendCommandReply(caller, "command_removeinvalidproducts_cleanup_finished", productsToRemove.Count, products.Count);
             TShop.IsCleanupInProgress = false;
             return true;
