@@ -14,10 +14,12 @@ using UnityEngine.Serialization;
 
 namespace Tavstal.TShop.Components
 {
+    /// <summary>
+    /// Represents a shop component for managing player interactions with the shop system.
+    /// </summary>
     public class ShopComponent : UnturnedPlayerComponent, IPlayerComponent
     {
         public bool IsUIOpened {  get; set; }
-        public bool IsTransactionInProgress { get; set; }
         public DateTime LastButtonClick = DateTime.Now;
         public DateTime ProductRefreshTime = DateTime.Now;
         public ITransportConnection TransportConnection => Player.SteamPlayer().transportConnection;
@@ -40,6 +42,9 @@ namespace Tavstal.TShop.Components
         [FormerlySerializedAs("NotifiesOnQueue")] 
         public List<string> notifiesOnQueue = new List<string>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShopComponent"/> class.
+        /// </summary>
         public ShopComponent()
         {
             PageIndexes[0] = new int[5];
@@ -47,6 +52,10 @@ namespace Tavstal.TShop.Components
             PageIndexes[2] = new int[5];
         }
 
+        /// <summary>
+        /// Adds a notification message to the queue and sends it if no active notification exists.
+        /// </summary>
+        /// <param name="message">The notification message to add.</param>
         public void AddNotifyToQueue(string message)
         {
             try
@@ -61,10 +70,13 @@ namespace Tavstal.TShop.Components
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Error(ex);
             }
         }
 
+        /// <summary>
+        /// Sends the next notification from the queue to the player.
+        /// </summary>
         private void SendNotify()
         {
             try
@@ -93,8 +105,8 @@ namespace Tavstal.TShop.Components
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogException("Error in Component SendNotify():");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Exception("Error in Component SendNotify():");
+                TShop.Logger.Error(ex);
             }
         }
     }
