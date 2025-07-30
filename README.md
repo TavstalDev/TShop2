@@ -31,121 +31,37 @@ An user-friendly item and vehicle shop plugin supporting async (mysql) database.
 
 ---
 ### Player Commands
-<details>
-<summary>/buy [itemID | itemName] <amount></summary>
-<b>Description:</b> Buys a specific amount of item(s).
-<br>
-<b>Permission(s):</b> tshop.commands.buy.item
-</details>
 
-<details>
-<summary>/buyvehicle [vehicleID]</summary>
-<b>Description:</b> Buys a specific vehicle.
-<br>
-<b>Permission(s):</b> tshop.commands.buy.vehicle
-<br>
-</details>
+These commands are for general player use.
 
-<details>
-<summary>/cost [itemID]</summary>
-<b>Description:</b> Checks the cost of a specific item.
-<br>
-<b>Permission(s):</b>  tshop.commands.cost.item
-</details>
+| Command Syntax                               | Description                                                      | Permissions                 |
+| :------------------------------------------- | :--------------------------------------------------------------- | :-------------------------- |
+| `/buy [itemID \| itemName] <amount>`          | Buys a specified `amount` of an item by `itemID` or `itemName`. If `<amount>` is omitted, 1 item is purchased. | `tshop.commands.buy.item`   |
+| `/buyvehicle [vehicleID]`                    | Buys the vehicle identified by `vehicleID`.                      | `tshop.commands.buy.vehicle`|
+| `/cost [itemID]`                             | Checks the cost of an item using its `itemID`.                   | `tshop.commands.cost.item`  |
+| `/costvehicle [vehicleID]`                   | Checks the cost of a vehicle using its `vehicleID`.              | `tshop.commands.cost.vehicle`|
+| `/sell [itemID] <amount>`                    | Sells a specified `amount` of an item by `itemID`. If `<amount>` is omitted, all available items are sold. | `tshop.commands.sell.item`  |
+| `/sellvehicle`                               | Sells the vehicle you are currently occupying.                   | `tshop.commands.sell.vehicle`|
+| `/shop`                                      | Opens the TShop graphical user interface (GUI).                  | `tshop.commands.shopui`     |
 
-<details>
-<summary>/costvehicle [vehicleID] <amount></summary>
-<b>Description:</b> Checks the cost of a specific vehicle.
-<br>
-<b>Permission(s):</b> tshop.commands.cost.vehicle
-</details>
-
-<details>
-<summary>/sell [itemID] <amount></summary>
-<b>Description:</b> Sells a specific amount of item(s).
-<br>
-<b>Permission(s):</b> tshop.commands.sell.item
-</details>
-
-<details>
-<summary>/sellvehicle <amount></summary>
-<b>Description:</b> Sells the current vehicle.
-<br>
-<b>Permission(s):</b> tshop.commands.sell.vehicle
-</details>
-
-<details>
-<summary>/shop</summary>
-<b>Description:</b> Opens the UI.
-<br>
-<b>Permission(s):</b> tshop.commands.shopui
-</details>
-
----
 ### Admin Commands
 
-<details>
-<summary>/itemshop add [item name | id] [buycost] [sellcost] <permission></summary>
-<b>Description:</b> Manages the item shop.
-<br>
-<b>Permission(s):</b>  tshop.commands.itemshop, tshop.commands.itemshop.add
-</details>
+These commands are for server administrators to manage shop functionalities.
 
-<details>
-<summary>/itemshop remove  [item name | id]</summary>
-<b>Description:</b> Manages the item shop.
-<br>
-<b>Permission(s):</b>  tshop.commands.itemshop, tshop.commands.itemshop.remove
-</details>
+| Command Syntax                                       | Description                                                                                                                               | Permissions                                  |
+| :--------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- |
+| `/itemshop add [item name \| id] [buycost] [sellcost] <permission>` | Adds a new item to the shop. Requires `item name` or `id`, `buycost`, `sellcost`, and an optional `permission`.                      | `tshop.commands.itemshop`, `tshop.commands.itemshop.add`     |
+| `/itemshop remove [item name \| id]`                  | Removes an item from the shop by `item name` or `id`.                                                                                     | `tshop.commands.itemshop`, `tshop.commands.itemshop.remove`  |
+| `/itemshop update [item name \| id] [buycost] [sellcost] <permission>` | Modifies an existing item's `buycost`, `sellcost`, and `permission` in the shop.                                                        | `tshop.commands.itemshop`, `tshop.commands.itemshop.update`  |
+| `/vehicleshop add [vehicle name \| id] <buycost> <sellcost> <hexColor> <permission>` | Adds a new vehicle to the shop. Requires `vehicle name` or `id`. Optional `buycost`, `sellcost`, `hexColor` (e.g., `#AABBCC`), and `permission`. | `tshop.commands.vehicleshop`, `tshop.commands.vehicleshop.add` |
+| `/vehicleshop remove [vehicle name \| id]`            | Removes a vehicle from the shop by `vehicle name` or `id`.                                                                                | `tshop.commands.vehicleshop`, `tshop.commands.vehicleshop.remove`|
+| `/vehicleshop color [vehicle name \| id] [hexColor]`  | Sets or updates the `hexColor` (e.g., `#AABBCC`) of a vehicle in the shop.                                                                  | `tshop.commands.vehicleshop`, `tshop.commands.vehicleshop.color`|
+| `/vehicleshop update [vehicle name \| id] <buycost> <sellcost> <permission>` | Modifies an existing vehicle's `buycost`, `sellcost`, and `permission` in the shop.                                                       | `tshop.commands.vehicleshop`, `tshop.commands.vehicleshop.update`|
+| `/migratezaupdb [itemtablename] [vehicletablename]`  | Migrates item and vehicle data from a ZaupShop database using the specified `itemtablename` and `vehicletablename`.                     | `tshop.commands.migratezaupdb`               |
+| `/removeinvalidproducts`                             | Cleans the database by removing any invalid products (items or vehicles) that no longer exist in Unturned.                                  | `tshop.commands.removeinvalidproducts`       |
 
-<details>
-<summary>/itemshop update [item name | id] [buycost] [sellcost] <permission></summary>
-<b>Description:</b> Manages the item shop.
-<br>
-<b>Permission(s):</b>  tshop.commands.itemshop, tshop.commands.itemshop.update
-</details>
+---
 
-<details>
-<summary>/vehicleshop add [vehicle name | id] <buycost> <sellcost> <hexColor> <permission></summary>
-<b>Description:</b> Manages the vehicle shop.
-<br>
-<b>Permission(s):</b>  tshop.commands.vehicleshop, tshop.commands.vehicleshop.add
-</details>
-
-<details>
-<summary>/vehicleshop remove  [vehicle name | id]</summary>
-<b>Description:</b> Manages the vehicle shop.
-<br>
-<b>Permission(s):</b> tshop.commands.vehicleshop, tshop.commands.vehicleshop.remove
-</details>
-
-<details>
-<summary>/vehicleshop color  [vehicle name | id] [hexColor]</summary>
-<b>Description:</b> Manages the vehicle shop.
-<br>
-<b>Permission(s):</b> tshop.commands.vehicleshop, tshop.commands.vehicleshop.color
-</details>
-
-<details>
-<summary>/vehicleshop update [vehicle name | id] <buycost> <sellcost> <permission></summary>
-<b>Description:</b> Manages the vehicle shop.
-<br>
-<b>Permission(s):</b>  tshop.commands.vehicleshop, tshop.commands.vehicleshop.update
-</details>
-
-<details>
-<summary>/migratezaupdb [itemtablename] [vehicletablename]</summary>
-<b>Description:</b> Migrates data from the database of the zaupshop plugin.
-<br>
-<b>Permission(s):</b>  tshop.commands.migratezaupdb
-</details>
-
-<details>
-<summary>/removeinvalidproducts</summary>
-<b>Description:</b> Removes all invalid products from the database.
-<br>
-<b>Permission(s):</b>  tshop.commands.removeinvalidproducts
-</details>
 
 ## License
 
