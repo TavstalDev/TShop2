@@ -67,8 +67,8 @@ namespace Tavstal.TShop.Utils.Helpers
             catch (Exception ex)
             {
                 // Log any errors that occur during the purchase
-                TShop.Logger.LogException("Failed to buy item:");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Exception("Failed to buy item:");
+                TShop.Logger.Error(ex);
                 return false;
             }
         }
@@ -132,8 +132,8 @@ namespace Tavstal.TShop.Utils.Helpers
             catch (Exception ex)
             {
                 // Log any errors that occur during the sale
-                TShop.Logger.LogException("Failed to sell item:");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Exception("Failed to sell item:");
+                TShop.Logger.Error(ex);
                 return false;
             }
         }
@@ -186,8 +186,8 @@ namespace Tavstal.TShop.Utils.Helpers
             catch (Exception ex)
             {
                 // Log any errors that occur during the purchase
-                TShop.Logger.LogException("Failed to buy vehicle:");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Exception("Failed to buy vehicle:");
+                TShop.Logger.Error(ex);
                 return false;
             }
         }
@@ -234,8 +234,8 @@ namespace Tavstal.TShop.Utils.Helpers
             catch (Exception ex)
             {
                 // Log any errors that occur during the sale
-                TShop.Logger.LogException("Failed to sell vehicle:");
-                TShop.Logger.LogError(ex);
+                TShop.Logger.Exception("Failed to sell vehicle:");
+                TShop.Logger.Error(ex);
                 return false;
             }
         }

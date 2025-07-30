@@ -5,10 +5,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tavstal.TLibrary;
-using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
+using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Models.Enums;
@@ -23,6 +22,7 @@ namespace Tavstal.TShop.Utils.Handlers
     internal static class UnturnedEventHandler
     {
         private static bool _isAttached;
+        private static readonly TLogger _logger = TLogger.CreateInstance(TShop.Instance, typeof(UnturnedEventHandler), false);
 
         /// <summary>
         /// Attaches event handlers to Unturned events.
@@ -93,7 +93,7 @@ namespace Tavstal.TShop.Utils.Handlers
             ShopComponent comp = player.GetComponent<ShopComponent>();
     
             // Prevent equipping if a transaction is currently in progress.
-            if (comp.IsTransactionInProgress || comp.IsUIOpened)
+            if (comp.IsUIOpened)
                 shouldAllow = false;
         }
         
@@ -161,8 +161,8 @@ namespace Tavstal.TShop.Utils.Handlers
                 UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
                 ShopComponent comp = player.GetComponent<ShopComponent>();
                 var playerTc = uPlayer.SteamPlayer().transportConnection;
-
-                if (comp.LastButtonClick > DateTime.Now || comp.IsTransactionInProgress)
+                
+                if (comp.LastButtonClick > DateTime.Now)
                     return;
 
                 comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UIButtonDelay);
@@ -388,8 +388,6 @@ namespace Tavstal.TShop.Utils.Handlers
                         case "bt_tshop_basket#buy":
                         {
                             List<KeyValuePair<Product, byte>> toRemove = new List<KeyValuePair<Product, byte>>();
-                            comp.IsTransactionInProgress = true;
-                            player.equipment.dequip();
                             foreach (var prod in comp.Basket)
                             {
                                 decimal cost = prod.Key.GetBuyCost(prod.Value);
@@ -448,7 +446,7 @@ namespace Tavstal.TShop.Utils.Handlers
 
                                     if (!await ShopHelper.BuyItemAsync(uPlayer, prod.Key.UnturnedId, cost, prod.Value, comp.PaymentMethod))
                                         continue;
-                                    
+
                                     comp.AddNotifyToQueue(TShop.Instance.Localize("ui_success_item_buy", asset.itemName,
                                         prod.Value, cost, TShop.EconomyProvider.GetCurrencyName()));
                                     toRemove.Add(prod);
@@ -461,14 +459,11 @@ namespace Tavstal.TShop.Utils.Handlers
                                     comp.Basket.Remove(elem.Key);
                                 UIManager.UpdateBasketPage(uPlayer);
                             }
-                            comp.IsTransactionInProgress = false;
                             break;
                         }
                         case "bt_tshop_basket#sell":
                         {
                             List<KeyValuePair<Product, byte>> toRemove = new List<KeyValuePair<Product, byte>>();
-                            comp.IsTransactionInProgress = true;
-                            player.equipment.dequip();
                             foreach (var prod in comp.Basket)
                             {
                                 if (prod.Key.SellCost <= 0)
@@ -542,7 +537,6 @@ namespace Tavstal.TShop.Utils.Handlers
                                     comp.Basket.Remove(elem.Key);
                                 UIManager.UpdateBasketPage(uPlayer);
                             }
-                            comp.IsTransactionInProgress = false;
                             break;
                         }
                     }
@@ -636,8 +630,8 @@ namespace Tavstal.TShop.Utils.Handlers
             }
             catch (Exception ex)
             {
-                TShop.Logger.LogException($"Error in UEventHandler -> OnButtonClick({button}):");
-                TShop.Logger.LogError(ex);
+                _logger.Exception($"Error in UEventHandler -> OnButtonClick({button}):");
+                _logger.Error(ex);
             }
         }
     }
