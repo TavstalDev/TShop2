@@ -58,16 +58,16 @@ namespace Tavstal.TShop
             ItemCountToDiscount = 10;
             VehicleCountToDiscount = 5;
             DiscountInterval = 1800;
-            DefaultProductIconUrl = "https://raw.githubusercontent.com/TavstalDev/Icons/master/noimage.png";
+            DefaultProductIconUrl = "https://raw.githubusercontent.com/TavstalDev/TShop2/master/Assets/noimage.png";
             VehicleSpawnModifier = new SerializableVector3(0, 5, 5);
             ItemFolders = new List<FileServerFolder>
             {
-                new FileServerFolder("0-2000", "https://raw.githubusercontent.com/TavstalDev/Icons/master/Vanilla/", 0, 2000),
+                new FileServerFolder("0-2000", "https://raw.githubusercontent.com/SilksPlugins/UnturnedImages/refs/heads/images/vanilla/items/", 0, 2000),
                 new FileServerFolder("my-server", "https://api.myserver.com/items/", 0, 60000)
             };
             VehicleFolders = new List<FileServerFolder>
             {
-                new FileServerFolder("0-2000", "https://raw.githubusercontent.com/TavstalDev/Icons/master/Vanilla/Vehicles", 0, 1000),
+                new FileServerFolder("0-2000", "https://raw.githubusercontent.com/SilksPlugins/UnturnedImages/refs/heads/images/vanilla/vehicles/", 0, 1000),
                 new FileServerFolder("my-server", "https://api.myserver.com/vehicles/", 0, 60000),
             };
         }
