@@ -51,8 +51,8 @@ jobs:
       run: |
         if (Test-Path ${{ env.DLL_PATH }}) {
             Write-Output "DLL found: ${{ env.DLL_PATH }}"
-            $version = (Get-Item ${{ env.DLL_PATH }}).VersionInfo.FileVersion
-    
+            $version = (Get-Item ${{ env.DLL_PATH }}).VersionInfo.ProductVersion
+
             if ($version) {
                 Write-Output "Extracted version: $version"
                 echo "Setting DLL_VERSION=$version in GITHUB_ENV"
@@ -68,7 +68,7 @@ jobs:
         
         if (Test-Path ${{ env.LIBRARY_PATH }}) {
             Write-Output "Library DLL found: ${{ env.LIBRARY_PATH }}"
-            $libraryVersion = (Get-Item ${{ env.LIBRARY_PATH }}).VersionInfo.FileVersion
+            $libraryVersion = (Get-Item ${{ env.LIBRARY_PATH }}).VersionInfo.ProductVersion
 
             if ($libraryVersion) {
                 Write-Output "Extracted library version: $libraryVersion"
