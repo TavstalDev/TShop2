@@ -37,23 +37,27 @@ namespace Tavstal.TShop
         {
             Instance = this;
             
-            Logger.LogWarning("████████╗░██████╗██╗░░██╗░█████╗░██████╗░");
-            Logger.LogWarning("╚══██╔══╝██╔════╝██║░░██║██╔══██╗██╔══██╗");
-            Logger.LogWarning("░░░██║░░░╚█████╗░███████║██║░░██║██████╔╝");
-            Logger.LogWarning("░░░██║░░░░╚═══██╗██╔══██║██║░░██║██╔═══╝░");
-            Logger.LogWarning("░░░██║░░░██████╔╝██║░░██║╚█████╔╝██║░░░░░");
-            Logger.LogWarning("░░░╚═╝░░░╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░░░░");
-            Logger.Log("#########################################");
-            Logger.Log("# Thanks for using my plugin");
-            Logger.Log("# Plugin Created By Tavstal");
-            Logger.Log("# Discord: Tavstal#6189");
-            Logger.Log("# Website: https://redstoneplugins.com");
-            Logger.Log("# Discord: https://discord.gg/redstoneplugins");
-            Logger.Log("#########################################");
-            Logger.Log($"# Build Version: {Version}");
-            Logger.Log($"# Build Date: {BuildDate}");
-            Logger.Log($"# TLibrary Version: {LibraryVersion}");
-            Logger.Log("#########################################");
+            Logger.Log("████████╗░██████╗██╗░░██╗░█████╗░██████╗░", ConsoleColor.Cyan, prefix: null);
+            Logger.Log("╚══██╔══╝██╔════╝██║░░██║██╔══██╗██╔══██╗", ConsoleColor.Cyan, prefix: null);
+            Logger.Log("░░░██║░░░╚█████╗░███████║██║░░██║██████╔╝", ConsoleColor.Cyan, prefix: null);
+            Logger.Log("░░░██║░░░░╚═══██╗██╔══██║██║░░██║██╔═══╝░", ConsoleColor.Cyan, prefix: null);
+            Logger.Log("░░░██║░░░██████╔╝██║░░██║╚█████╔╝██║░░░░░", ConsoleColor.Cyan, prefix: null);
+            Logger.Log("░░░╚═╝░░░╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░░░░", ConsoleColor.Cyan, prefix: null);
+            Logger.Log("#########################################", prefix: null);
+            Logger.Log("#       Thanks for using this plugin!   #", prefix: null);
+            Logger.Log("#########################################", prefix: null);
+            Logger.Log("# Developed By: Tavstal", prefix: null);
+            Logger.Log("# Discord:      @Tavstal", prefix: null);
+            Logger.Log("# Website:      https://redstoneplugins.com", prefix: null);
+            Logger.Log("# My GitHub:    https://tavstaldev.github.io", prefix: null);
+            Logger.Log("#########################################", prefix: null);
+            Logger.Log($"# Plugin Version:    {Version}", prefix: null);
+            Logger.Log($"# Build Date:        {BuildDate}", prefix: null);
+            Logger.Log($"# TLibrary Version:  {LibraryVersion}", prefix: null);
+            Logger.Log("#########################################", prefix: null);
+            Logger.Log("# Found an issue or have a suggestion?", prefix: null);
+            Logger.Log("# Report it here: https://github.com/TavstalDev/TShop2/issues", prefix: null); 
+            Logger.Log("#########################################", prefix: null);
             try
             {
                 DatabaseManager = new DatabaseManager(Config);
@@ -68,13 +72,13 @@ namespace Tavstal.TShop
                 if (IsConnectionAuthFailed)
                     return;
 
-                Logger.Log("# TShop has been loaded.");
+                Logger.Log($"# {GetPluginName()} has been loaded.");
                 Logger.Log("# Starting late initialization...");
             }
             catch (Exception ex)
             {
-                Logger.LogException("# Failed to load TShop...");
-                Logger.LogError(ex);
+                Logger.Exception($"# Failed to load {GetPluginName()}...");
+                Logger.Error(ex);
             }
         }
 
@@ -95,7 +99,7 @@ namespace Tavstal.TShop
             if (Config.EnableDiscounts)
                 CancelInvoke(nameof(CheckDiscount));
 
-            Logger.Log("# TShop has been successfully unloaded.");
+            Logger.Log($"# {GetPluginName()} has been successfully unloaded.");
         }
 
         /// <summary>
@@ -105,13 +109,13 @@ namespace Tavstal.TShop
         {
             if (IsConnectionAuthFailed)
             {
-                Logger.LogWarning($"# Unloading {GetPluginName()} due to database authentication error.");
+                Logger.Warning($"# Unloading {GetPluginName()} due to database authentication error.");
                 this.UnloadPlugin();
                 return;
             }
 
-            Logger.LogLateInit();
-            Logger.LogWarning("# Searching for economy plugin...");
+            Logger.LateInit();
+            Logger.Warning("# Searching for economy plugin...");
             HookManager = new HookManager(this);
             HookManager.LoadAll(Assembly, true);
 
@@ -119,7 +123,7 @@ namespace Tavstal.TShop
             {
                 if (!HookManager.IsHookLoadable<ExpEconomyHook>())
                 {
-                    Logger.LogError("# Failed to load economy hook. Unloading TShop...");
+                    Logger.Error("# Failed to load economy hook. Unloading TShop...");
                     this.UnloadPlugin();
                     return;
                 }
@@ -133,7 +137,7 @@ namespace Tavstal.TShop
                 {
                     if (!HookManager.IsHookLoadable<UconomyHook>())
                     {
-                        Logger.LogError("# Failed to load economy hook. Unloading TShop...");
+                        Logger.Error("# Failed to load economy hook. Unloading TShop...");
                         this.UnloadPlugin();
                         return;
                     }
