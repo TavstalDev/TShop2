@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Tavstal")]
 [assembly: AssemblyProduct("TShop")]
-[assembly: AssemblyCopyright("Copyright ©  2026 Tavstal")]
+[assembly: AssemblyCopyright("Copyright © 2024-2026 Tavstal")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("en")]
 
