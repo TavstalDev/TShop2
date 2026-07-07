@@ -25,15 +25,15 @@ jobs:
     steps:
     # Step 1: Checkout the code
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkou@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
     # Step 2: Setup MSBuild for building .NET Framework
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57
       
     # Step 3: Setup NuGet
     - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
+      uses: nuget/setup-nuget@fd55a6f3b34392fa83fde1454582407d8c714123
       with:
         nuget-version: latest  # Use the latest version of NuGet
 
@@ -49,37 +49,39 @@ jobs:
     - name: Extract DLL Version
       id: extract_version
       run: |
-        if (Test-Path ${{ env.DLL_PATH }}) {
-            Write-Output "DLL found: ${{ env.DLL_PATH }}"
-            $version = (Get-Item ${{ env.DLL_PATH }}).VersionInfo.ProductVersion
+        if (Test-Path $env:DLL_PATH) {
+            Write-Output "DLL found: $env:DLL_PATH"
+            $version = (Get-Item $env:DLL_PATH).VersionInfo.ProductVersion
 
             if ($version) {
                 Write-Output "Extracted version: $version"
-                echo "Setting DLL_VERSION=$version in GITHUB_ENV"
+                Write-Output "Setting DLL_VERSION=$version in GITHUB_ENV"
                 Add-Content -Path $env:GITHUB_ENV -Value "DLL_VERSION=$version"
             } else {
                 Write-Output "FileVersion not found in the DLL metadata."
                 exit 1
             }
         } else {
-            Write-Output "DLL not found at path: $dllPath"
+            Write-Output "DLL not found at path: $env:DLL_PATH"
             exit 1
         }
         
-        if (Test-Path ${{ env.LIBRARY_PATH }}) {
-            Write-Output "Library DLL found: ${{ env.LIBRARY_PATH }}"
-            $libraryVersion = (Get-Item ${{ env.LIBRARY_PATH }}).VersionInfo.ProductVersion
+        if (Test-Path $env:LIBRARY_PATH) {
+            Write-Output "Library DLL found: $env:LIBRARY_PATH"
+            $libraryVersion = (Get-Item $env:LIBRARY_PATH).VersionInfo.ProductVersion
 
             if ($libraryVersion) {
                 Write-Output "Extracted library version: $libraryVersion"
-                echo "Setting LIBRARY_VERSION=$libraryVersion in GITHUB_ENV"
+                Write-Output "Setting LIBRARY_VERSION=$libraryVersion in GITHUB_ENV"
         
-                $commitDesc="${{ env.COMMIT_EXTRA_DESC }}"
-                echo "Debug 1: $commitDesc"
-                # Replace the placeholder
-                $updatedCommitDesc=$(echo "$commitDesc" | sed "s/VERSION_PLACEHOLDER/$libraryVersion/")
-                echo "Debug 2: $updatedCommitDesc"
-                echo "Debug 3: $COMMIT_EXTRA_DESC"
+                $commitDesc = $env:COMMIT_EXTRA_DESC
+                Write-Output "Debug 1: $commitDesc"
+        
+                # Replace the placeholder safely using native PowerShell
+                $updatedCommitDesc = $commitDesc -replace "VERSION_PLACEHOLDER", $libraryVersion
+                Write-Output "Debug 2: $updatedCommitDesc"
+                Write-Output "Debug 3: $commitDesc"
+        
                 Add-Content -Path $env:GITHUB_ENV -Value "COMMIT_EXTRA_DESC=$updatedCommitDesc"
             }
         }
@@ -111,32 +113,32 @@ jobs:
         # Fetch all history
         git fetch --unshallow
         
+        $repo = $env:GITHUB_REPOSITORY
+
         if ($env:LATEST_TAG -eq "none") {
           Write-Output "No previous tag found, listing all commits."
-          $commits = git log HEAD --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%h) - %s"
+          $commits = git log HEAD --pretty=format:"- [%h](https://github.com/$repo/commit/%h) - %s"
         } else {
           Write-Output "Getting commits since tag: $env:LATEST_TAG"
-          # Fetch commits since the latest tag, and format them properly
           $commits = @()
-          git log "$env:LATEST_TAG..HEAD" --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%h) - %s" | ForEach-Object { $commits += "$_" }
+          git log "$env:LATEST_TAG..HEAD" --pretty=format:"- [%h](https://github.com/$repo/commit/%h) - %s" | ForEach-Object { $commits += "$_" }
         }
         
-        # Log the full output of the git log command
         Write-Output "Full commit log:"
         Write-Output $commits
-        Write-Output "commits=$commits" >> $GITHUB_ENV
+        
+        $delimiter = [guid]::NewGuid().ToString("N")
         $localCommit = $commits -join "`n" 
-        Add-Content -Path $env:GITHUB_ENV -Value @"
-        COMMITS<<EOF
-        $localCommit
-        EOF
-        "@
+        Add-Content -Path $env:GITHUB_ENV -Value "COMMITS<<$delimiter"
+        Add-Content -Path $env:GITHUB_ENV -Value $localCommit
+        Add-Content -Path $env:GITHUB_ENV -Value $delimiter
         exit 0
+      shell: powershell
       
     # Step 9: Create a GitHub release (or update an existing one)
     - name: Create GitHub Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
