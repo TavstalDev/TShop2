@@ -134,31 +134,18 @@ jobs:
         Add-Content -Path $env:GITHUB_ENV -Value $delimiter
         exit 0
       shell: powershell
-      
-    # Step 9: Create a GitHub release (or update an existing one)
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    # Step 9: Create and upload GitHub release
+    - name: Create GitHub Release and Upload Asset
+      uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
       with:
-        tag_name: ${{ env.DLL_VERSION }} # Use the extracted DLL version
-        release_name: Build ${{ env.DLL_VERSION }}
+        tag_name: ${{ env.DLL_VERSION }}
+        name: Build ${{ env.DLL_VERSION }}
         draft: false
         prerelease: true
         body: |
           ## Changelog
           ${{ env.COMMIT_EXTRA_DESC }}
           Changes pushed to branch `${{ github.ref_name }}`
-          ${{ env.COMMITS}}
-      
-    # Step 10: Upload the DLL to the release
-    - name: Upload DLL to Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.DLL_PATH }}
-        asset_name: ${{ env.DLL_NAME }}
-        asset_content_type: application/octet-stream
+          ${{ env.COMMITS }}
+        files: ${{ env.DLL_PATH }}
