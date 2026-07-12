@@ -1,14 +1,13 @@
-﻿using MySql.Data.MySqlClient;
-using SDG.Unturned;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tavstal.TLibrary.Models.Database;
-using Tavstal.TLibrary.Models.Plugin;
+using MySqlConnector;
+using SDG.Unturned;
 using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Helpers.General;
+using Tavstal.TLibrary.Extensions.Database;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Managers;
+using Tavstal.TLibrary.Models.Database;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Models.Enums;
 
@@ -21,9 +20,11 @@ namespace Tavstal.TShop.Utils.Managers
     {
         // ReSharper disable once InconsistentNaming
         private static ShopConfiguration _pluginConfig => TShop.Instance.Config;
+        public MySqlRepository<ulong, Product> Products { get; }
 
-        public DatabaseManager(IConfigurationBase configuration) : base(TShop.Instance, configuration)
+        public DatabaseManager() : base(TShop.Instance, _pluginConfig.Database)
         {
+            Products = new MySqlRepository<ulong, Product>(this, _pluginConfig.Database.ProductsTable);
         }
 
         /// <summary>
@@ -33,27 +34,12 @@ namespace Tavstal.TShop.Utils.Managers
         {
             try
             {
-                using (var connection = CreateConnection())
-                {
-                    if (!await connection.OpenSafeAsync())
-                        TShop.IsConnectionAuthFailed = true;
-                    if (connection.State != System.Data.ConnectionState.Open)
-                        throw new Exception("# Failed to connect to the database. Please check the plugin's config file.");
-
-                    //Item Shop
-                    if (await connection.DoesTableExistAsync<Product>(_pluginConfig.Database.ProductsTable))
-                        await connection.CheckTableAsync<Product>(_pluginConfig.Database.ProductsTable);
-                    else
-                        await connection.CreateTableAsync<Product>(_pluginConfig.Database.ProductsTable);
-
-                    if (connection.State != System.Data.ConnectionState.Closed)
-                        await connection.CloseAsync();
-                }
+                await using var connection = CreateConnection();
+                await Products.CheckSchemaAsync(connection);
             }
             catch (Exception ex)
             {
-                TShop.Logger.Exception("Error in checkSchema:");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Error in checkSchema:", ex);
             }
         }
 
@@ -63,17 +49,18 @@ namespace Tavstal.TShop.Utils.Managers
         /// <param name="id">The ID of the product.</param>
         /// <param name="isVehicle">A boolean value indicating whether the product is a vehicle.</param>
         /// <param name="vehicleColor">HEX color code of a vehicle</param>
-        /// <param name="buycost">The buy cost of the product.</param>
-        /// <param name="sellcost">The sell cost of the product.</param>
-        /// <param name="enableperm">A boolean value indicating whether the product requires permission to be enabled.</param>
+        /// <param name="buyCost">The buy cost of the product.</param>
+        /// <param name="sellCost">The sell cost of the product.</param>
+        /// <param name="enablePerm">A boolean value indicating whether the product requires permission to be enabled.</param>
         /// <param name="permission">The permission required to enable the product.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains a boolean value indicating whether the product was successfully added to the database.
         /// </returns>
-        public async Task<bool> AddProductAsync(ushort id, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, bool enableperm, string permission)
+        public async Task<bool> AddProductAsync(ushort id, bool isVehicle, string? vehicleColor, decimal buyCost, decimal sellCost, bool enablePerm, string? permission)
         {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.AddTableRowAsync(tableName: _pluginConfig.Database.ProductsTable, new Product(id, isVehicle, vehicleColor, buycost, sellcost, enableperm, permission, false, 0));
+            await using var connection = CreateConnection();
+            Product product = new Product(id, isVehicle, vehicleColor, buyCost, sellCost, enablePerm, permission, false, 0);
+            return await Products.AddAsync(product, connection) != null;
         }
 
         /// <summary>
@@ -86,8 +73,7 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<bool> RemoveProductAsync(ushort id, bool isVehicle)
         {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.RemoveTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", null);
+            return await Products.DeleteAsync(QueryParameter.eq("UnturnedId", id), QueryParameter.eq("IsVehicle", isVehicle));
         }
 
         /// <summary>
@@ -95,23 +81,22 @@ namespace Tavstal.TShop.Utils.Managers
         /// </summary>
         /// <param name="id">The ID of the product.</param>
         /// <param name="isVehicle">A boolean value indicating whether the product is a vehicle.</param>
-        /// <param name="buycost">The new buy cost of the product.</param>
-        /// <param name="sellcost">The new sell cost of the product.</param>
-        /// <param name="enablepermission">A boolean value indicating whether the product requires permission to be enabled.</param>
+        /// <param name="buyCost">The new buy cost of the product.</param>
+        /// <param name="sellCost">The new sell cost of the product.</param>
+        /// <param name="enablePermission">A boolean value indicating whether the product requires permission to be enabled.</param>
         /// <param name="permission">The new permission required to enable the product.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains a boolean value indicating whether the product was successfully updated in the database.
         /// </returns>
-        public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, decimal buycost, decimal sellcost, bool enablepermission, string permission)
+        public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, decimal buyCost, decimal sellCost, bool enablePermission, string? permission)
         {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
+            return await Products.UpdateAsync(new List<UpdateParameter>
             {
-                SqlParameter.Get<Product>(x => x.BuyCost, buycost),
-                SqlParameter.Get<Product>(x => x.SellCost, sellcost),
-                SqlParameter.Get<Product>(x => x.HasPermission, enablepermission),
-                SqlParameter.Get<Product>(x => x.Permission, permission)
-            });
+                UpdateParameter.Get<Product>(x => x.BuyCost, buyCost),
+                UpdateParameter.Get<Product>(x => x.SellCost, sellCost),
+                UpdateParameter.Get<Product>(x => x.HasPermission, enablePermission),
+                UpdateParameter.Get<Product>(x => x.Permission!, permission)
+            }, QueryParameter.eq("UnturnedId", id), QueryParameter.eq("IsVehicle", isVehicle));
         }
 
         /// <summary>
@@ -119,19 +104,18 @@ namespace Tavstal.TShop.Utils.Managers
         /// </summary>
         /// <param name="id">The ID of the product.</param>
         /// <param name="isVehicle">A boolean value indicating whether the product is a vehicle.</param>
-        /// <param name="isdiscounted">A boolean value indicating whether the product is discounted.</param>
+        /// <param name="isDiscounted">A boolean value indicating whether the product is discounted.</param>
         /// <param name="percent">The discount percentage of the product.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains a boolean value indicating whether the product was successfully updated in the database.
         /// </returns>
-        public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, bool isdiscounted, decimal percent)
+        public async Task<bool> UpdateProductAsync(ushort id, bool isVehicle, bool isDiscounted, decimal percent)
         {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, $"UnturnedId='{id}' AND IsVehicle='{isVehicle}'", new List<SqlParameter>
+            return await Products.UpdateAsync(new List<UpdateParameter>
             {
-                SqlParameter.Get<Product>(x => x.IsDiscounted, isdiscounted),
-                SqlParameter.Get<Product>(x => x.DiscountPercent, percent)
-            });
+                UpdateParameter.Get<Product>(x => x.IsDiscounted, isDiscounted),
+                UpdateParameter.Get<Product>(x => x.DiscountPercent, percent)
+            }, QueryParameter.eq("UnturnedId", id), QueryParameter.eq("IsVehicle", isVehicle));
         }
         
         /// <summary>
@@ -144,11 +128,10 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<bool> UpdateProductAsync(ushort id, string vehicleColor)
         {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.UpdateTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, $"UnturnedId='{id}' AND IsVehicle='{true}'", new List<SqlParameter>
+            return await Products.UpdateAsync(new List<UpdateParameter>
             {
-                SqlParameter.Get<Product>(x => x.VehicleColor, vehicleColor)
-            });
+                UpdateParameter.Get<Product>(x => x.VehicleColor!, vehicleColor)
+            }, QueryParameter.eq("UnturnedId", id), QueryParameter.eq("IsVehicle", true));
         }
 
         /// <summary>
@@ -157,11 +140,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains a list of products retrieved from the database.
         /// </returns>
-        public async Task<List<Product>> GetProductsAsync()
-        {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: string.Empty, null);
-        }
+        public async Task<List<Product>> GetProductsAsync() =>
+            await Products.GetAsync(int.MaxValue) ?? new List<Product>();
 
         /// <summary>
         /// Asynchronously retrieves a list of items from the database.
@@ -169,11 +149,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains a list of items retrieved from the database.
         /// </returns>
-        public async Task<List<Product>> GetItemsAsync()
-        {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: $"IsVehicle='{false}'", null);
-        }
+        public async Task<List<Product>> GetItemsAsync() => 
+            await Products.GetAsync(int.MaxValue, QueryParameter.eq("IsVehicle", false)) ?? new List<Product>();
 
         /// <summary>
         /// Asynchronously retrieves a list of items from the database based on the specified filter.
@@ -190,7 +167,7 @@ namespace Tavstal.TShop.Utils.Managers
             List<Product> local = new List<Product>();
             foreach (var item in items)
             {
-                ItemAsset asset = UAssetHelper.FindItemAsset(item.UnturnedId);
+                ItemAsset? asset = UAssetHelper.FindItemAsset(item.UnturnedId);
                 if (asset == null)
                     continue;
 
@@ -321,11 +298,8 @@ namespace Tavstal.TShop.Utils.Managers
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains a list of vehicles retrieved from the database.
         /// </returns>
-        public async Task<List<Product>> GetVehiclesAsync()
-        {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowsAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: $"IsVehicle='{true}'", null);
-        }
+        public async Task<List<Product>> GetVehiclesAsync() => 
+            await Products.GetAsync(int.MaxValue, QueryParameter.eq("IsVehicle", true)) ?? new List<Product>();
 
         /// <summary>
         /// Asynchronously retrieves a list of vehicles from the database based on the specified engine type.
@@ -342,7 +316,7 @@ namespace Tavstal.TShop.Utils.Managers
             List<Product> local = new List<Product>();
             foreach (var vehicle in vehicles)
             {
-                VehicleAsset asset = UAssetHelper.FindVehicleAsset(vehicle.UnturnedId);
+                VehicleAsset? asset = UAssetHelper.FindVehicleAsset(vehicle.UnturnedId);
                 if (asset == null)
                     continue;
 
@@ -359,10 +333,13 @@ namespace Tavstal.TShop.Utils.Managers
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains the item found in the database, if any.
         /// </returns>
-        public async Task<Product> FindItemAsync(ushort id)
+        public async Task<Product?> FindItemAsync(ushort id)
         {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: $"UnturnedId='{id}' AND IsVehicle='{false}'", null);
+            var result = await Products.GetAsync(1, QueryParameter.eq("UnturnedId", id),
+                QueryParameter.eq("IsVehicle", false));
+            if (result == null || result.Count == 0)
+                return null;
+            return result[0];
         }
 
         /// <summary>
@@ -372,10 +349,13 @@ namespace Tavstal.TShop.Utils.Managers
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous operation. The task result contains the vehicle found in the database, if any.
         /// </returns>
-        public async Task<Product> FindVehicleAsync(ushort id)
+        public async Task<Product?> FindVehicleAsync(ushort id)
         {
-            MySqlConnection mySqlConnection = CreateConnection();
-            return await mySqlConnection.GetTableRowAsync<Product>(tableName: _pluginConfig.Database.ProductsTable, whereClause: $"UnturnedId='{id}' AND IsVehicle='{true}'", null);
+            var result = await Products.GetAsync(1, QueryParameter.eq("UnturnedId", id),
+                QueryParameter.eq("IsVehicle", true));
+            if (result == null || result.Count == 0)
+                return null;
+            return result[0];
         }
 
         #region Zaup
@@ -385,9 +365,9 @@ namespace Tavstal.TShop.Utils.Managers
         /// <returns>
         /// A MySqlConnection object representing the connection to the Zaup database.
         /// </returns>
-        public MySqlConnection CreateZaupConnection()
+        public MySqlConnection? CreateZaupConnection()
         {
-            MySqlConnection mySqlConnection = null;
+            MySqlConnection? mySqlConnection = null;
             try
             {
                 if (_pluginConfig.Database.Port == 0)
@@ -403,9 +383,9 @@ namespace Tavstal.TShop.Utils.Managers
                     _pluginConfig.Database.Port
                 }));
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                TShop.Logger.Exception(exception);
+                TShop.Logger.Error("Failed to create zaup connection.", ex);
             }
             return mySqlConnection;
         }
@@ -420,10 +400,13 @@ namespace Tavstal.TShop.Utils.Managers
         /// </returns>
         public async Task<List<ZaupProduct>> GetZaupProductsAsync(string itemTable, string vehicleTable)
         {
-            List<ZaupProduct> i = new List<ZaupProduct>();
+            List<ZaupProduct> items = new List<ZaupProduct>();
             try
             {
-                MySqlConnection mySqlConnection = CreateConnection();
+                MySqlConnection? mySqlConnection = CreateZaupConnection();
+                if (mySqlConnection == null)
+                    return items;
+                
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 await mySqlConnection.OpenSafeAsync();
 
@@ -441,7 +424,7 @@ namespace Tavstal.TShop.Utils.Managers
                         uint id = reader.GetUInt32("id");
                         prod = new ZaupProduct((ushort)id, false, reader.GetDecimal("cost"), reader.GetDecimal("buyback"));
                     }
-                    i.Add(prod);
+                    items.Add(prod);
                 }
                 reader.Close();
 
@@ -459,16 +442,15 @@ namespace Tavstal.TShop.Utils.Managers
                         uint id = reader.GetUInt32("id");
                         prod = new ZaupProduct((ushort)id, true, reader.GetDecimal("cost"), 0);
                     }
-                    i.Add(prod);
+                    items.Add(prod);
                 }
                 await mySqlConnection.CloseAsync();
             }
             catch (Exception ex)
             {
-                TShop.Logger.Warning("This error might be caused by the database because it does not use ushort (uint16) as itemId, or decimal as price.");
-                TShop.Logger.Exception(ex);
+                TShop.Logger.Error("This error might be caused by the database because it does not use ushort (uint16) as itemId, or decimal as price.", ex);
             }
-            return i;
+            return items;
         }
         #endregion
     }
