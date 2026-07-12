@@ -6,6 +6,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Extensions.General;
+using Tavstal.TLibrary.Extensions.Unturned;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
@@ -22,7 +24,7 @@ namespace Tavstal.TShop.Utils.Handlers
     internal static class UnturnedEventHandler
     {
         private static bool _isAttached;
-        private static readonly TLogger _logger = TLogger.CreateInstance(TShop.Instance, typeof(UnturnedEventHandler), false);
+        private static readonly TLogger _logger = new TLogger(TShop.Instance, typeof(UnturnedEventHandler), TShop.Instance.GetLogLevel());
 
         /// <summary>
         /// Attaches event handlers to Unturned events.
@@ -141,7 +143,7 @@ namespace Tavstal.TShop.Utils.Handlers
 
             if (button.EqualsIgnoreCase("inputf_product_search"))
             {
-                if (comp.ProductSearch.EqualsIgnoreCase(text)) 
+                if (comp.ProductSearch!.EqualsIgnoreCase(text)) 
                     return;
                 comp.ProductSearch = text;
                 Task.Run(async () => await UIManager.UpdateProductPage(uPlayer));
@@ -393,7 +395,7 @@ namespace Tavstal.TShop.Utils.Handlers
                                 decimal cost = prod.Key.GetBuyCost(prod.Value);
                                 if (prod.Key.IsVehicle)
                                 {
-                                    VehicleAsset asset = UAssetHelper.FindVehicleAsset(prod.Key.UnturnedId);
+                                    VehicleAsset? asset = UAssetHelper.FindVehicleAsset(prod.Key.UnturnedId);
                                     if (asset == null)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_vehicle_not_exists",
@@ -423,7 +425,7 @@ namespace Tavstal.TShop.Utils.Handlers
                                 }
                                 else
                                 {
-                                    ItemAsset asset = UAssetHelper.FindItemAsset(prod.Key.UnturnedId);
+                                    ItemAsset? asset = UAssetHelper.FindItemAsset(prod.Key.UnturnedId);
                                     if (asset == null)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_found",
@@ -499,7 +501,7 @@ namespace Tavstal.TShop.Utils.Handlers
                                 }
                                 else
                                 {
-                                    ItemAsset asset = UAssetHelper.FindItemAsset(prod.Key.UnturnedId);
+                                    ItemAsset? asset = UAssetHelper.FindItemAsset(prod.Key.UnturnedId);
 
                                     if (asset == null)
                                     {
@@ -507,9 +509,8 @@ namespace Tavstal.TShop.Utils.Handlers
                                             prod.Key.UnturnedId));
                                         continue;
                                     }
-
-                                    List<InventorySearch> search =
-                                        uPlayer.Inventory.search(prod.Key.UnturnedId, true, true);
+                                    
+                                    List<InventorySearch> search = uPlayer.Inventory.Search(prod.Key.UnturnedId, true);
                                     if (search.Count < prod.Value)
                                     {
                                         comp.AddNotifyToQueue(TShop.Instance.Localize("ui_error_item_not_enough"));
@@ -625,13 +626,74 @@ namespace Tavstal.TShop.Utils.Handlers
 
                             UIManager.UpdateBasketPage(uPlayer);
                         }
+                        else if (button.EndsWith("#amount#up"))
+                        {
+                            int buttonIndex =
+                                Convert.ToInt32(button.Replace("bt_tshop_basket#product#", "").Replace("#amount#up", "")) -
+                                1;
+
+                            int elementIndex = (comp.PageBasket - 1) * 12 + buttonIndex;
+                            if (!comp.Basket.IsValidIndex(elementIndex))
+                                return;
+                            
+                            var key = comp.Basket.Keys.ElementAt(elementIndex);
+                            if (key.IsVehicle)
+                            {
+                                comp.Basket[key] = 1;
+                                comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_vehicle_quantity_change_prevent"));
+                                UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID,
+                                    uPlayer.SteamPlayer().transportConnection, true, button, "1");
+                            }
+                            else
+                            {
+                                int amount = comp.Basket[key];
+                                if (amount >= 100)
+                                    comp.Basket[key] = 1;
+                                else
+                                    comp.Basket[key] += 1;
+                            }
+
+                            UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID,
+                                uPlayer.SteamPlayer().transportConnection, true, $"tb_tshop_basket#product#{buttonIndex + 1}#amount", comp.Basket[key].ToString());
+                            UIManager.UpdateBasketPayment(uPlayer);
+                        }
+                        else if (button.EndsWith("#amount#down"))
+                        {
+                            int buttonIndex =
+                                Convert.ToInt32(button.Replace("bt_tshop_basket#product#", "").Replace("#amount#down", "")) -
+                                1;
+
+                            int elementIndex = (comp.PageBasket - 1) * 12 + buttonIndex;
+                            if (!comp.Basket.IsValidIndex(elementIndex))
+                                return;
+                            
+                            var key = comp.Basket.Keys.ElementAt(elementIndex);
+                            if (key.IsVehicle)
+                            {
+                                comp.Basket[key] = 1;
+                                comp.AddNotifyToQueue(TShop.Instance.Localize("ui_basket_vehicle_quantity_change_prevent"));
+                                UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID,
+                                    uPlayer.SteamPlayer().transportConnection, true, button, "1");
+                            }
+                            else
+                            {
+                                int amount = comp.Basket[key];
+                                if (amount <= 1)
+                                    comp.Basket[key] = 100;
+                                else
+                                    comp.Basket[key] -= 1;
+                            }
+                            
+                            UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID,
+                                uPlayer.SteamPlayer().transportConnection, true, $"tb_tshop_basket#product#{buttonIndex + 1}#amount", comp.Basket[key].ToString());
+                            UIManager.UpdateBasketPayment(uPlayer);
+                        }
                     }
                 });
             }
             catch (Exception ex)
             {
-                _logger.Exception($"Error in UEventHandler -> OnButtonClick({button}):");
-                _logger.Error(ex);
+                _logger.Error($"Error in UEventHandler -> OnButtonClick({button}):", ex);
             }
         }
     }

@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
-using Tavstal.TLibrary;
+using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Economy;
+using Tavstal.TLibrary.Threading;
 using UnityEngine;
 
 namespace Tavstal.TShop.Utils.Helpers
@@ -35,7 +36,7 @@ namespace Tavstal.TShop.Utils.Helpers
                 await TShop.EconomyProvider.WithdrawAsync(buyerSteamId, totalCost);
 
                 // Add the item to the buyer's inventory or drop it if inventory is full
-                await MainThreadDispatcher.RunOnMainThreadAsync(() =>
+                MainThreadDispatcher.Run(() =>
                 {
                     var item = new Item(itemId, true);
                     for (int i = 0; i < amount; i++)
@@ -67,8 +68,7 @@ namespace Tavstal.TShop.Utils.Helpers
             catch (Exception ex)
             {
                 // Log any errors that occur during the purchase
-                TShop.Logger.Exception("Failed to buy item:");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Failed to buy item:", ex);
                 return false;
             }
         }
@@ -100,7 +100,7 @@ namespace Tavstal.TShop.Utils.Helpers
                 await TShop.EconomyProvider.DepositAsync(sellerSteamId, totalCost);
 
                 // Remove the item from the seller's inventory
-                await MainThreadDispatcher.RunOnMainThreadAsync(() =>
+                MainThreadDispatcher.Run(() =>
                 {
                     seller.Player.equipment.dequip();
                     for (int i = 0; i < amount; i++)
@@ -132,8 +132,7 @@ namespace Tavstal.TShop.Utils.Helpers
             catch (Exception ex)
             {
                 // Log any errors that occur during the sale
-                TShop.Logger.Exception("Failed to sell item:");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Failed to sell item:", ex);
                 return false;
             }
         }
@@ -157,7 +156,7 @@ namespace Tavstal.TShop.Utils.Helpers
                 await TShop.EconomyProvider.WithdrawAsync(buyerSteamId, totalCost);
 
                 // Spawn the vehicle and set its color if specified
-                await MainThreadDispatcher.RunOnMainThreadAsync(() =>
+                MainThreadDispatcher.Run(() =>
                 {
                     InteractableVehicle vehicle = UnturnedHelper.SpawnOwnedVehicle(vehicleId, buyer);
                     if (vehicleColor.HasValue)
@@ -186,8 +185,7 @@ namespace Tavstal.TShop.Utils.Helpers
             catch (Exception ex)
             {
                 // Log any errors that occur during the purchase
-                TShop.Logger.Exception("Failed to buy vehicle:");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Failed to buy vehicle:", ex);
                 return false;
             }
         }
@@ -207,7 +205,7 @@ namespace Tavstal.TShop.Utils.Helpers
                 CSteamID sellerSteamId = seller.CSteamID;
 
                 // Destroy the vehicle
-                await MainThreadDispatcher.RunOnMainThreadAsync(() => VehicleManager.askVehicleDestroy(vehicle));
+                MainThreadDispatcher.Run(() => VehicleManager.askVehicleDestroy(vehicle));
 
                 // Deposit the earnings into the seller's account
                 await TShop.EconomyProvider.DepositAsync(sellerSteamId, totalCost);
@@ -234,8 +232,7 @@ namespace Tavstal.TShop.Utils.Helpers
             catch (Exception ex)
             {
                 // Log any errors that occur during the sale
-                TShop.Logger.Exception("Failed to sell vehicle:");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Failed to sell vehicle:", ex);
                 return false;
             }
         }

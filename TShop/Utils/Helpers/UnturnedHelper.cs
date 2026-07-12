@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
+using Tavstal.TLibrary.Extensions;
 using Tavstal.TShop.Models;
 using UnityEngine;
 
@@ -26,16 +27,15 @@ namespace Tavstal.TShop.Utils.Helpers
             string voidName = "GetIcon";
             try
             {
-                FileServerFolder githubElement = TShop.Instance.Config.ItemFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
+                FileServerFolder? githubElement = TShop.Instance.Config.ItemFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
                 if (githubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";
                 return githubElement.FolderLink + filename;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                TShop.Logger.Exception("Error in " + voidName + "(): ");
-                TShop.Logger.Error(e);
+                TShop.Logger.Error("Error in " + voidName + "(): ", ex);
             }
             return TShop.Instance.Config.DefaultProductIconUrl;
         }
@@ -52,16 +52,15 @@ namespace Tavstal.TShop.Utils.Helpers
             string voidName = "GetIcon";
             try
             {
-                FileServerFolder githubElement = TShop.Instance.Config.VehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
+                FileServerFolder? githubElement = TShop.Instance.Config.VehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
                 if (githubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";
                 return githubElement.FolderLink + filename;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                TShop.Logger.Exception("Error in " + voidName + "(): ");
-                TShop.Logger.Error(e);
+                TShop.Logger.Error("Error in " + voidName + "(): ", ex);
             }
             return TShop.Instance.Config.DefaultProductIconUrl;
         }
@@ -109,8 +108,7 @@ namespace Tavstal.TShop.Utils.Helpers
             }
             catch (Exception ex)
             {
-                TShop.Logger.Error("Failed to get vehicle spawn modifier. Using default value...");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Failed to get vehicle spawn modifier. Using default value...", ex);
             }
 
             return new Vector3(0, 5, 5);
