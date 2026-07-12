@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Tavstal.TLibrary.Models;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Models;
+#pragma warning disable CS8618 // The fields are initialized in LoadDefaults() method and set by json serializer.
 
 namespace Tavstal.TShop
 {
@@ -39,13 +40,13 @@ namespace Tavstal.TShop
         [JsonProperty(PropertyName = "VehicleFolders", Order = 16)]
         public List<FileServerFolder> VehicleFolders { get; set; }
         [JsonIgnore]
-        public readonly string MessageIcon = "https://raw.githubusercontent.com/TavstalDev/Icons/master/Plugins/icon_plugin_tshop.png";
+        public readonly string MessageIcon = "https://raw.githubusercontent.com/TavstalDev/TShop2/master/assets/icon.png";
         [JsonIgnore]
         public readonly ushort EffectID = 8818;
 
         public override void LoadDefaults()
         {
-            DebugMode = false;
+            LogLevel = ELogLevel.INFO;
             Locale = "en";
             DownloadLocalePacks = true;
             Database = new DatabaseData("tshop_products");
@@ -58,7 +59,7 @@ namespace Tavstal.TShop
             ItemCountToDiscount = 10;
             VehicleCountToDiscount = 5;
             DiscountInterval = 1800;
-            DefaultProductIconUrl = "https://raw.githubusercontent.com/TavstalDev/TShop2/master/Assets/noimage.png";
+            DefaultProductIconUrl = "https://raw.githubusercontent.com/TavstalDev/TShop2/master/assets/noimage.png";
             VehicleSpawnModifier = new SerializableVector3(0, 5, 5);
             ItemFolders = new List<FileServerFolder>
             {
