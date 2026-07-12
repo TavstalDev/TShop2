@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
@@ -50,7 +51,7 @@ namespace Tavstal.TShop.Commands
                     successCount++;
                 }
 
-                TShop.Logger.LogRich(
+                TShop.Logger.RichCommand(
                     $"&a{successCount}&6/&2{productsToCheck.Count} &6items have been successfully migrated to TShop's table.");
 
                 TShop.Logger.RichWarning("Migrating vehicles...");
@@ -70,9 +71,9 @@ namespace Tavstal.TShop.Commands
                     successCount++;
                 }
 
-                TShop.Logger.LogRich(
+                TShop.Logger.RichCommand(
                     $"&a{successCount}&6/&2{productsToCheck.Count} &6vehicles have been successfully migrated to TShop's table.");
-                TShop.Logger.LogRich(
+                TShop.Logger.RichCommand(
                     "&bIf there are any items or vehicles that were not migrated then please check Zaup's database or the workshop mod on the server. The problem is not on TShop's side.");
                 TShop.Instance.SendCommandReply(caller, "success_migrate");
             }

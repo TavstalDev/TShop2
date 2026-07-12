@@ -42,7 +42,7 @@ namespace Tavstal.TShop.Commands
                 /* ignore */
             }
 
-            VehicleAsset asset;
+            VehicleAsset? asset;
             if (id > 0)
                 asset = UAssetHelper.FindVehicleAsset(id);
             else
@@ -58,7 +58,7 @@ namespace Tavstal.TShop.Commands
                 return true;
             }
 
-            Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
+            Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
             if (item == null)
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_added", args[0]);

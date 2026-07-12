@@ -2,9 +2,10 @@
 using SDG.Unturned;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
-using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Models;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace Tavstal.TShop.Commands
                 async (caller, args) =>
                 {
                     ushort id = 0;
-                    VehicleAsset asset;
+                    VehicleAsset? asset;
 
                     if (args.Length < 3 || args.Length > 5)
                     {
@@ -61,7 +62,7 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
 
-                    Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
+                    Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item != null)
                     {
                         TShop.Instance.SendCommandReply(caller,  "error_vehicle_already_added", asset.vehicleName, id);
@@ -70,7 +71,7 @@ namespace Tavstal.TShop.Commands
 
                     decimal buycost = 0;
                     decimal sellcost = 0;
-                    string permission = null;
+                    string? permission = null;
 
                     try
                     {
@@ -84,7 +85,7 @@ namespace Tavstal.TShop.Commands
                     }
                     catch { /* ignore */ }
 
-                    string vehicleColor = null;
+                    string? vehicleColor = null;
 
                     if (args.Length == 4)
                     {
@@ -111,7 +112,7 @@ namespace Tavstal.TShop.Commands
                 async (caller, args) =>
                 {
                     ushort id = 0;
-                    VehicleAsset asset;
+                    VehicleAsset? asset;
 
                     if (args.Length != 1)
                     {
@@ -141,7 +142,7 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
 
-                    Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
+                    Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
                         TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_added", args[0]);
@@ -157,7 +158,7 @@ namespace Tavstal.TShop.Commands
                 async (caller, args) =>
                 {
                     ushort id = 0;
-                    VehicleAsset asset;
+                    VehicleAsset? asset;
 
                     if (args.Length < 3|| args.Length > 4)
                     {
@@ -187,7 +188,7 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
 
-                    Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
+                    Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_not_added", asset.vehicleName);
@@ -196,7 +197,7 @@ namespace Tavstal.TShop.Commands
 
                     decimal buycost = 0;
                     decimal sellcost = 0;
-                    string permission = null;
+                    string? permission = null;
 
                     try
                     {
@@ -225,7 +226,7 @@ namespace Tavstal.TShop.Commands
                 async (caller, args) =>
                 {
                     ushort id = 0;
-                    VehicleAsset asset;
+                    VehicleAsset? asset;
 
                     if (args.Length != 2)
                     {
@@ -254,7 +255,7 @@ namespace Tavstal.TShop.Commands
                         return;
                     }
 
-                    Product item = await TShop.DatabaseManager.FindVehicleAsync(id);
+                    Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_not_added", asset.vehicleName);

@@ -21,7 +21,7 @@ namespace Tavstal.TShop.Commands
 
         protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
         {
-            if (!TShop.Instance.Config.DebugMode)
+            if (TShop.Instance.Config.LogLevel != ELogLevel.DEBUG)
             {
                 TShop.Instance.SendPlainCommandReply(caller,"&cYou must enable debugMode to use 'shopfill'.");
                 return true;

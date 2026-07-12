@@ -1,6 +1,5 @@
 ﻿using Rocket.API;
 using Rocket.Unturned.Player;
-using SDG.Unturned;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tavstal.TLibrary.Helpers.Unturned;
@@ -41,11 +40,7 @@ namespace Tavstal.TShop.Commands
                 /* ignore */
             }
 
-            ItemAsset asset;
-            if (id > 0)
-                asset = UAssetHelper.FindItemAsset(id);
-            else
-                asset = UAssetHelper.FindItemAsset(args[0]);
+            var asset = id > 0 ? UAssetHelper.FindItemAsset(id) : UAssetHelper.FindItemAsset(args[0]);
 
             if (asset == null)
             {
@@ -55,7 +50,7 @@ namespace Tavstal.TShop.Commands
 
             id = asset.id;
 
-            Product item = await TShop.DatabaseManager.FindItemAsync(id);
+            Product? item = await TShop.DatabaseManager.FindItemAsync(id);
             if (item == null)
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_not_added", args[0]);

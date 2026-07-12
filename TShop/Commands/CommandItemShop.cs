@@ -1,10 +1,9 @@
 ﻿using Rocket.API;
-using SDG.Unturned;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
-using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Models;
 
@@ -27,8 +26,7 @@ namespace Tavstal.TShop.Commands
                 async (caller, args) =>
                 {
                     ushort id = 0;
-                    ItemAsset asset;
-                    
+
                     if (args.Length < 3 || args.Length > 4)
                     {
                         await ExecuteHelp(caller, true, "add", args);
@@ -42,10 +40,7 @@ namespace Tavstal.TShop.Commands
                     catch { /* ignore */ }
 
 
-                    if (id > 0)
-                        asset = UAssetHelper.FindItemAsset(id);
-                    else
-                        asset = UAssetHelper.FindItemAsset(args[0]);
+                    var asset = id > 0 ? UAssetHelper.FindItemAsset(id) : UAssetHelper.FindItemAsset(args[0]);
 
                     if (asset == null)
                     {
@@ -54,7 +49,7 @@ namespace Tavstal.TShop.Commands
                     }
                     id = asset.id;
 
-                    Product item = await TShop.DatabaseManager.FindItemAsync(id);
+                    Product? item = await TShop.DatabaseManager.FindItemAsync(id);
                     if (item != null)
                     {
                         TShop.Instance.SendCommandReply(caller,  "error_item_already_added", asset.itemName, asset.id);
@@ -63,7 +58,7 @@ namespace Tavstal.TShop.Commands
 
                     decimal buycost = 0;
                     decimal sellcost = 0;
-                    string permission = null;
+                    string? permission = null;
 
                     try
                     {
@@ -92,7 +87,6 @@ namespace Tavstal.TShop.Commands
                 async (caller, args) =>
                 {
                     ushort id = 0;
-                    ItemAsset asset;
 
                     if (args.Length != 1)
                     {
@@ -106,10 +100,7 @@ namespace Tavstal.TShop.Commands
                     }
                     catch { /* ignore */ }
 
-                    if (id > 0)
-                        asset = UAssetHelper.FindItemAsset(id);
-                    else
-                        asset = UAssetHelper.FindItemAsset(args[0]);
+                    var asset = id > 0 ? UAssetHelper.FindItemAsset(id) : UAssetHelper.FindItemAsset(args[0]);
 
                     if (asset == null)
                     {
@@ -118,7 +109,7 @@ namespace Tavstal.TShop.Commands
                     }
                     id = asset.id;
 
-                    Product item = await TShop.DatabaseManager.FindItemAsync(id);
+                    Product? item = await TShop.DatabaseManager.FindItemAsync(id);
                     if (item == null)
                     {
                         TShop.Instance.SendCommandReply(caller, "error_item_not_added", args[0]);
@@ -134,7 +125,6 @@ namespace Tavstal.TShop.Commands
                 async (caller, args) =>
                 {
                     ushort id = 0;
-                    ItemAsset asset;
 
                     if (args.Length < 3 || args.Length > 4)
                     {
@@ -148,10 +138,7 @@ namespace Tavstal.TShop.Commands
                     }
                     catch { /* ignore */ }
 
-                    if (id > 0)
-                        asset = UAssetHelper.FindItemAsset(id);
-                    else
-                        asset = UAssetHelper.FindItemAsset(args[0]);
+                    var asset = id > 0 ? UAssetHelper.FindItemAsset(id) : UAssetHelper.FindItemAsset(args[0]);
 
                     if (asset == null)
                     {
@@ -160,7 +147,7 @@ namespace Tavstal.TShop.Commands
                     }
                     id = asset.id;
 
-                    Product item = await TShop.DatabaseManager.FindItemAsync(id);
+                    Product? item = await TShop.DatabaseManager.FindItemAsync(id);
                     if (item == null)
                     {
                         TShop.Instance.SendCommandReply(caller, "error_item_not_added", asset.itemName);
@@ -169,7 +156,7 @@ namespace Tavstal.TShop.Commands
 
                     decimal buycost = 0;
                     decimal sellcost = 0;
-                    string permission = null;
+                    string? permission = null;
 
                     try
                     {
