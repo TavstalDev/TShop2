@@ -5,6 +5,7 @@ using Rocket.Unturned.Player;
 using SDG.NetTransport;
 using SDG.Unturned;
 using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Models.Plugin;
@@ -26,7 +27,7 @@ namespace Tavstal.TShop.Components
         public EMenuCategory MenuCategory { get; set; }
         public EItemFilter? ItemFilter { get; set; }
         public ESortType SortType { get; set; }
-        public string ProductSearch { get; set; }
+        public string? ProductSearch { get; set; }
         public bool IsProductSearchDirty { get; set; }
         public EEngine? VehicleFilter { get; set; }
         public EPaymentMethod PaymentMethod { get; set; } = EPaymentMethod.CASH;
@@ -70,7 +71,7 @@ namespace Tavstal.TShop.Components
             }
             catch (Exception ex)
             {
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Failed to add notification to the queue.", ex);
             }
         }
 
@@ -105,8 +106,7 @@ namespace Tavstal.TShop.Components
             }
             catch (Exception ex)
             {
-                TShop.Logger.Exception("Error in Component SendNotify():");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Error in Component SendNotify():", ex);
             }
         }
     }

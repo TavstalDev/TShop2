@@ -8,68 +8,81 @@ using UnityEngine;
 
 namespace Tavstal.TShop.Models
 {
-    [Serializable]
+    [SqlName("products")]
     public class Product : IProduct
     {
         [SqlMember(isPrimaryKey: true, isUnsigned: true, shouldAutoIncrement: true)]
         public ulong Id { get; set; }
+        
         [SqlMember(isUnsigned: true)]
         public ushort UnturnedId { get; set; }
+        
         [SqlMember(columnType:"varchar(255)")]
         public string DisplayName { get; set; }
+        
         [SqlMember]
         public bool IsVehicle { get; set; }
+        
         [SqlMember(columnType:"varchar(255)", isNullable: true)]
-        public string VehicleColor { get; set; }
+        public string? VehicleColor { get; set; }
+        
         [SqlMember(columnType: "decimal(14, 1)")]
         public decimal BuyCost { get; set; }
+        
         [SqlMember(columnType: "decimal(14, 1)")]
         public decimal SellCost { get; set; }
+        
         [SqlMember]
         public bool HasPermission { get; set; }
+        
         [SqlMember(columnType: "varchar(255)", isNullable: true)]
-        public string Permission { get; set; }
+        public string? Permission { get; set; }
+        
         [SqlMember]
         public bool IsDiscounted { get; set; }
+        
         [SqlMember(columnType: "decimal(3, 1)")]
         public decimal DiscountPercent { get; set; }
 
-        public Product() { }
+        public Product()
+        {
+            DisplayName = string.Empty;
+        }
 
-        public Product(ushort unturnedId, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, string perm)
+        public Product(ushort unturnedId, bool isVehicle, string? vehicleColor, decimal buyCost, decimal sellCost, string? permission)
         {
             UnturnedId = unturnedId;
             IsVehicle = isVehicle;
             VehicleColor = vehicleColor;
-            BuyCost = buycost;
-            SellCost = sellcost;
+            BuyCost = buyCost;
+            SellCost = sellCost;
             HasPermission = true;
-            Permission = perm;
+            Permission = permission;
             DisplayName = GetName();
         }
 
-        public Product(ushort unturnedId, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost)
+        public Product(ushort unturnedId, bool isVehicle, string? vehicleColor, decimal buyCost, decimal sellCost)
         {
             UnturnedId = unturnedId;
             IsVehicle = isVehicle;
             VehicleColor = vehicleColor;
-            BuyCost = buycost;
-            SellCost = sellcost;
+            BuyCost = buyCost;
+            SellCost = sellCost;
             HasPermission = false;
             Permission = "TShop.item.";
             DisplayName = GetName();
         }
 
-        public Product(ushort unturnedId, bool isVehicle, string vehicleColor, decimal buycost, decimal sellcost, bool hasperm, string perm, bool isdiscount, decimal discount)
+        public Product(ushort unturnedId, bool isVehicle, string? vehicleColor, decimal buyCost, decimal sellCost, bool hasPermission, string? permission, bool isDiscounted, decimal discount)
         {
             UnturnedId = unturnedId;
             IsVehicle = isVehicle;
             VehicleColor = vehicleColor;
-            BuyCost = buycost;
-            SellCost = sellcost;
-            HasPermission = hasperm;
-            Permission = perm;
-            IsDiscounted = isdiscount;
+            BuyCost = buyCost;
+            SellCost = sellCost;
+            HasPermission = hasPermission;
+            Permission = permission;
+            IsDiscounted = isDiscounted;
             DiscountPercent = discount;
             DisplayName = GetName();
         }
@@ -94,15 +107,14 @@ namespace Tavstal.TShop.Models
             catch (Exception ex)
             {
                 string type = IsVehicle ? "vehicle" : "item";
-                TShop.Logger.Warning($"Failed to get the asset name for '{type}' with {UnturnedId} id. Exception:");
-                TShop.Logger.Exception(ex);
+                TShop.Logger.Error($"Failed to get the asset name for '{type}' with {UnturnedId} id.", ex);
                 return "unknown_name";
             }
         }
 
         public Color32 GetVehicleColor()
         {
-            if (VehicleColor.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(VehicleColor))
                 return default;
             
             if (ColorUtility.TryParseHtmlString(VehicleColor, out var newCol))
