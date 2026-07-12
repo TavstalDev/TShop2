@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Rocket.API;
-using Tavstal.TLibrary;
 using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Helpers.Unturned;
+using Tavstal.TLibrary.Threading;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Models.Enums;
@@ -31,8 +32,16 @@ namespace Tavstal.TShop.Utils.Managers
         public static void Init(UnturnedPlayer player)
         {
             UEffectHelper.SendUIEffect(Config.EffectID, (short)Config.EffectID, player.SteamPlayer().transportConnection, true);
-            Hide(player, false); // Just in case
-            Translate(player);
+            // Delay the packets to make sure the UI is ready.
+            Task.Run(async () =>
+            {
+                await Task.Delay(100);
+                MainThreadDispatcher.Run(() =>
+                {
+                    Hide(player, false);
+                    Translate(player);
+                });
+            });
         }
 
         /// <summary>
@@ -114,7 +123,7 @@ namespace Tavstal.TShop.Utils.Managers
         /// <param name="handleCursor">Optional: A boolean value indicating whether to handle the cursor visibility along with showing the HUD. Default is true.</param>
         public static void Show(UnturnedPlayer player, bool handleCursor = true)
         {
-            MainThreadDispatcher.RunOnMainThread(() =>
+            MainThreadDispatcher.Run(() =>
             {
                 UEffectHelper.SendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", true);
                 player.GetComponent<ShopComponent>().IsUIOpened = true;
@@ -130,7 +139,7 @@ namespace Tavstal.TShop.Utils.Managers
         /// <param name="handleCursor">Optional: A boolean value indicating whether to handle the cursor visibility along with hiding the HUD. Default is true.</param>
         public static void Hide(UnturnedPlayer player, bool handleCursor = true)
         {
-            MainThreadDispatcher.RunOnMainThread(() =>
+            MainThreadDispatcher.Run(() =>
             {
                 UEffectHelper.SendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", false);
                 player.GetComponent<ShopComponent>().IsUIOpened = false;
@@ -169,7 +178,7 @@ namespace Tavstal.TShop.Utils.Managers
                 List<Product> products = new List<Product>();
                 foreach (Product product in productList)
                 {
-                    if (!comp.ProductSearch.IsNullOrEmpty() && !product.DisplayName.ContainsIgnoreCase(comp.ProductSearch))
+                    if (!string.IsNullOrEmpty(comp.ProductSearch) && !product.DisplayName.ContainsIgnoreCase(comp.ProductSearch!))
                         continue;
                     
                     if (product.HasPermission && !player.HasPermission(product.Permission))
@@ -244,7 +253,7 @@ namespace Tavstal.TShop.Utils.Managers
                     Product product = products.ElementAt(index);
                     if (comp.IsVehiclePage)
                     {
-                        VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
+                        VehicleAsset? vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
                         if (vehicle == null)
                         {
                             TShop.Logger.Warning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
@@ -262,7 +271,7 @@ namespace Tavstal.TShop.Utils.Managers
                     }
                     else
                     {
-                        ItemAsset item = UAssetHelper.FindItemAsset(product.UnturnedId);
+                        ItemAsset? item = UAssetHelper.FindItemAsset(product.UnturnedId);
                         if (item == null)
                         {
                             UEffectHelper.SendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_product#{uiIndex}", false);
@@ -309,8 +318,7 @@ namespace Tavstal.TShop.Utils.Managers
             }
             catch (Exception ex)
             {
-                TShop.Logger.Exception("Error in HUDManager: ");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Error in HUDManager: ", ex);
             }
         }
 
@@ -351,7 +359,7 @@ namespace Tavstal.TShop.Utils.Managers
                     int amount = comp.Basket.Values.ElementAt(index);
                     if (product.IsVehicle)
                     {
-                        VehicleAsset vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
+                        VehicleAsset? vehicle = UAssetHelper.FindVehicleAsset(product.UnturnedId);
                         if (vehicle == null)
                         {
                             TShop.Logger.Warning($"# Failed to get the vehicle asset with {product.UnturnedId} ID.");
@@ -369,7 +377,7 @@ namespace Tavstal.TShop.Utils.Managers
                     }
                     else
                     {
-                        ItemAsset item = UAssetHelper.FindItemAsset(product.UnturnedId);
+                        ItemAsset? item = UAssetHelper.FindItemAsset(product.UnturnedId);
                         if (item == null)
                         {
                             UEffectHelper.SendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_basket#product#{uiIndex}", false);
@@ -404,6 +412,7 @@ namespace Tavstal.TShop.Utils.Managers
                     }
 
                     UEffectHelper.SendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#product#{uiIndex}#price", product.BuyCost <= 0 ? TShop.Instance.Localize("ui_product_free") : TShop.Instance.Localize("ui_product_buycost", product.BuyCost.ToString("0.00")));
+                    UEffectHelper.SendUIEffectText((short)Config.EffectID, playerTc, true, $"tb_tshop_basket#product#{uiIndex}#amount", amount.ToString());
                     UEffectHelper.SendUIEffectText((short)Config.EffectID, playerTc, true, $"inputf_tshop_basket#product#{uiIndex}#amt", amount.ToString());
                     //UEffectHelper.SendUIEffectText((short)Config.EffectID, playerTC, true, $"tshop_basket#product#{uiIndex}#sellcost", product.SellCost <= 0 ? TShop.Instance.Localize("ui_product_notavailable") : TShop.Instance.Localize("ui_product_sellcost", product.BuyCost.ToString("0.00")));
                     UEffectHelper.SendUIEffectVisibility((short)Config.EffectID, playerTc, true, $"tshop_basket#product#{uiIndex}", true);
@@ -420,8 +429,7 @@ namespace Tavstal.TShop.Utils.Managers
             }
             catch (Exception ex)
             {
-                TShop.Logger.Exception("Error in HUDManager: ");
-                TShop.Logger.Error(ex);
+                TShop.Logger.Error("Error in HUDManager: ", ex);
             }
         }
 
