@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -8,31 +9,38 @@ using Rocket.API;
 using Rocket.Core;
 using Steamworks;
 using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Models.Hooks;
+using Tavstal.TLibrary.Models.Plugin;
 
 namespace Tavstal.TShop.Models.Hooks
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class UconomyHook : Hook, IEconomyProvider
     {
-        private MethodInfo _getBalanceMethod;
-        private MethodInfo _increaseBalanceMethod;
-        private MethodInfo _getTranslation;
+        private readonly TLogger _logger;
+        private MethodInfo? _getBalanceMethod;
+        private MethodInfo? _increaseBalanceMethod;
+        private MethodInfo? _getTranslation;
         //private EventInfo _onPlayerPayMethod;
         //private EventInfo _onBalanceUpdateMethod;
-        private object _databaseInstance;
-        private object _pluginInstance;
-        private object _uconomyConfig;
-        
-        public UconomyHook() : base(TShop.Instance, "thook_uconomy", true) { }
+        private object? _databaseInstance;
+        private object? _pluginInstance;
+        private object? _uconomyConfig;
 
-        public override void OnLoad()
+        public UconomyHook() : base(TShop.Instance, "thook_uconomy", true)
+        {
+            _logger = new TLogger(TShop.Instance.GetPluginName(), nameof(UconomyHook), TShop.Instance.GetLogLevel());
+        }
+
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
+        protected override void OnLoad()
         {
             try
             {
 
-                TShop.Logger.Log("Loading Uconomy hook...");
+                _logger.Info("Loading Uconomy hook...");
                 IRocketPlugin plugin = R.Plugins.GetPlugins().FirstOrDefault(c => c.Name.EqualsIgnoreCase("uconomy"));
                 if (plugin == null)
                     throw new Exception("Could not find plugin.");
@@ -46,7 +54,7 @@ namespace Tavstal.TShop.Models.Hooks
                     throw new Exception("Could not get plugin instance.");
                 Type pluginInstanceType = _pluginInstance.GetType();
                 
-                object uconomyConfigInst = pluginType.GetProperty("Configuration")?.GetValue(plugin);
+                object? uconomyConfigInst = pluginType.GetProperty("Configuration")?.GetValue(plugin);
                 if (uconomyConfigInst == null)
                     throw new Exception("Could not get plugin configuration field.");
 
@@ -63,10 +71,9 @@ namespace Tavstal.TShop.Models.Hooks
 
                 _increaseBalanceMethod = _databaseInstance.GetType().GetMethod(
                     "IncreaseBalance", new[] { typeof(string), typeof(decimal) });
-                if (pluginInstanceType.GetMethods().Any(x => x.Name == "Localize"))
-                    _getTranslation = pluginInstanceType.GetMethod("Localize", new[] { typeof(string), typeof(object[]) });
-                else
-                    _getTranslation = pluginInstanceType.GetMethod("Translate", new[] { typeof(string), typeof(object[]) });
+
+                bool hasLocalize = pluginInstanceType.GetMethods().Any(x => x.Name == "Localize");
+                _getTranslation = pluginInstanceType.GetMethod(hasLocalize ? "Localize" : "Translate", new[] { typeof(string), typeof(object[]) });
                 
                 #region Create Event Delegates
                 /* Added because it might be needed in the future
@@ -84,8 +91,8 @@ namespace Tavstal.TShop.Models.Hooks
                 }
                 catch (Exception ex)
                 {
-                    TShop.Logger.Error("Uconomy hook onPlayerPay delegate error:");
-                    TShop.Logger.Error(ex.ToString());
+                    _logger.Error("Uconomy hook onPlayerPay delegate error:");
+                    _logger.Error(ex.ToString());
                 }
 
                 try
@@ -97,23 +104,23 @@ namespace Tavstal.TShop.Models.Hooks
                 }
                 catch (Exception ex)
                 {
-                    TShop.Logger.Error("Uconomy hook onBalanceUpdate delegate error:");
-                    TShop.Logger.Error(ex.ToString());
+                    _logger.Error("Uconomy hook onBalanceUpdate delegate error:");
+                    _logger.Error(ex.ToString());
                 }*/
                 #endregion
 
-                TShop.Logger.Exception("Currency Name >> " + GetCurrencyName());
-                TShop.Logger.Exception("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance"));
-                TShop.Logger.Log("Uconomy hook loaded.");
+                _logger.Info("Currency Name >> " + GetCurrencyName());
+                _logger.Info("Initial Balance >> " + GetConfigValue<decimal>("InitialBalance"));
+                _logger.Info("Uconomy hook loaded.");
             }
             catch (Exception e)
             {
-                TShop.Logger.Error("Failed to load Uconomy hook");
-                TShop.Logger.Error(e.ToString());
+                _logger.Error("Failed to load Uconomy hook");
+                _logger.Error(e.ToString());
             }
         }
 
-        public override void OnUnload() { }
+        protected override void OnUnload() { }
 
         public override bool CanBeLoaded()
         {
@@ -125,20 +132,20 @@ namespace Tavstal.TShop.Models.Hooks
         {
             try
             {
-                return (T)Convert.ChangeType(_uconomyConfig.GetType().GetField(variableName).GetValue(_uconomyConfig), typeof(T));
+                return (T)Convert.ChangeType(_uconomyConfig?.GetType().GetField(variableName).GetValue(_uconomyConfig), typeof(T));
             }
             catch
             {
                 try
                 {
                     // ReSharper disable PossibleNullReferenceException
-                    return (T)Convert.ChangeType(_uconomyConfig.GetType().GetProperty(variableName).GetValue(_uconomyConfig), typeof(T));
+                    return (T)Convert.ChangeType(_uconomyConfig?.GetType().GetProperty(variableName).GetValue(_uconomyConfig), typeof(T));
                     // ReSharper restore PossibleNullReferenceException
                 }
                 catch
                 {
-                    TShop.Logger.Error($"Failed to get '{variableName}' variable!");
-                    return default;
+                    _logger.Error($"Failed to get '{variableName}' variable!");
+                    return default!;
                 }
             }
         }
@@ -147,12 +154,12 @@ namespace Tavstal.TShop.Models.Hooks
         {
             try
             {
-                return JObject.FromObject(_uconomyConfig.GetType());
+                return JObject.FromObject(_uconomyConfig?.GetType()!);
             }
             catch
             {
-                TShop.Logger.Error($"Failed to get config jobj.");
-                return null;
+                _logger.Error($"Failed to get config jobj.");
+                return null!;
             }
         }
 
@@ -163,112 +170,84 @@ namespace Tavstal.TShop.Models.Hooks
 
         public string Localize(bool addPrefix, string translationKey, params object[] placeholder)
         {
-            return ((string)_getTranslation.Invoke(_pluginInstance, new object[] { translationKey, placeholder }));
+            return (string)_getTranslation?.Invoke(_pluginInstance, new object[] { translationKey, placeholder })!;
         }
         #endregion
 
         #region Economy Methods
-        public decimal Withdraw(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                player.ToString(), -amount
-            });
-        }
 
-        public decimal Deposit(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        public Task<decimal> WithdrawAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            return (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                player.ToString(), amount
-            });
-        }
-
-        public decimal GetBalance(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            return (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
-                player.ToString()
-            });
-        }
-
-        public bool Has(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            if (amount >= 0)
-                return (GetBalance(player) - amount) >= 0;
-            else
-                return (GetBalance(player) - Math.Abs(amount)) >= 0;
-        }
-
-        public async Task<decimal> WithdrawAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
-        {
-            var taskCompletionSource = new TaskCompletionSource<decimal>();
-
-            await Task.Run(() =>
+            try
             {
-                try
+                if (_increaseBalanceMethod == null)
                 {
-                    decimal result = (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                        player.ToString(), -amount
-                    });
-                    taskCompletionSource.SetResult(result);
+                    _logger.Error("IncreaseBalance method is null. Cannot withdraw.");
+                    return Task.FromResult(-1m);
                 }
-                catch (Exception ex)
-                {
-                    taskCompletionSource.SetException(ex);
-                }
-            });
-
-            return await taskCompletionSource.Task;
+                
+                decimal result = (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
+                    player.ToString(), -amount
+                });
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Failed to withdraw {amount} from player {player}.", ex);
+                return Task.FromResult(-1m);
+            }
         }
 
-        public async Task<decimal> DepositAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        public Task<decimal> DepositAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            var taskCompletionSource = new TaskCompletionSource<decimal>();
-
-            await Task.Run(() =>
+            try
             {
-                try
+                if (_increaseBalanceMethod == null)
                 {
-                    decimal result = (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[] {
-                        player.ToString(), amount
-                    });
-                    taskCompletionSource.SetResult(result);
+                    _logger.Error("IncreaseBalance method is null. Cannot deposit.");
+                    return Task.FromResult(-1m);
                 }
-                catch (Exception ex)
+                
+                decimal result = (decimal)_increaseBalanceMethod.Invoke(_databaseInstance, new object[]
                 {
-                    taskCompletionSource.SetException(ex);
-                }
-            });
-
-            return await taskCompletionSource.Task;
+                    player.ToString(), amount
+                });
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Failed to deposit {amount} to player {player}.", ex);
+                return Task.FromResult(-1m);
+            }
         }
 
-        public async Task<decimal> GetBalanceAsync(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
+        public Task<decimal> GetBalanceAsync(CSteamID player, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
-            var taskCompletionSource = new TaskCompletionSource<decimal>();
-
-            await Task.Run(() =>
+            try
             {
-                try
+                if (_getBalanceMethod == null)
                 {
-                    decimal result = (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
-                        player.ToString()
-                    });
-                    taskCompletionSource.SetResult(result);
+                    _logger.Error("GetBalance method is null. Cannot get balance.");
+                    return Task.FromResult(-1m);
                 }
-                catch (Exception ex)
-                {
-                    taskCompletionSource.SetException(ex);
-                }
-            });
-
-            return await taskCompletionSource.Task;
+                
+                decimal result = (decimal)_getBalanceMethod.Invoke(_databaseInstance, new object[] {
+                    player.ToString()
+                });
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Failed to get balance for player {player}.", ex);
+                return Task.FromResult(-1m);
+            }
         }
 
         public async Task<bool> HasAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             if (amount >= 0)
-                return (await GetBalanceAsync(player) - amount) >= 0;
-            else
-                return (await GetBalanceAsync(player) - Math.Abs(amount)) >= 0;
+                return await GetBalanceAsync(player) - amount >= 0;
+            return await GetBalanceAsync(player) - Math.Abs(amount) >= 0;
         }
 
         public string GetCurrencyName()
@@ -284,86 +263,31 @@ namespace Tavstal.TShop.Models.Hooks
         #endregion
 
         #region TEconomy Methods
-        public bool HasTransactionSystem()
-        {
-            return false;
-        }
 
-        public bool HasBankCardSystem()
-        {
-            return false;
-        }
-        public void AddTransaction(CSteamID player, ITransaction transaction)
-        {
+        public bool HasTransactionSystem() => false;
+
+        public bool HasBankCardSystem() => false;
+        
+        public Task AddTransactionAsync(CSteamID player, ITransaction transaction) =>
             throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
-        }
-
-        public List<ITransaction> GetTransactions(CSteamID player)
-        {
+        
+        public Task<List<ITransaction>> GetTransactionsAsync(CSteamID player) =>
             throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
-        }
 
-        public void AddBankCard(CSteamID steamID, IBankCard newCard)
-        {
+        public Task AddBankCardAsync(CSteamID steamID, IBankCard newCard) =>
             throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
 
-        public void UpdateBankCard(string cardId, decimal limitUsed, bool isActive)
-        {
+        public Task UpdateBankCardAsync(string cardId, decimal limitUsed, bool isActive) =>
             throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
 
-        public void RemoveBankCard(string cardId)
-        {
+        public Task RemoveBankCardAsync(string cardId) =>
             throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
 
-        public List<IBankCard> GetBankCardsByPlayer(CSteamID steamID)
-        {
+        public Task<List<IBankCard>> GetBankCardsByPlayerAsync(CSteamID steamID) =>
             throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
 
-        public IBankCard GetBankCardById(string cardId)
-        {
+        public Task<IBankCard> GetBankCardByIdAsync(string cardId) =>
             throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task AddTransactionAsync(CSteamID player, ITransaction transaction)
-        {
-            throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
-        }
-
-        public async Task<List<ITransaction>> GetTransactionsAsync(CSteamID player)
-        {
-            throw new NotImplementedException($"Transaction system is not supported by the current economy plugin.");
-        }
-
-        public async Task AddBankCardAsync(CSteamID steamID, IBankCard newCard)
-        {
-            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
-
-        public async Task UpdateBankCardAsync(string cardId, decimal limitUsed, bool isActive)
-        {
-            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
-
-        public async Task RemoveBankCardAsync(string cardId)
-        {
-            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
-
-        public async Task<List<IBankCard>> GetBankCardsByPlayerAsync(CSteamID steamID)
-        {
-            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
-
-        public async Task<IBankCard> GetBankCardByIdAsync(string cardId)
-        {
-            throw new NotImplementedException($"Bank card system is not supported by the current economy plugin.");
-        }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         #endregion
     }
 }
