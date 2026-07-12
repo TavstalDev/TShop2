@@ -1,10 +1,10 @@
-﻿using Rocket.Unturned;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Rocket.Unturned;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Extensions.Unturned;
@@ -16,7 +16,7 @@ using Tavstal.TShop.Models.Enums;
 using Tavstal.TShop.Utils.Helpers;
 using Tavstal.TShop.Utils.Managers;
 
-namespace Tavstal.TShop.Utils.Handlers
+namespace Tavstal.TShop.Handlers
 {
     /// <summary>
     /// Handles various Unturned events related to the TShop.
@@ -184,6 +184,10 @@ namespace Tavstal.TShop.Utils.Handlers
                                 "tshop_products", true);
                             UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
                                 "tshop_basket", false);
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "categorybox#item", true);
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "categorybox#vehicle", false);
                             return;
                         }
                         case "bt_nav_tshop_vehicles":
@@ -198,6 +202,10 @@ namespace Tavstal.TShop.Utils.Handlers
                                 "tshop_products", true);
                             UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
                                 "tshop_basket", false);
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "categorybox#item", false);
+                            UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, playerTc, true,
+                                "categorybox#vehicle", true);
                             return;
                         }
                         case "bt_nav_tshop_basket":
