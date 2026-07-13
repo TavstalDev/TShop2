@@ -17,9 +17,9 @@
     <Description>Async mysql based item and vehicle shop plugin for Unturned 3.x</Description>
 
     <!-- Version -->
-    <Version>4.3.1</Version>
-    <AssemblyVersion>4.3.1.0</AssemblyVersion>
-    <FileVersion>4.3.1.0</FileVersion>
+    <Version>4.4.0</Version>
+    <AssemblyVersion>4.4.0.0</AssemblyVersion>
+    <FileVersion>4.4.0.0</FileVersion>
     <BuildDate>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss"))</BuildDate>
 
     <!-- Config -->
