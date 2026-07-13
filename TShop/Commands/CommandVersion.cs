@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Tavstal.TLibrary.Helpers.Unturned;
+// ReSharper disable UnusedType.Global
 
 namespace Tavstal.TShop.Commands
 {

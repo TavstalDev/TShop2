@@ -9,8 +9,7 @@ using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TShop.Models;
 using UnityEngine;
-
-// ReSharper disable AsyncVoidLambda
+// ReSharper disable UnusedType.Global
 
 namespace Tavstal.TShop.Commands
 {

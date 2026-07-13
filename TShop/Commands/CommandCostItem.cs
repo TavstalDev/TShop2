@@ -6,6 +6,7 @@ using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Models;
+// ReSharper disable UnusedType.Global
 
 namespace Tavstal.TShop.Commands
 {
