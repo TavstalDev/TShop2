@@ -5,6 +5,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
 using Tavstal.TLibrary.Extensions;
+using Tavstal.TLibrary.Extensions.Unturned;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Threading;
@@ -89,7 +90,7 @@ namespace Tavstal.TShop.Utils.Helpers
                 CSteamID sellerSteamId = seller.CSteamID;
 
                 // Search for the item in the seller's inventory
-                List<InventorySearch> search = seller.Inventory.search(itemId, true, true);
+                List<InventorySearch> search = seller.Inventory.Search(itemId, true);
                 if (search.Count < amount)
                 {
                     TShop.Instance.SendCommandReply(seller.SteamPlayer(), "error_item_not_enough");
