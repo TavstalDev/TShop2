@@ -1,24 +1,31 @@
 ﻿using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 
 namespace Tavstal.TShop.Models
 {
     public class FileServerFolder
     {
-        [JsonProperty("DispalyName")]
+        [YamlMember(Order = 0)]
         public string DisplayName { get; set; }
-        [JsonProperty("FolderLink")]
+        [YamlMember(Order = 1)]
         public string FolderLink { get; set; }
-        [JsonProperty("MinItemId")]
-        public int MinItemID { get; set; }
-        [JsonProperty("MaxItemId")]
-        public int MaxItemID { get; set; }
+        [YamlMember(Order = 2)]
+        public int MinItemId { get; set; }
+        [YamlMember(Order = 3)]
+        public int MaxItemId { get; set; }
+
+        public FileServerFolder()
+        {
+            DisplayName = string.Empty;
+            FolderLink = string.Empty;
+        }
 
         public FileServerFolder(string displayName, string folderLink, int minItemID, int maxItemID)
         {
             DisplayName = displayName;
             FolderLink = folderLink;
-            MinItemID = minItemID;
-            MaxItemID = maxItemID;
+            MinItemId = minItemID;
+            MaxItemId = maxItemID;
         }
     }
 }

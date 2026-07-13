@@ -1,18 +1,23 @@
 ﻿using System;
-using Newtonsoft.Json;
 using Tavstal.TLibrary.Models.Database;
+using YamlDotNet.Serialization;
 
 namespace Tavstal.TShop.Models
 {
     [Serializable]
     public class DatabaseData : DatabaseSettingsBase
     {
-        [JsonProperty(Order = 7)]
-        public string ProductsTable { get; set; }
+        [YamlMember(Order = 7, Description = "Database table prefix, default is 'tshop_'.")]
+        public string TablePrefix { get; set; }
 
-        public DatabaseData(string productsTable)
+        public DatabaseData()
         {
-            ProductsTable = productsTable;
+            TablePrefix = "tshop_";
+        }
+        
+        public DatabaseData(string tablePrefix)
+        {
+            TablePrefix = tablePrefix;
         }
     }
 }
