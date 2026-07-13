@@ -27,7 +27,7 @@ namespace Tavstal.TShop.Utils.Helpers
             string voidName = "GetIcon";
             try
             {
-                FileServerFolder? githubElement = TShop.Instance.Config.ItemFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
+                FileServerFolder? githubElement = TShop.Instance.Config.ItemFolders.FirstOrDefault(x => x.MinItemId <= id && x.MaxItemId >= id);
                 if (githubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";
@@ -52,7 +52,7 @@ namespace Tavstal.TShop.Utils.Helpers
             string voidName = "GetIcon";
             try
             {
-                FileServerFolder? githubElement = TShop.Instance.Config.VehicleFolders.FirstOrDefault(x => x.MinItemID <= id && x.MaxItemID >= id);
+                FileServerFolder? githubElement = TShop.Instance.Config.VehicleFolders.FirstOrDefault(x => x.MinItemId <= id && x.MaxItemId >= id);
                 if (githubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";

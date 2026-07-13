@@ -7,7 +7,7 @@ using Steamworks;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Models.Hooks;
-using Tavstal.TLibrary.Models.Plugin;
+using Tavstal.TLibrary.Models.Logging;
 
 namespace Tavstal.TShop.Models.Hooks
 {

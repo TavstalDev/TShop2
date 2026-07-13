@@ -24,7 +24,7 @@ namespace Tavstal.TShop.Utils.Managers
 
         public DatabaseManager() : base(TShop.Instance, _pluginConfig.Database)
         {
-            Products = new MySqlRepository<ulong, Product>(this, _pluginConfig.Database.ProductsTable);
+            Products = new MySqlRepository<ulong, Product>(this, _pluginConfig.Database.TablePrefix);
         }
 
         /// <summary>
@@ -370,10 +370,10 @@ namespace Tavstal.TShop.Utils.Managers
             MySqlConnection? mySqlConnection = null;
             try
             {
-                if (_pluginConfig.Database.Port == 0)
+                if (_pluginConfig.Database.Port <= 0)
                 {
                     _pluginConfig.Database.Port = 3306;
-                    _pluginConfig.SaveConfig();
+                    _pluginConfig.Save();
                 }
                 mySqlConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};", new object[] {
                     _pluginConfig.Database.Host,

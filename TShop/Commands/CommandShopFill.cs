@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Commands;
+using Tavstal.TLibrary.Models.Logging;
 using Tavstal.TLibrary.Models.Plugin;
 // ReSharper disable UnusedType.Global
 

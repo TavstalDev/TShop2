@@ -9,7 +9,7 @@ using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Extensions.Unturned;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TLibrary.Models.Plugin;
+using Tavstal.TLibrary.Models.Logging;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Models.Enums;
@@ -167,7 +167,7 @@ namespace Tavstal.TShop.Handlers
                 if (comp.LastButtonClick > DateTime.Now)
                     return;
 
-                comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UIButtonDelay);
+                comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UiButtonDelay);
                 Task.Run(async () =>
                 {
                     switch (button.ToLower())
