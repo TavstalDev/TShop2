@@ -8,8 +8,9 @@ updates:
     commit-message:
       prefix: "ci"
     labels:
-      - "dependencies"
-      - "github-actions"
+      - "type: github-actions"
+      - "priority: high"
+      - "status: needs review"
     groups:
       github-actions:
         patterns:
