@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
-using Steamworks;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Extensions.Unturned;
 using Tavstal.TLibrary.Helpers.Unturned;
-using Tavstal.TLibrary.Models.Economy;
-using Tavstal.TLibrary.Threading;
-using UnityEngine;
+using Tavstal.TShop.Models;
 
 namespace Tavstal.TShop.Utils.Helpers
 {
@@ -18,223 +14,37 @@ namespace Tavstal.TShop.Utils.Helpers
     /// </summary>
     public static class ShopHelper
     {
-        /// <summary>
-        /// Handles the purchase of an item by a player.
-        /// </summary>
-        /// <param name="buyer">The player buying the item.</param>
-        /// <param name="itemId">The ID of the item to be purchased.</param>
-        /// <param name="totalCost">The total cost of the item.</param>
-        /// <param name="amount">The quantity of the item to be purchased. Defaults to 1.</param>
-        /// <param name="paymentMethod">The payment method used for the purchase. Defaults to BANK_ACCOUNT.</param>
-        /// <returns>A task that resolves to true if the purchase was successful, otherwise false.</returns>
-        public static async Task<bool> BuyItemAsync(UnturnedPlayer buyer, ushort itemId, decimal totalCost, byte amount = 1, EPaymentMethod paymentMethod = EPaymentMethod.BANK_ACCOUNT)
+        public static decimal? RemoveAndGetCost(UnturnedPlayer seller, Product product, byte amount = 1)
         {
             try
             {
-                CSteamID buyerSteamId = buyer.CSteamID;
-
-                // Withdraw the cost from the buyer's account
-                await TShop.EconomyProvider.WithdrawAsync(buyerSteamId, totalCost);
-
-                // Add the item to the buyer's inventory or drop it if inventory is full
-                MainThreadDispatcher.Run(() =>
-                {
-                    var item = new Item(itemId, true);
-                    for (int i = 0; i < amount; i++)
-                    {
-                        if (!buyer.Inventory.tryAddItem(item, false))
-                            ItemManager.dropItem(item, buyer.Position, true, true, false);
-                    }
-                });
-
-                // Add a transaction record if the transaction system is enabled
-                if (!TShop.EconomyProvider.HasTransactionSystem())
-                    return true;
-
-                await TShop.EconomyProvider.AddTransactionAsync(
-                    buyerSteamId,
-                    new Transaction(
-                        Guid.NewGuid().ToString(),
-                        ETransaction.PURCHASE,
-                        paymentMethod,
-                        TShop.Instance.Localize(true, "ui_shopname"),
-                        buyerSteamId.m_SteamID,
-                        0,
-                        totalCost,
-                        DateTime.Now
-                    )
-                );
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // Log any errors that occur during the purchase
-                TShop.Logger.Error("Failed to buy item:", ex);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Handles the sale of an item by a player.
-        /// </summary>
-        /// <param name="seller">The player selling the item.</param>
-        /// <param name="itemId">The ID of the item to be sold.</param>
-        /// <param name="totalCost">The total cost of the item.</param>
-        /// <param name="amount">The quantity of the item to be sold. Defaults to 1.</param>
-        /// <param name="paymentMethod">The payment method used for the sale. Defaults to BANK_ACCOUNT.</param>
-        /// <returns>A task that resolves to true if the sale was successful, otherwise false.</returns>
-        public static async Task<bool> SellItemAsync(UnturnedPlayer seller, ushort itemId, decimal totalCost, byte amount = 1, EPaymentMethod paymentMethod = EPaymentMethod.BANK_ACCOUNT)
-        {
-            try
-            {
-                CSteamID sellerSteamId = seller.CSteamID;
-
-                // Search for the item in the seller's inventory
-                List<InventorySearch> search = seller.Inventory.Search(itemId, true);
+                List<InventorySearch> search = seller.Inventory.Search(product.UnturnedId, true);
                 if (search.Count < amount)
                 {
                     TShop.Instance.SendCommandReply(seller.SteamPlayer(), "error_item_not_enough");
-                    return false;
+                    return null;
+                }
+                
+                seller.Player.equipment.dequip();
+                decimal totalCost = 0;
+                for (int i = 0; i < amount; i++)
+                {
+                    var page = search[i].page;
+                    var itemIndex = seller.Inventory.getIndex(search[i].page, search[i].jar.x, search[i].jar.y);
+                    var item = seller.Inventory.getItem(page, itemIndex);
+                    totalCost += TShop.Instance.Config.UseQuality
+                        ? product.GetSellCostByQuality(item.item.quality)
+                        : product.GetSellCost();
+
+                    seller.Inventory.removeItem(page, itemIndex);
                 }
 
-                // Deposit the earnings into the seller's account
-                await TShop.EconomyProvider.DepositAsync(sellerSteamId, totalCost);
-
-                // Remove the item from the seller's inventory
-                MainThreadDispatcher.Run(() =>
-                {
-                    seller.Player.equipment.dequip();
-                    for (int i = 0; i < amount; i++)
-                    {
-                        seller.Inventory.removeItem(search[i].page,
-                            seller.Inventory.getIndex(search[i].page, search[i].jar.x, search[i].jar.y));
-                    }
-                });
-
-                // Add a transaction record if the transaction system is enabled
-                if (!TShop.EconomyProvider.HasTransactionSystem())
-                    return true;
-
-                await TShop.EconomyProvider.AddTransactionAsync(
-                    sellerSteamId,
-                    new Transaction(
-                        Guid.NewGuid().ToString(),
-                        ETransaction.SALE,
-                        paymentMethod,
-                        TShop.Instance.Localize(true, "ui_shopname"),
-                        0,
-                        sellerSteamId.m_SteamID,
-                        totalCost,
-                        DateTime.Now
-                    )
-                );
-                return true;
+                return totalCost;
             }
             catch (Exception ex)
             {
-                // Log any errors that occur during the sale
-                TShop.Logger.Error("Failed to sell item:", ex);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Handles the purchase of a vehicle by a player.
-        /// </summary>
-        /// <param name="buyer">The player buying the vehicle.</param>
-        /// <param name="vehicleId">The ID of the vehicle to be purchased.</param>
-        /// <param name="vehicleColor">The color of the vehicle. Optional.</param>
-        /// <param name="totalCost">The total cost of the vehicle.</param>
-        /// <param name="paymentMethod">The payment method used for the purchase. Defaults to BANK_ACCOUNT.</param>
-        /// <returns>A task that resolves to true if the purchase was successful, otherwise false.</returns>
-        public static async Task<bool> BuyVehicleAsync(UnturnedPlayer buyer, ushort vehicleId, Color32? vehicleColor, decimal totalCost, EPaymentMethod paymentMethod = EPaymentMethod.BANK_ACCOUNT)
-        {
-            try
-            {
-                CSteamID buyerSteamId = buyer.CSteamID;
-
-                // Withdraw the cost from the buyer's account
-                await TShop.EconomyProvider.WithdrawAsync(buyerSteamId, totalCost);
-
-                // Spawn the vehicle and set its color if specified
-                MainThreadDispatcher.Run(() =>
-                {
-                    InteractableVehicle vehicle = UnturnedHelper.SpawnOwnedVehicle(vehicleId, buyer);
-                    if (vehicleColor.HasValue)
-                        vehicle.ServerSetPaintColor(vehicleColor.Value);
-                });
-
-                // Add a transaction record if the transaction system is enabled
-                if (!TShop.EconomyProvider.HasTransactionSystem())
-                    return true;
-
-                await TShop.EconomyProvider.AddTransactionAsync(
-                    buyerSteamId,
-                    new Transaction(
-                        Guid.NewGuid().ToString(),
-                        ETransaction.PURCHASE,
-                        paymentMethod,
-                        TShop.Instance.Localize(true, "ui_shopname"),
-                        buyerSteamId.m_SteamID,
-                        0,
-                        totalCost,
-                        DateTime.Now
-                    )
-                );
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // Log any errors that occur during the purchase
-                TShop.Logger.Error("Failed to buy vehicle:", ex);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Handles the sale of a vehicle by a player.
-        /// </summary>
-        /// <param name="seller">The player selling the vehicle.</param>
-        /// <param name="vehicle">The vehicle to be sold.</param>
-        /// <param name="totalCost">The total cost of the vehicle.</param>
-        /// <param name="paymentMethod">The payment method used for the sale. Defaults to BANK_ACCOUNT.</param>
-        /// <returns>A task that resolves to true if the sale was successful, otherwise false.</returns>
-        public static async Task<bool> SellVehicleAsync(UnturnedPlayer seller, InteractableVehicle vehicle, decimal totalCost, EPaymentMethod paymentMethod = EPaymentMethod.BANK_ACCOUNT)
-        {
-            try
-            {
-                CSteamID sellerSteamId = seller.CSteamID;
-
-                // Destroy the vehicle
-                MainThreadDispatcher.Run(() => VehicleManager.askVehicleDestroy(vehicle));
-
-                // Deposit the earnings into the seller's account
-                await TShop.EconomyProvider.DepositAsync(sellerSteamId, totalCost);
-
-                // Add a transaction record if the transaction system is enabled
-                if (!TShop.EconomyProvider.HasTransactionSystem())
-                    return true;
-
-                await TShop.EconomyProvider.AddTransactionAsync(
-                    sellerSteamId,
-                    new Transaction(
-                        Guid.NewGuid().ToString(),
-                        ETransaction.SALE,
-                        paymentMethod,
-                        TShop.Instance.Localize(true, "ui_shopname"),
-                        0,
-                        sellerSteamId.m_SteamID,
-                        totalCost,
-                        DateTime.Now
-                    )
-                );
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // Log any errors that occur during the sale
-                TShop.Logger.Error("Failed to sell vehicle:", ex);
-                return false;
+                TShop.Logger.Error("Failed to remove item and get cost:", ex);
+                return null;
             }
         }
     }

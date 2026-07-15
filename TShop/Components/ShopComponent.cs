@@ -1,17 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using Rocket.Unturned.Player;
 using SDG.NetTransport;
 using SDG.Unturned;
 using Tavstal.TLibrary.Extensions;
-using Tavstal.TLibrary.Extensions.General;
-using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Models.Plugin;
+using Tavstal.TLibrary.Threading;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Models.Enums;
-using UnityEngine.Serialization;
 
 namespace Tavstal.TShop.Components
 {
@@ -24,10 +22,14 @@ namespace Tavstal.TShop.Components
         public DateTime LastButtonClick = DateTime.Now;
         public DateTime ProductRefreshTime = DateTime.Now;
         public ITransportConnection TransportConnection => Player.SteamPlayer().transportConnection;
+        
+        public int ProductsGenerationCount { get; set; } = 0;
+        public int BasketGenerationCount { get; set; } = 0;
+        
         public EMenuCategory MenuCategory { get; set; }
         public EItemFilter? ItemFilter { get; set; }
         public ESortType SortType { get; set; }
-        public string? ProductSearch { get; set; }
+        public string ProductSearch { get; set; } = string.Empty;
         public bool IsProductSearchDirty { get; set; }
         public EEngine? VehicleFilter { get; set; }
         public EPaymentMethod PaymentMethod { get; set; } = EPaymentMethod.CASH;
@@ -36,12 +38,11 @@ namespace Tavstal.TShop.Components
         public bool IsVehiclePage { get; set; }
         public int PageBasket { get; set; } = 1;
         public List<Product> ProductsCache { get; set; } = new List<Product>();
-        public readonly Dictionary<Product, byte> Basket = new Dictionary<Product, byte>();
+        public readonly ConcurrentDictionary<Product, byte> Basket = new ConcurrentDictionary<Product, byte>();
         public bool HasActiveNotify { get; set; }
         public int[][] PageIndexes { get; set; } = new int[3][];
 
-        [FormerlySerializedAs("NotifiesOnQueue")] 
-        public List<string> notifiesOnQueue = new List<string>();
+        public readonly ConcurrentQueue<string> notifiesOnQueue = new ConcurrentQueue<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShopComponent"/> class.
@@ -61,7 +62,7 @@ namespace Tavstal.TShop.Components
         {
             try
             {
-                notifiesOnQueue.Add(message);
+                notifiesOnQueue.Enqueue(message);
 
                 if (!HasActiveNotify)
                 {
@@ -82,24 +83,26 @@ namespace Tavstal.TShop.Components
         {
             try
             {
-                if (!notifiesOnQueue.IsValidIndex(0))
+                if (notifiesOnQueue.Count == 0)
                 {
                     HasActiveNotify = false;
                     return;
                 }
 
-                string notify = notifiesOnQueue.ElementAt(0);
+                notifiesOnQueue.TryDequeue(out string notify);
                 if (notify != null)
                 {
-                    UEffectHelper.SendUIEffectText((short)TShop.Instance.Config.EffectID, TransportConnection, true, "tb_notification#1#text", notify);
-                    UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", true);
-
-                    TShop.Instance.InvokeAction(2f, () =>
+                    MainThreadDispatcher.Run(() =>
                     {
-                        UEffectHelper.SendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", false);
-                        SendNotify();
+                        EffectManager.sendUIEffectText((short)TShop.Instance.Config.EffectID, TransportConnection, true, "tb_notification#1#text", notify);
+                        EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", true);
+
+                        TShop.Instance.InvokeAction(2f, () =>
+                        {
+                            EffectManager.sendUIEffectVisibility((short)TShop.Instance.Config.EffectID, TransportConnection, true, "notification#1", false);
+                            SendNotify();
+                        });
                     });
-                    notifiesOnQueue.RemoveAt(0);
                 }
                 else
                     HasActiveNotify = false;
