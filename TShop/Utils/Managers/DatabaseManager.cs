@@ -181,7 +181,7 @@ namespace Tavstal.TShop.Utils.Managers
                     case EItemType.SHIRT:
                     case EItemType.VEST:
                         {
-                            if (filter == EItemFilter.Clothing)
+                            if (filter == EItemFilter.CLOTHING)
                                 local.Add(item);
 
                             break;
@@ -189,13 +189,13 @@ namespace Tavstal.TShop.Utils.Managers
                     case EItemType.FOOD:
                     case EItemType.WATER:
                         {
-                            if (filter == EItemFilter.Food)
+                            if (filter == EItemFilter.FOOD)
                                 local.Add(item);
                             break;
                         }
                     case EItemType.MEDICAL:
                         {
-                            if (filter == EItemFilter.Medical)
+                            if (filter == EItemFilter.MEDICAL)
                                 local.Add(item);
                             break;
                         }
@@ -206,7 +206,7 @@ namespace Tavstal.TShop.Utils.Managers
                     case EItemType.OPTIC:
                     case EItemType.MAP:
                         {
-                            if (filter == EItemFilter.Tools)
+                            if (filter == EItemFilter.TOOL)
                                 local.Add(item);
                             break;
                         }
@@ -218,13 +218,13 @@ namespace Tavstal.TShop.Utils.Managers
                     case EItemType.LIBRARY:
                     case EItemType.GROWER:
                         {
-                            if (filter == EItemFilter.Barricades)
+                            if (filter == EItemFilter.BARRICADE)
                                 local.Add(item);
                             break;
                         }
                     case EItemType.STRUCTURE:
                         {
-                            if (filter == EItemFilter.Structures)
+                            if (filter == EItemFilter.STRUCTURE)
                                 local.Add(item);
                             break;
                         }
@@ -232,14 +232,14 @@ namespace Tavstal.TShop.Utils.Managers
                     case EItemType.GENERATOR:
                     case EItemType.BEACON:
                         {
-                            if (filter == EItemFilter.Electronic)
+                            if (filter == EItemFilter.ELECTRONIC)
                                 local.Add(item);
                             break;
                         }
                     case EItemType.VEHICLE_REPAIR_TOOL:
                     case EItemType.TIRE:
                         {
-                            if (filter == EItemFilter.Vehicles)
+                            if (filter == EItemFilter.VEHICLE)
                                 local.Add(item);
                             break;
                         }
@@ -247,20 +247,20 @@ namespace Tavstal.TShop.Utils.Managers
                     case EItemType.REFILL:
                     case EItemType.OIL_PUMP:
                         {
-                            if (filter == EItemFilter.Fuel)
+                            if (filter == EItemFilter.FUEL)
                                 local.Add(item);
                             break;
                         }
                     case EItemType.MELEE:
                         {
-                            if (filter == EItemFilter.Melees)
+                            if (filter == EItemFilter.MELEE)
                                 local.Add(item);
                             break;
                         }
                     case EItemType.GUN:
                     case EItemType.THROWABLE:
                         {
-                            if (filter == EItemFilter.Guns)
+                            if (filter == EItemFilter.GUN)
                                 local.Add(item);
                             break;
                         }
@@ -270,7 +270,7 @@ namespace Tavstal.TShop.Utils.Managers
                     case EItemType.SIGHT:
                     case EItemType.TACTICAL:
                         {
-                            if (filter == EItemFilter.Attachments)
+                            if (filter == EItemFilter.ATTACHMENT)
                                 local.Add(item);
                             break;
                         }
@@ -283,7 +283,7 @@ namespace Tavstal.TShop.Utils.Managers
                     case EItemType.TANK:
                     case EItemType.TRAP:
                         {
-                            if (filter == EItemFilter.Misc)
+                            if (filter == EItemFilter.MISC)
                                 local.Add(item);
                             break;
                         }
@@ -403,7 +403,7 @@ namespace Tavstal.TShop.Utils.Managers
             List<ZaupProduct> items = new List<ZaupProduct>();
             try
             {
-                MySqlConnection? mySqlConnection = CreateZaupConnection();
+                await using MySqlConnection? mySqlConnection = CreateZaupConnection();
                 if (mySqlConnection == null)
                     return items;
                 
@@ -411,40 +411,39 @@ namespace Tavstal.TShop.Utils.Managers
                 await mySqlConnection.OpenSafeAsync();
 
                 // Get Items
-                mySqlCommand.CommandText = "SELECT * FROM " + itemTable;
-                var reader = await mySqlCommand.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                mySqlCommand.CommandText = $"SELECT * FROM `{itemTable}`";
+                await using var itemReader = await mySqlCommand.ExecuteReaderAsync();
+                while (await itemReader.ReadAsync())
                 {
                     ZaupProduct prod;
                     try
                     {
-                        prod = new ZaupProduct(reader.GetUInt16("id"), false, reader.GetDecimal("cost"), reader.GetDecimal("buyback"));
+                        prod = new ZaupProduct(itemReader.GetUInt16("id"), false, itemReader.GetDecimal("cost"), itemReader.GetDecimal("buyback"));
                     }
                     catch (OverflowException) {
-                        uint id = reader.GetUInt32("id");
-                        prod = new ZaupProduct((ushort)id, false, reader.GetDecimal("cost"), reader.GetDecimal("buyback"));
+                        uint id = itemReader.GetUInt32("id");
+                        prod = new ZaupProduct((ushort)id, false, itemReader.GetDecimal("cost"), itemReader.GetDecimal("buyback"));
                     }
                     items.Add(prod);
                 }
-                reader.Close();
+                itemReader.Close();
 
                 // Get Vehicles
-                mySqlCommand.CommandText = "SELECT * FROM " + vehicleTable;
-                reader = await mySqlCommand.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                mySqlCommand.CommandText = $"SELECT * FROM `{vehicleTable}`";
+                await using var vehicleReader = await mySqlCommand.ExecuteReaderAsync();
+                while (await vehicleReader.ReadAsync())
                 {
                     ZaupProduct prod;
                     try
                     {
-                        prod = new ZaupProduct(reader.GetUInt16("id"), true, reader.GetDecimal("cost"), 0);
+                        prod = new ZaupProduct(vehicleReader.GetUInt16("id"), true, vehicleReader.GetDecimal("cost"), 0);
                     }
                     catch (OverflowException) {
-                        uint id = reader.GetUInt32("id");
-                        prod = new ZaupProduct((ushort)id, true, reader.GetDecimal("cost"), 0);
+                        uint id = vehicleReader.GetUInt32("id");
+                        prod = new ZaupProduct((ushort)id, true, vehicleReader.GetDecimal("cost"), 0);
                     }
                     items.Add(prod);
                 }
-                await mySqlConnection.CloseAsync();
             }
             catch (Exception ex)
             {
