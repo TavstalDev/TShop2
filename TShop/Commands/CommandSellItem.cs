@@ -1,10 +1,13 @@
-﻿using Rocket.API;
+﻿using System;
+using Rocket.API;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Commands;
+using Tavstal.TLibrary.Models.Economy;
 using Tavstal.TLibrary.Models.Plugin;
+using Tavstal.TLibrary.Threading;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Utils.Helpers;
@@ -12,50 +15,38 @@ using Tavstal.TShop.Utils.Helpers;
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandSellItem : CommandBase
+    public class CommandSellItem : CustomCommandBase
     {
-        protected override IPlugin Plugin => TShop.Instance;
+        public override IPlugin Plugin => TShop.Instance;
+        public override bool UseBackgroundThread => true;
+        
         public override AllowedCaller AllowedCaller => AllowedCaller.Player;
         public override string Name => "sell";
         public override string Help => "Sells a specific amount of items.";
         public override string Syntax => "[itemID] <amount>";
         public override List<string> Aliases => new List<string> { "sellitem", "selli" };
         public override List<string> Permissions => new List<string> { "tshop.sell.item", "tshop.commands.sell.item" };
-        protected override List<SubCommand> SubCommands => new List<SubCommand>();
+        public override List<ISubcommand>? SubCommands => null;
 
-        protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
+        protected override async Task<bool> HandleExecuteAsync(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
             ShopComponent comp = callerPlayer.GetComponent<ShopComponent>();
-
             if (args.Length < 1 || args.Length > 2)
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_sellitem_args");
                 return true;
             }
 
-            ushort id = 0;
-            byte amount = 1;
-            try
-            {
-                ushort.TryParse(args[0], out id);
-            }
-            catch
-            {
-                /* ignore */
-            }
+            ushort.TryParse(args[0], out var id);
 
+            byte amount = 1;
             if (args.Length == 2)
-            {
-                try
+                if (!byte.TryParse(args[1], out amount))
                 {
-                    byte.TryParse(args[1], out amount);
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_arg_not_number", args[1]);
+                    return true;
                 }
-                catch
-                {
-                    /* ignore */
-                }
-            }
 
             var asset = id > 0 ? UAssetHelper.FindItemAsset(id) : UAssetHelper.FindItemAsset(args[0]);
 
@@ -67,31 +58,58 @@ namespace Tavstal.TShop.Commands
 
             id = asset.id;
 
-            Product? item = await TShop.DatabaseManager.FindItemAsync(id);
-            if (item == null)
+            Product? product = await TShop.DatabaseManager.FindItemAsync(id);
+            if (product == null)
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_not_added", args[0]);
                 return true;
             }
 
-            if (item.HasPermission && !callerPlayer.HasPermission(item.Permission))
+            if (product.HasPermission && !callerPlayer.HasPermission(product.Permission))
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_no_permission");
                 return true;
             }
 
-            decimal cost = item.GetSellCost(amount);
-            if (cost == 0)
+            await MainThreadDispatcher.RunAsync(async () =>
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_sell_error");
-                return true;
-            }
+                decimal? cost = ShopHelper.RemoveAndGetCost(callerPlayer, product, amount);
+                if (cost == null)
+                {
+                    TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_sell_error");
+                    return;
+                }
 
-            if (!await ShopHelper.SellItemAsync(callerPlayer, id, cost, amount, comp.PaymentMethod))
-                return true;
-            
-            TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_item_sell", asset.itemName, amount,
-                cost, TShop.EconomyProvider.GetCurrencyName());
+                decimal totalCost = cost.Value;
+
+                await BackgroundThreadDispatcher.RunAsync(async () =>
+                {
+                    // Deposit the earnings into the seller's account
+                    await TShop.EconomyProvider.DepositAsync(callerPlayer.CSteamID, totalCost);
+
+                    // Add a transaction record if the transaction system is enabled
+                    if (!TShop.EconomyProvider.HasTransactionSystem())
+                        return;
+
+                    await TShop.EconomyProvider.AddTransactionAsync(
+                        callerPlayer.CSteamID,
+                        new Transaction(
+                            Guid.NewGuid().ToString(),
+                            ETransaction.SALE,
+                            comp.PaymentMethod,
+                            TShop.Instance.Localize(true, "ui_shop_name"),
+                            0,
+                            callerPlayer.CSteamID.m_SteamID,
+                            totalCost,
+                            DateTime.Now
+                        )
+                    );
+                });
+
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_item_sell", asset.itemName,
+                    amount,
+                    cost, TShop.EconomyProvider.GetCurrencyName());
+            });
             return true;
         }
     }

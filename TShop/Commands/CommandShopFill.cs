@@ -4,26 +4,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tavstal.TLibrary.Helpers.Unturned;
 using Tavstal.TLibrary.Models.Commands;
-using Tavstal.TLibrary.Models.Logging;
 using Tavstal.TLibrary.Models.Plugin;
 // ReSharper disable UnusedType.Global
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandShopFill : CommandBase
+    public class CommandShopFill : CustomCommandBase
     {
-        protected override IPlugin Plugin => TShop.Instance;
+        public override IPlugin Plugin => TShop.Instance;
+        public override bool UseBackgroundThread => true;
+        
         public override AllowedCaller AllowedCaller => AllowedCaller.Both;
         public override string Name => "shopfill";
         public override string Help => "Fills the shop with items. Used for debug";
         public override string Syntax => "";
         public override List<string> Aliases => new List<string> { "shfill" };
         public override List<string> Permissions => new List<string> { "tshop.shopfill", "tshop.commands.shopfill" };
-        protected override List<SubCommand> SubCommands => new List<SubCommand>();
+        public override List<ISubcommand>? SubCommands => null;
 
-        protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
+        protected override async Task<bool> HandleExecuteAsync(IRocketPlayer caller, string[] args)
         {
-            if (TShop.Instance.Config.LogLevel != ELogLevel.DEBUG)
+            if (!TShop.Instance.Config.DebugMode)
             {
                 TShop.Instance.SendPlainCommandReply(caller,"&cYou must enable debugMode to use 'shopfill'.");
                 return true;
@@ -42,8 +43,7 @@ namespace Tavstal.TShop.Commands
                 count++;
             }
 
-
-            count = 0;
+            
             foreach (var asset in UAssetHelper.GetVehicleAssets().OrderBy(x => x.id))
             {
                 if (count == 100)
@@ -55,6 +55,8 @@ namespace Tavstal.TShop.Commands
                 await TShop.DatabaseManager.AddProductAsync(asset.id, true,  null,1, 1, false, "");
                 count++;
             }
+            
+            Plugin.SendPlainCommandReply(caller, $"<color=green>Shop filled with {count} items and vehicles.</color>");
             return true;
         }
     }

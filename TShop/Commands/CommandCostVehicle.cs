@@ -11,18 +11,20 @@ using Tavstal.TShop.Models;
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandCostVehicle : CommandBase
+    public class CommandCostVehicle : CustomCommandBase
     {
-        protected override IPlugin Plugin => TShop.Instance;
+        public override IPlugin Plugin => TShop.Instance;
+        public override bool UseBackgroundThread => true;
+        
         public override AllowedCaller AllowedCaller => AllowedCaller.Player;
         public override string Name => "costvehicle";
         public override string Help => "Checks the cost of a specific vehicle.";
         public override string Syntax => "[vehicleID]";
         public override List<string> Aliases => new List<string> { "costv" };
         public override List<string> Permissions => new List<string> { "tshop.cost.vehicle", "tshop.commands.cost.vehicle" };
-        protected override List<SubCommand> SubCommands => new List<SubCommand>();
+        public override List<ISubcommand>? SubCommands => null;
 
-        protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
+        protected override async Task<bool> HandleExecuteAsync(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
 
@@ -33,7 +35,6 @@ namespace Tavstal.TShop.Commands
             }
 
             ushort id = 0;
-            int amount = 1;
             try
             {
                 ushort.TryParse(args[0], out id);
@@ -66,8 +67,8 @@ namespace Tavstal.TShop.Commands
                 return true;
             }
 
-            TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_cost", asset.vehicleName,
-                amount, item.GetBuyCost(), item.GetSellCost(), TShop.EconomyProvider.GetCurrencyName());
+            TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_cost", asset.vehicleName, 
+                item.GetBuyCost(), item.GetSellCost(), TShop.EconomyProvider.GetCurrencyName());
 
             return true;
         }

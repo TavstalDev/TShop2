@@ -11,18 +11,20 @@ using Tavstal.TShop.Models;
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandMigrateZaupDB : CommandBase
+    public class CommandMigrateZaupDB : CustomCommandBase
     {
-        protected override IPlugin Plugin => TShop.Instance;
+        public override IPlugin Plugin => TShop.Instance;
+        public override bool UseBackgroundThread => true;
+        
         public override AllowedCaller AllowedCaller => AllowedCaller.Both;
         public override string Name => "migratezaupdb";
         public override string Help => "Migrates data from the database of the zaupshop plugin.";
         public override string Syntax => "[itemtablename] [vehicletablename]";
         public override List<string> Aliases => new List<string> { "mzdb" };
         public override List<string> Permissions => new List<string> { "tshop.admin.migratezaupdb", "tshop.commands.migratezaupdb" };
-        protected override List<SubCommand> SubCommands => new List<SubCommand>();
+        public override List<ISubcommand>? SubCommands => null;
 
-        protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
+        protected override async Task<bool> HandleExecuteAsync(IRocketPlayer caller, string[] args)
         {
             if (args.Length != 2)
             {

@@ -1,39 +1,33 @@
 ﻿using Rocket.API;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Tavstal.TLibrary.Models.Commands;
-using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Utils.Managers;
 // ReSharper disable UnusedType.Global
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandShopUI : CommandBase
+    public class CommandShopUI : IRocketCommand
     {
-        protected override IPlugin Plugin => TShop.Instance;
-        public override AllowedCaller AllowedCaller => AllowedCaller.Player;
-        public override string Name => "shop";
-        public override string Help => "Opens the shop UI.";
-        public override string Syntax => "";
-        public override List<string> Aliases => new List<string> { "shui", "shopui" };
-        public override List<string> Permissions => new List<string> { "tshop.shop", "tshop.commands.shop", "tshop.commands.shopui" };
-        protected override List<SubCommand> SubCommands => new List<SubCommand>();
+        public AllowedCaller AllowedCaller => AllowedCaller.Player;
+        public string Name => "shop";
+        public string Help => "Opens the shop UI.";
+        public string Syntax => "";
+        public List<string> Aliases => new List<string> { "shui", "shopui" };
+        public List<string> Permissions => new List<string> { "tshop.shop", "tshop.commands.shop", "tshop.commands.shopui" };
 
-        protected override async Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
+        public void Execute(IRocketPlayer caller, string[] command)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
             ShopComponent comp = callerPlayer.GetComponent<ShopComponent>();
             if (comp.IsUIOpened)
             {
                 UIManager.Hide(callerPlayer);
-                return true;
+                return;
             }
 
             UIManager.Show(callerPlayer);
-            await UIManager.UpdateProductPage(callerPlayer);
-            return true;
+            UIManager.UpdateProductPage(callerPlayer);
         }
     }
 }

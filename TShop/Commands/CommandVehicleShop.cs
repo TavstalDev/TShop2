@@ -1,7 +1,6 @@
 ﻿using Rocket.API;
 using SDG.Unturned;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Models.Commands;
@@ -13,8 +12,11 @@ using UnityEngine;
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandVehicleShop : CommandBase
+    public class CommandVehicleShop : CustomCommandBase
     {
+        public override IPlugin Plugin => TShop.Instance;
+        public override bool UseBackgroundThread => true;
+
         public override AllowedCaller AllowedCaller => AllowedCaller.Both;
         public override string Name => "vehicleshop";
         public override string Help => "Manages the vehicle shop.";
@@ -22,11 +24,11 @@ namespace Tavstal.TShop.Commands
         public override List<string> Aliases => new List<string> { "vshop" };
         public override List<string> Permissions => new List<string> { "tshop.vehicleshop", "tshop.commands.vehicleshop" };
 
-        protected override IPlugin Plugin => TShop.Instance;
-
-        protected override List<SubCommand> SubCommands => new List<SubCommand>()
+        public override List<ISubcommand>? SubCommands => new List<ISubcommand>
         {
-            new SubCommand("add", "Adds vehicle to the shop.", "add [vehicle name | id] [buycost] [sellcost] <vehicleColor> <permission>", new List<string>() { "insert", "create" }, new List<string>() { "tshop.vehicleshop.add", "tshop.commands.vehicleshop.add" },
+            new SubCommand("add", "Adds vehicle to the shop.", "add [vehicle name | id] [buycost] [sellcost] <vehicleColor> <permission>", 
+                new List<string> { "insert", "create" }, new List<string> { "tshop.vehicleshop.add", "tshop.commands.vehicleshop.add" },
+                Plugin, AllowedCaller,
                 async (caller, args) =>
                 {
                     ushort id = 0;
@@ -107,7 +109,9 @@ namespace Tavstal.TShop.Commands
                     else
                         TShop.Instance.SendCommandReply(caller,  "error_vehicle_added", asset.vehicleName);
                 }),
-            new SubCommand("remove", "Removes a vehicle from the shop.", "remove [vehicle name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.vehicleshop.remove", "tshop.commands.vehicleshop.remove" },
+            new SubCommand("remove", "Removes a vehicle from the shop.", "remove [vehicle name | id]",
+                new List<string> { "delete" }, new List<string> { "tshop.vehicleshop.remove", "tshop.commands.vehicleshop.remove" },
+                Plugin, AllowedCaller,
                 async (caller, args) =>
                 {
                     ushort id = 0;
@@ -153,7 +157,9 @@ namespace Tavstal.TShop.Commands
                     else
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_removed", asset.vehicleName);
                 }),
-            new SubCommand("update", "Updates a vehicle in the shop.", "update [vehicle name | id] <buycost> <sellcost> <permission>", new List<string>() { "change" }, new List<string>() { "tshop.vehicleshop.update", "tshop.commands.vehicleshop.update" },
+            new SubCommand("update", "Updates a vehicle in the shop.", "update [vehicle name | id] <buycost> <sellcost> <permission>", 
+                new List<string> { "change" }, new List<string> { "tshop.vehicleshop.update", "tshop.commands.vehicleshop.update" },
+                Plugin, AllowedCaller,
                 async (caller, args) =>
                 {
                     ushort id = 0;
@@ -221,7 +227,9 @@ namespace Tavstal.TShop.Commands
                     else
                         TShop.Instance.SendCommandReply(caller, "error_vehicle_updated", asset.vehicleName);
                 }),
-            new SubCommand("color", "Updates the tint color of a vehicle.", "color [vehicle name | id] [vehicleColor]", new List<string>() { "tint", "paint" }, new List<string>() { "tshop.vehicleshop.color", "tshop.commands.vehicleshop.color" },
+            new SubCommand("color", "Updates the tint color of a vehicle.", "color [vehicle name | id] [vehicleColor]", 
+                new List<string> { "tint", "paint" }, new List<string> { "tshop.vehicleshop.color", "tshop.commands.vehicleshop.color" },
+                Plugin, AllowedCaller,
                 async (caller, args) =>
                 {
                     ushort id = 0;
@@ -274,9 +282,6 @@ namespace Tavstal.TShop.Commands
                 })
             };
 
-        protected override Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
-        {
-            return Task.FromResult(false);
-        }
+        protected override bool HandleExecute(IRocketPlayer caller, string[] command) => false;
     }
 }

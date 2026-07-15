@@ -1,7 +1,7 @@
 ﻿using Rocket.API;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Tavstal.TLibrary.Extensions.General;
+using Tavstal.TLibrary.Extensions.Unturned;
 using Tavstal.TLibrary.Models.Commands;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Helpers.Unturned;
@@ -10,25 +10,29 @@ using Tavstal.TShop.Models;
 
 namespace Tavstal.TShop.Commands
 {
-    public class CommandItemShop : CommandBase
+    public class CommandItemShop : CustomCommandBase
     {
+        public override IPlugin Plugin => TShop.Instance;
+        public override bool UseBackgroundThread => false;
+        
         public override AllowedCaller AllowedCaller => AllowedCaller.Both;
         public override string Name => "itemshop";
         public override string Help => "Manages the item shop.";
         public override string Syntax => "add | remove | update";
         public override List<string> Aliases => new List<string> { "ishop" };
         public override List<string> Permissions => new List<string> { "tshop.itemshop", "tshop.commands.itemshop" };
-        protected override IPlugin Plugin => TShop.Instance;
-        protected override List<SubCommand> SubCommands => new List<SubCommand>()
+        public override List<ISubcommand>? SubCommands => new List<ISubcommand>
         {
-            new SubCommand("add", "Adds an item to the shop.", "add [item name | id] [buycost] [sellcost] <permission>", new List<string>() { "insert", "create" }, new List<string>() { "tshop.itemshop.add", "tshop.commands.itemshop.add" }, 
+            new SubCommand("add", "Adds an item to the shop.", "add [item name | id] [buycost] [sellcost] <permission>", 
+                new List<string> { "insert", "create" }, new List<string> { "tshop.itemshop.add", "tshop.commands.itemshop.add" }, 
+                Plugin, AllowedCaller,
                 async (caller, args) =>
                 {
                     ushort id = 0;
 
                     if (args.Length < 3 || args.Length > 4)
                     {
-                        await ExecuteHelp(caller, true, "add", args);
+                        this.ExecuteHelp(caller, true, "add");
                         return;
                     }
 
@@ -82,14 +86,16 @@ namespace Tavstal.TShop.Commands
                     else
                         TShop.Instance.SendCommandReply(caller,  "error_item_added", asset.itemName);
                 }),
-            new SubCommand("remove", "Removes an item from the shop", "remove [item name | id]", new List<string>() { "delete" }, new List<string>() { "tshop.itemshop.remove", "tshop.commands.itemshop.remove" },
+            new SubCommand("remove", "Removes an item from the shop", "remove [item name | id]", new List<string> { "delete" }, 
+                new List<string> { "tshop.itemshop.remove", "tshop.commands.itemshop.remove" },
+                Plugin, AllowedCaller,
                 async (caller, args) =>
                 {
                     ushort id = 0;
 
                     if (args.Length != 1)
                     {
-                        await ExecuteHelp(caller,  true, "remove", args);
+                        this.ExecuteHelp(caller,  true, "remove");
                         return;
                     }
 
@@ -120,14 +126,16 @@ namespace Tavstal.TShop.Commands
                     else
                         TShop.Instance.SendCommandReply(caller, "error_item_removed", asset.itemName);
                 }),
-            new SubCommand("update", "Updates an item in the shop.", "update [item name | id] [buycost] [sellcost] <permission>", new List<string> { "change" }, new List<string>() { "tshop.itemshop.update", "tshop.commands.itemshop.update"  },
+            new SubCommand("update", "Updates an item in the shop.", "update [item name | id] [buycost] [sellcost] <permission>", 
+                new List<string> { "change" }, new List<string> { "tshop.itemshop.update", "tshop.commands.itemshop.update"  },
+                Plugin, AllowedCaller,
                 async (caller, args) =>
                 {
                     ushort id = 0;
 
                     if (args.Length < 3 || args.Length > 4)
                     {
-                        await ExecuteHelp(caller, true, "update", args);
+                        this.ExecuteHelp(caller, true, "update");
                         return;
                     }
 
@@ -182,9 +190,6 @@ namespace Tavstal.TShop.Commands
                 })
         };
 
-        protected override Task<bool> ExecutionRequested(IRocketPlayer caller, string[] args)
-        {
-            return Task.FromResult(false);
-        }
+        protected override bool HandleExecute(IRocketPlayer caller, string[] command) => false;
     }
 }
