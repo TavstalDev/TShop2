@@ -112,15 +112,15 @@ namespace Tavstal.TShop.Models
             }
         }
 
-        public Color32 GetVehicleColor()
+        public Color32? GetVehicleColor()
         {
             if (string.IsNullOrEmpty(VehicleColor))
-                return default;
+                return null;
             
             if (ColorUtility.TryParseHtmlString(VehicleColor, out var newCol))
                 return newCol;
             TShop.Logger.Error("Failed to parse the product's vehicle color. Please fix its database value to html HEX color.");
-            return default;
+            return null;
         }
 
         public decimal GetBuyCost(int amount = 1)
