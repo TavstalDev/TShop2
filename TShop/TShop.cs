@@ -62,7 +62,7 @@ namespace Tavstal.TShop
             sb.AppendLine(" ▸ https://github.com/TavstalDev/TShop2/issues");
             sb.AppendLine();
             sb.AppendLine("────────────────────────────────────────────────────────");
-            Logger.Log(ELogLevel.ERROR, sb.ToString(), includePrefixes: false, color:  ConsoleColor.Cyan);
+            Logger.Log(ELogLevel.COMMAND, sb.ToString(), includePrefixes: false, color:  ConsoleColor.Cyan);
         }
 
         /// <summary>
