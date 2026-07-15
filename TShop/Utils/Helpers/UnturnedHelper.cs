@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Linq;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
@@ -31,6 +29,8 @@ namespace Tavstal.TShop.Utils.Helpers
                 if (githubElement == null)
                     return TShop.Instance.Config.DefaultProductIconUrl;
                 string filename = id + ".png";
+                if (!githubElement.FolderLink.EndsWith("/") && !filename.StartsWith("/"))
+                    githubElement.FolderLink += "/";
                 return githubElement.FolderLink + filename;
             }
             catch (Exception ex)
@@ -66,28 +66,6 @@ namespace Tavstal.TShop.Utils.Helpers
         }
 
         /// <summary>
-        /// Retrieves the items list in JSON format.
-        /// </summary>
-        /// <returns>
-        /// A JSON string containing information about the items.
-        /// </returns>
-        public static string GetItemsInJson()
-        {
-            return JArray.FromObject(TShop.DatabaseManager.GetItemsAsync()).ToString(Formatting.None);
-        }
-
-        /// <summary>
-        /// Retrieves the vehicles list in JSON format.
-        /// </summary>
-        /// <returns>
-        /// A JSON string containing information about the vehicles.
-        /// </returns>
-        public static string GetVehiclesInJson()
-        {
-            return JArray.FromObject(TShop.DatabaseManager.GetVehiclesAsync()).ToString(Formatting.None);
-        }
-
-        /// <summary>
         /// Retrieves the vehicle spawn modifier from the configuration.
         /// </summary>
         /// <returns>
@@ -95,7 +73,7 @@ namespace Tavstal.TShop.Utils.Helpers
         /// </returns>
         /// <remarks>
         /// If the vehicle spawn modifier cannot be retrieved from the configuration,
-        /// a default value of (0, 5, 0) is returned.
+        /// a default value of (0, 5, 5) is returned.
         /// </remarks>
         /// <exception cref="Exception">
         /// Logs an error if there is an issue retrieving the vehicle spawn modifier.
