@@ -62,7 +62,7 @@ namespace Tavstal.TShop.Models.Hooks
                 if (_uconomyConfig == null)
                     throw new Exception("Could not get plugin configuration instance.");
                 
-                _databaseInstance = pluginInstanceType.GetField("Database").GetValue(_pluginInstance);
+                _databaseInstance = pluginInstanceType.GetField("Database")?.GetValue(_pluginInstance);
                 if (_databaseInstance == null)
                     throw new Exception("Failed to get the plugin database instance.");
 
@@ -246,8 +246,8 @@ namespace Tavstal.TShop.Models.Hooks
         public async Task<bool> HasAsync(CSteamID player, decimal amount, EPaymentMethod method = EPaymentMethod.BANK_ACCOUNT)
         {
             if (amount >= 0)
-                return await GetBalanceAsync(player) - amount >= 0;
-            return await GetBalanceAsync(player) - Math.Abs(amount) >= 0;
+                return await GetBalanceAsync(player, method) - amount >= 0;
+            return await GetBalanceAsync(player, method) - Math.Abs(amount) >= 0;
         }
 
         public string GetCurrencyName()

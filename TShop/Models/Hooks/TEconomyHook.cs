@@ -174,7 +174,7 @@ namespace Tavstal.TShop.Models.Hooks
                 Task<decimal> task = (Task<decimal>)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance,
                     new object[]
                     {
-                        player, -amount, method
+                        player.m_SteamID, -amount, method
                     });
                 return await task;
             }
@@ -198,7 +198,7 @@ namespace Tavstal.TShop.Models.Hooks
                 Task<decimal> task = (Task<decimal>)_increaseBalanceByCurrencyMethod.Invoke(_databaseInstance,
                     new object[]
                     {
-                        player, +amount, method
+                        player.m_SteamID, +amount, method
                     });
                 return await task;
             }

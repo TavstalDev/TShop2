@@ -92,6 +92,13 @@ namespace Tavstal.TShop.Models.Hooks
             UnturnedPlayer uPlayer = UnturnedPlayer.FromCSteamID(player);
             if (uPlayer == null)
                 return Task.FromResult(-1m);
+
+            if (amount > uPlayer.Experience)
+            {
+                uPlayer.Experience = 0;
+                return Task.FromResult(0m);
+            }
+            
             return Task.FromResult((decimal)(uPlayer.Experience -= (uint)amount));
         }
 
@@ -101,6 +108,12 @@ namespace Tavstal.TShop.Models.Hooks
             UnturnedPlayer uPlayer = UnturnedPlayer.FromCSteamID(player);
             if (uPlayer == null)
                 return Task.FromResult(-1m);
+            
+            if (amount + uPlayer.Experience > uint.MaxValue)
+            {
+                uPlayer.Experience = uint.MaxValue;
+                return Task.FromResult((decimal)uint.MaxValue);
+            }
             return Task.FromResult((decimal)(uPlayer.Experience += (uint)amount));
         }
 
