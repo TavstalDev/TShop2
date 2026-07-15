@@ -25,7 +25,7 @@ namespace Tavstal.TShop.Utils.Managers
         {
             UEffectHelper.SendUIEffect(Config.EffectID, (short)Config.EffectID, player.SteamPlayer().transportConnection, true);
             // Delay the packets to make sure the UI is ready.
-            Task.Run(async () =>
+            BackgroundThreadDispatcher.Run(async () =>
             {
                 await Task.Delay(100);
                 await MainThreadDispatcher.RunAsync(() =>

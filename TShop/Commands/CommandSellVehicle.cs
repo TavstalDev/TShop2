@@ -83,7 +83,7 @@ namespace Tavstal.TShop.Commands
             await MainThreadDispatcher.RunAsync(async () =>
             {
                 VehicleManager.askVehicleDestroy(vehicle);
-                await Task.Run(async () =>
+                await BackgroundThreadDispatcher.RunAsync(async () =>
                 {
                     await TShop.EconomyProvider.DepositAsync(callerPlayer.CSteamID, cost, comp.PaymentMethod);
 

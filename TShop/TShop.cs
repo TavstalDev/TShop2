@@ -11,6 +11,7 @@ using Tavstal.TLibrary.Extensions.General;
 using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Managers;
 using Tavstal.TLibrary.Models.Logging;
+using Tavstal.TLibrary.Threading;
 using Tavstal.TShop.Handlers;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Models.Hooks;
@@ -170,7 +171,7 @@ namespace Tavstal.TShop
                 if (IsConnectionAuthFailed || !_isLateInited)
                     return;
                 
-                Task.Run(async () =>
+                BackgroundThreadDispatcher.Run(async () =>
                 {
                     List<Product> products = await DatabaseManager.GetProductsAsync();
                     // Remove the current discounts

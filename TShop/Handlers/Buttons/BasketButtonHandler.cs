@@ -175,7 +175,7 @@ namespace Tavstal.TShop.Handlers.Buttons
                     if (component.Basket.Count == 0)
                         break;
                     
-                    Task.Run(async () =>
+                    BackgroundThreadDispatcher.Run(async () =>
                     {
                         await LockHelper.WaitForLockAsync(player, ELockKind.UI);
                         if (component.Basket.Count == 0)
