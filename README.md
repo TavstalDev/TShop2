@@ -29,7 +29,7 @@ A user-friendly item and vehicle shop plugin supporting async (mysql) database.
 
 ### Installation
 
-1. Download the latest release and its libraries from the [Releases](https://github.com/TavstalDev/TShop/releases) page.
+1. Download the latest release and its libraries from the [Releases](https://github.com/TavstalDev/TShop2/releases) page.
 2. Place `TShop.dll` into your server's `Rocket/Plugins/` directory.
 3. Extract the libraries archive into `Rocket/Libraries` directory.
 4. Start or restart the server. The plugin will generate a default YAML configuration file on first load.
