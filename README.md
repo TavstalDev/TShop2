@@ -10,7 +10,7 @@
 This is the source code of a .NETFramework library written in C#. This library is a plugin made for Unturned 3.24.x+ servers. 
 
 ### Description
-An user-friendly item and vehicle shop plugin supporting async (mysql) database. 
+A user-friendly item and vehicle shop plugin supporting async (mysql) database. 
 
 ### Features
 * Customizable item shop
@@ -21,9 +21,19 @@ An user-friendly item and vehicle shop plugin supporting async (mysql) database.
 * Supports economy plugins that are based on Uconomy
 
 ### Requirements
+- Unturned 3.24.x or later
+- [RocketMod](https://rocketmod.net/) installed on the server
 - [Uconomy](https://github.com/Rawrfuls/Uconomy/releases/download/1.2/Uconomy.zip), [Uconomy2](https://github.com/TavstalDev/Uconomy) or other economy plugin
 - [Workshop 4.4.0+](https://steamcommunity.com/sharedfiles/filedetails/?id=3763365279)
 - [Workshop 4.3.0](https://steamcommunity.com/sharedfiles/filedetails/?id=2767766199)
+
+### Installation
+
+1. Download the latest release and its libraries from the [Releases](https://github.com/TavstalDev/TShop/releases) page.
+2. Place `TShop.dll` into your server's `Rocket/Plugins/` directory.
+3. Extract the libraries archive into `Rocket/Libraries` directory.
+4. Start or restart the server. The plugin will generate a default YAML configuration file on first load.
+5. Edit the configuration file to your liking, then reload the plugin or restart the server.
 
 ### Commands
 | - means <b>or</b></br>
@@ -63,6 +73,24 @@ These commands are for server administrators to manage shop functionalities.
 
 ---
 
+## Building from Source
+
+### Prerequisites
+
+- .NET Framework 4.8 SDK / targeting pack
+
+### Steps
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/TavstalDev/TShop.git
+   ```
+2. Open `TShop.sln` in your IDE.
+3. Build the project:
+   ```
+   dotnet build -c Release
+   ```
+4. The output DLL will be at `TShop/bin/Release/net48/TShop.dll`.
 
 ## License
 
