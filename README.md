@@ -83,7 +83,7 @@ These commands are for server administrators to manage shop functionalities.
 
 1. Clone the repository:
    ```
-   git clone https://github.com/TavstalDev/TShop.git
+   git clone https://github.com/TavstalDev/TShop2.git
    ```
 2. Open `TShop.sln` in your IDE.
 3. Build the project:
