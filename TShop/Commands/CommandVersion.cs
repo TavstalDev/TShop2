@@ -18,10 +18,16 @@ namespace Tavstal.TShop.Commands
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            TShop.Instance.SendPlainCommandReply(caller, "#########################################", TShop.Instance.Config.General.MessageIcon);
-            TShop.Instance.SendPlainCommandReply(caller, $"# Build Version: {TShop.Version}", TShop.Instance.Config.General.MessageIcon);
-            TShop.Instance.SendPlainCommandReply(caller, $"# Build Date: {TShop.BuildDate}", TShop.Instance.Config.General.MessageIcon);
-            TShop.Instance.SendPlainCommandReply(caller, "#########################################", TShop.Instance.Config.General.MessageIcon);
+            var instance = TShop.Instance;
+            var config = instance.Config.General;
+            var icon = config.MessageIcon;
+            string message = string.Join(System.Environment.NewLine, 
+                $"&b&l[{instance.GetPluginName()}]&r System Info:",
+                $"&b • Version: &r{TShop.Version}",
+                $"&b • Build Date: &r{TShop.BuildDate}",
+                "&b • Developer: &rTavstal");
+            
+            instance.SendPlainCommandReply(caller, message, icon);
         }
     }
 }
