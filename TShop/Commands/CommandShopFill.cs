@@ -24,7 +24,7 @@ namespace Tavstal.TShop.Commands
 
         protected override async Task<bool> HandleExecuteAsync(IRocketPlayer caller, string[] args)
         {
-            if (!TShop.Instance.Config.DebugMode)
+            if (!TShop.Instance.Config.General.DebugMode)
             {
                 TShop.Instance.SendPlainCommandReply(caller,"&cYou must enable debugMode to use 'shopfill'.");
                 return true;
@@ -56,7 +56,7 @@ namespace Tavstal.TShop.Commands
                 count++;
             }
             
-            Plugin.SendPlainCommandReply(caller, $"<color=green>Shop filled with {count} items and vehicles.</color>");
+            Plugin.SendPlainCommandReply(caller, $"<color=green>Shop filled with {count} items and vehicles.</color>", TShop.Instance.Config.General.MessageIcon);
             return true;
         }
     }

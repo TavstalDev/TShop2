@@ -36,14 +36,14 @@ namespace Tavstal.TShop.Commands
 
             if (args.Length != 0)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_sellvehicle_args");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_sellvehicle_args", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
             InteractableVehicle vehicle = callerPlayer.CurrentVehicle;
             if (vehicle == null)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_sell_null");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_sell_null", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
@@ -51,20 +51,20 @@ namespace Tavstal.TShop.Commands
 
             if (vehicle.lockedOwner != callerPlayer.CSteamID || !vehicle.isLocked || vehicle.isDead)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_sell_owner");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_sell_owner", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
             Product? product = await TShop.DatabaseManager.FindVehicleAsync(vehicle.id);
             if (product == null)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_added", args[0]);
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_added", TShop.Instance.Config.General.MessageIcon, args[0]);
                 return true;
             }
 
             if (product.HasPermission && !callerPlayer.HasPermission(product.Permission))
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_no_permission");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_no_permission", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
@@ -76,7 +76,7 @@ namespace Tavstal.TShop.Commands
 
             if (cost == 0)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_sell_error");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_sell_error", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
@@ -105,7 +105,7 @@ namespace Tavstal.TShop.Commands
                     );
                 });
 
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_sell", asset.vehicleName,
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_sell", TShop.Instance.Config.General.MessageIcon, asset.vehicleName,
                     cost,
                     TShop.EconomyProvider.GetCurrencyName());
             });

@@ -30,7 +30,7 @@ namespace Tavstal.TShop.Commands
 
             if (args.Length != 1)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_costvehicle_args");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_costvehicle_args", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
@@ -56,18 +56,18 @@ namespace Tavstal.TShop.Commands
 
             if (asset == null)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_exists", args[0]);
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_exists", TShop.Instance.Config.General.MessageIcon, args[0]);
                 return true;
             }
 
             Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
             if (item == null)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_added", args[0]);
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_vehicle_not_added", TShop.Instance.Config.General.MessageIcon, args[0]);
                 return true;
             }
 
-            TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_cost", asset.vehicleName, 
+            TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_vehicle_cost", TShop.Instance.Config.General.MessageIcon, asset.vehicleName, 
                 item.GetBuyCost(), item.GetSellCost(), TShop.EconomyProvider.GetCurrencyName());
 
             return true;

@@ -18,10 +18,10 @@ namespace Tavstal.TShop.Commands
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            TShop.Instance.SendPlainCommandReply(caller, "#########################################");
-            TShop.Instance.SendPlainCommandReply(caller, $"# Build Version: {TShop.Version}");
-            TShop.Instance.SendPlainCommandReply(caller, $"# Build Date: {TShop.BuildDate}");
-            TShop.Instance.SendPlainCommandReply(caller, "#########################################");
+            TShop.Instance.SendPlainCommandReply(caller, "#########################################", TShop.Instance.Config.General.MessageIcon);
+            TShop.Instance.SendPlainCommandReply(caller, $"# Build Version: {TShop.Version}", TShop.Instance.Config.General.MessageIcon);
+            TShop.Instance.SendPlainCommandReply(caller, $"# Build Date: {TShop.BuildDate}", TShop.Instance.Config.General.MessageIcon);
+            TShop.Instance.SendPlainCommandReply(caller, "#########################################", TShop.Instance.Config.General.MessageIcon);
         }
     }
 }

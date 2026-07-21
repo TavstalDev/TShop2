@@ -28,16 +28,16 @@ namespace Tavstal.TShop.Commands
         {
             if (args.Length != 2)
             {
-                TShop.Instance.SendCommandReply(caller, "error_command_migrate_args");
+                TShop.Instance.SendCommandReply(caller, "error_command_migrate_args", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
             try
             {
-                TShop.Logger.RichWarning("Started migrating the zaup db...");
+                TShop.Logger.Info("Started migrating the zaup db...");
                 List<ZaupProduct> products = await TShop.DatabaseManager.GetZaupProductsAsync(args[0], args[1]);
 
-                TShop.Logger.RichWarning("Migrating items...");
+                TShop.Logger.Info("Migrating items...");
                 int successCount = 0;
                 List<ZaupProduct> productsToCheck = products.FindAll(x => !x.IsVehicle);
                 foreach (ZaupProduct product in productsToCheck)
@@ -57,7 +57,7 @@ namespace Tavstal.TShop.Commands
                 TShop.Logger.RichCommand(
                     $"&a{successCount}&6/&2{productsToCheck.Count} &6items have been successfully migrated to TShop's table.");
 
-                TShop.Logger.RichWarning("Migrating vehicles...");
+                TShop.Logger.Info("Migrating vehicles...");
                 successCount = 0;
                 productsToCheck = products.FindAll(x => x.IsVehicle);
                 foreach (ZaupProduct product in productsToCheck)
@@ -78,7 +78,7 @@ namespace Tavstal.TShop.Commands
                     $"&a{successCount}&6/&2{productsToCheck.Count} &6vehicles have been successfully migrated to TShop's table.");
                 TShop.Logger.RichCommand(
                     "&bIf there are any items or vehicles that were not migrated then please check Zaup's database or the workshop mod on the server. The problem is not on TShop's side.");
-                TShop.Instance.SendCommandReply(caller, "success_migrate");
+                TShop.Instance.SendCommandReply(caller, "success_migrate", TShop.Instance.Config.General.MessageIcon);
             }
             catch (Exception ex)
             {

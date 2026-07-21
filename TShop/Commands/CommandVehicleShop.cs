@@ -36,7 +36,7 @@ namespace Tavstal.TShop.Commands
 
                     if (args.Length < 3 || args.Length > 5)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_command_vehicleshop_add_args");
+                        TShop.Instance.SendCommandReply(caller,  "error_command_vehicleshop_add_args", TShop.Instance.Config.General.MessageIcon);
                         return;
                     }
 
@@ -59,14 +59,14 @@ namespace Tavstal.TShop.Commands
 
                     if (asset == null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_exists", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_exists", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
 
                     Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item != null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_already_added", asset.vehicleName, id);
+                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_already_added", TShop.Instance.Config.General.MessageIcon, asset.vehicleName, id);
                         return;
                     }
 
@@ -92,7 +92,7 @@ namespace Tavstal.TShop.Commands
                     {
                         if (!ColorUtility.TryParseHtmlString(args[3], out _))
                         {
-                            TShop.Instance.SendCommandReply(caller,  "error_vehicle_color_not_hex", args[3]);
+                            TShop.Instance.SendCommandReply(caller,  "error_vehicle_color_not_hex", TShop.Instance.Config.General.MessageIcon, args[3]);
                             return;
                         }
                         vehicleColor = args[3];
@@ -105,9 +105,9 @@ namespace Tavstal.TShop.Commands
                         permission = null;
 
                     if (await TShop.DatabaseManager.AddProductAsync(id, true, vehicleColor, buycost, sellcost, permission != null, permission))
-                        TShop.Instance.SendCommandReply(caller, "success_vehicle_added", asset.vehicleName, id);
+                        TShop.Instance.SendCommandReply(caller, "success_vehicle_added", TShop.Instance.Config.General.MessageIcon, asset.vehicleName, id);
                     else
-                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_added", asset.vehicleName);
+                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_added", TShop.Instance.Config.General.MessageIcon, asset.vehicleName);
                 }),
             new SubCommand("remove", "Removes a vehicle from the shop.", "remove [vehicle name | id]",
                 new List<string> { "delete" }, new List<string> { "tshop.vehicleshop.remove", "tshop.commands.vehicleshop.remove" },
@@ -119,7 +119,7 @@ namespace Tavstal.TShop.Commands
 
                     if (args.Length != 1)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_command_vehicleshop_remove_args");
+                        TShop.Instance.SendCommandReply(caller,  "error_command_vehicleshop_remove_args", TShop.Instance.Config.General.MessageIcon);
                         return;
                     }
 
@@ -141,21 +141,21 @@ namespace Tavstal.TShop.Commands
 
                     if (asset == null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_exists", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_exists", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
 
                     Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_added", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_added", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
 
                     if (await TShop.DatabaseManager.RemoveProductAsync(id, true))
-                        TShop.Instance.SendCommandReply(caller, "success_vehicle_removed", asset.vehicleName);
+                        TShop.Instance.SendCommandReply(caller, "success_vehicle_removed", TShop.Instance.Config.General.MessageIcon, asset.vehicleName);
                     else
-                        TShop.Instance.SendCommandReply(caller, "error_vehicle_removed", asset.vehicleName);
+                        TShop.Instance.SendCommandReply(caller, "error_vehicle_removed", TShop.Instance.Config.General.MessageIcon, asset.vehicleName);
                 }),
             new SubCommand("update", "Updates a vehicle in the shop.", "update [vehicle name | id] <buycost> <sellcost> <permission>", 
                 new List<string> { "change" }, new List<string> { "tshop.vehicleshop.update", "tshop.commands.vehicleshop.update" },
@@ -167,7 +167,7 @@ namespace Tavstal.TShop.Commands
 
                     if (args.Length < 3|| args.Length > 4)
                     {
-                        TShop.Instance.SendCommandReply(caller, "error_command_vehicleshop_update_args");
+                        TShop.Instance.SendCommandReply(caller, "error_command_vehicleshop_update_args", TShop.Instance.Config.General.MessageIcon);
                         return;
                     }
 
@@ -189,14 +189,14 @@ namespace Tavstal.TShop.Commands
 
                     if (asset == null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_exists", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_exists", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
 
                     Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
-                        TShop.Instance.SendCommandReply(caller, "error_vehicle_not_added", asset.vehicleName);
+                        TShop.Instance.SendCommandReply(caller, "error_vehicle_not_added", TShop.Instance.Config.General.MessageIcon, asset.vehicleName);
                         return;
                     }
 
@@ -223,9 +223,9 @@ namespace Tavstal.TShop.Commands
                         permission = null;
 
                     if (await TShop.DatabaseManager.UpdateProductAsync(id, true, buycost, sellcost, permission != null, permission))
-                        TShop.Instance.SendCommandReply(caller,  "success_vehicle_updated", asset.vehicleName, id);
+                        TShop.Instance.SendCommandReply(caller,  "success_vehicle_updated", TShop.Instance.Config.General.MessageIcon, asset.vehicleName, id);
                     else
-                        TShop.Instance.SendCommandReply(caller, "error_vehicle_updated", asset.vehicleName);
+                        TShop.Instance.SendCommandReply(caller, "error_vehicle_updated", TShop.Instance.Config.General.MessageIcon, asset.vehicleName);
                 }),
             new SubCommand("color", "Updates the tint color of a vehicle.", "color [vehicle name | id] [vehicleColor]", 
                 new List<string> { "tint", "paint" }, new List<string> { "tshop.vehicleshop.color", "tshop.commands.vehicleshop.color" },
@@ -237,7 +237,7 @@ namespace Tavstal.TShop.Commands
 
                     if (args.Length != 2)
                     {
-                        TShop.Instance.SendCommandReply(caller, "error_command_vehicleshop_color_args");
+                        TShop.Instance.SendCommandReply(caller, "error_command_vehicleshop_color_args", TShop.Instance.Config.General.MessageIcon);
                         return;
                     }
 
@@ -258,27 +258,27 @@ namespace Tavstal.TShop.Commands
                     
                     if (asset == null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_exists", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_not_exists", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
 
                     Product? item = await TShop.DatabaseManager.FindVehicleAsync(id);
                     if (item == null)
                     {
-                        TShop.Instance.SendCommandReply(caller, "error_vehicle_not_added", asset.vehicleName);
+                        TShop.Instance.SendCommandReply(caller, "error_vehicle_not_added", TShop.Instance.Config.General.MessageIcon, asset.vehicleName);
                         return;
                     }
                     
                     if (!ColorUtility.TryParseHtmlString(args[1], out _))
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_color_not_hex", args[1]);
+                        TShop.Instance.SendCommandReply(caller,  "error_vehicle_color_not_hex", TShop.Instance.Config.General.MessageIcon, args[1]);
                         return;
                     }
                     
                     if (await TShop.DatabaseManager.UpdateProductAsync(id, args[1]))
-                        TShop.Instance.SendCommandReply(caller,  "success_vehicle_updated", asset.vehicleName, id);
+                        TShop.Instance.SendCommandReply(caller,  "success_vehicle_updated", TShop.Instance.Config.General.MessageIcon, asset.vehicleName, id);
                     else
-                        TShop.Instance.SendCommandReply(caller, "error_vehicle_updated", asset.vehicleName);
+                        TShop.Instance.SendCommandReply(caller, "error_vehicle_updated", TShop.Instance.Config.General.MessageIcon, asset.vehicleName);
                 })
             };
 

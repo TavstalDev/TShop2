@@ -28,14 +28,14 @@ namespace Tavstal.TShop.Commands
         {
             if (TShop.IsCleanupInProgress)
             {
-                Plugin.SendCommandReply(caller, "error_command_removeinvalidproducts_cleanup_in_progress");
+                Plugin.SendCommandReply(caller, "error_command_removeinvalidproducts_cleanup_in_progress", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
             TShop.IsCleanupInProgress = true;
             try
             {
-                Plugin.SendCommandReply(caller, "command_removeinvalidproducts_cleanup_started");
+                Plugin.SendCommandReply(caller, "command_removeinvalidproducts_cleanup_started", TShop.Instance.Config.General.MessageIcon);
                 var logger = Plugin.GetLogger();
                 logger.Debug("Removing invalid products from the database...");
                 List<Product> products = await TShop.DatabaseManager.GetProductsAsync();
@@ -51,7 +51,7 @@ namespace Tavstal.TShop.Commands
 
                 logger.Debug($"There were {productsToRemove.Count} invalid products out from {products.Count}.");
                 logger.Debug("Invalid products removed from the database. Cleanup finished.");
-                Plugin.SendCommandReply(caller, "command_removeinvalidproducts_cleanup_finished",
+                Plugin.SendCommandReply(caller, "command_removeinvalidproducts_cleanup_finished", TShop.Instance.Config.General.MessageIcon,
                     productsToRemove.Count, products.Count);
                 return true;
             }

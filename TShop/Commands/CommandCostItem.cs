@@ -29,7 +29,7 @@ namespace Tavstal.TShop.Commands
 
             if (args.Length != 1)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_costitem_args");
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_costitem_args", TShop.Instance.Config.General.MessageIcon);
                 return true;
             }
 
@@ -38,7 +38,7 @@ namespace Tavstal.TShop.Commands
 
             if (asset == null)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_not_found", args[0]);
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_not_found", TShop.Instance.Config.General.MessageIcon, args[0]);
                 return true;
             }
 
@@ -47,11 +47,11 @@ namespace Tavstal.TShop.Commands
             Product? item = await TShop.DatabaseManager.FindItemAsync(id);
             if (item == null)
             {
-                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_not_added", args[0]);
+                TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_item_not_added", TShop.Instance.Config.General.MessageIcon, args[0]);
                 return true;
             }
 
-            TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_item_cost", asset.itemName,
+            TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "success_item_cost", TShop.Instance.Config.General.MessageIcon, asset.itemName,
                 item.GetBuyCost(), item.GetSellCost(), TShop.EconomyProvider.GetCurrencyName());
 
             return true;

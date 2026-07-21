@@ -47,7 +47,7 @@ namespace Tavstal.TShop.Commands
 
                     if (asset == null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
                     id = asset.id;
@@ -55,7 +55,7 @@ namespace Tavstal.TShop.Commands
                     Product? item = await TShop.DatabaseManager.FindItemAsync(id);
                     if (item != null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_item_already_added", asset.itemName, asset.id);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_already_added", TShop.Instance.Config.General.MessageIcon, asset.itemName, asset.id);
                         return;
                     }
 
@@ -82,9 +82,9 @@ namespace Tavstal.TShop.Commands
                         permission = null;
 
                     if (await TShop.DatabaseManager.AddProductAsync(asset.id, false, null, buycost, sellcost, permission != null, permission))
-                        TShop.Instance.SendCommandReply(caller,  "success_item_added", asset.itemName, asset.id);
+                        TShop.Instance.SendCommandReply(caller,  "success_item_added", TShop.Instance.Config.General.MessageIcon, asset.itemName, asset.id);
                     else
-                        TShop.Instance.SendCommandReply(caller,  "error_item_added", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_added", TShop.Instance.Config.General.MessageIcon, asset.itemName);
                 }),
             new SubCommand("remove", "Removes an item from the shop", "remove [item name | id]", new List<string> { "delete" }, 
                 new List<string> { "tshop.itemshop.remove", "tshop.commands.itemshop.remove" },
@@ -109,7 +109,7 @@ namespace Tavstal.TShop.Commands
 
                     if (asset == null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
                     id = asset.id;
@@ -117,14 +117,14 @@ namespace Tavstal.TShop.Commands
                     Product? item = await TShop.DatabaseManager.FindItemAsync(id);
                     if (item == null)
                     {
-                        TShop.Instance.SendCommandReply(caller, "error_item_not_added", args[0]);
+                        TShop.Instance.SendCommandReply(caller, "error_item_not_added", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
 
                     if (await TShop.DatabaseManager.RemoveProductAsync(id, false))
-                        TShop.Instance.SendCommandReply(caller, "success_item_removed", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller, "success_item_removed", TShop.Instance.Config.General.MessageIcon, asset.itemName);
                     else
-                        TShop.Instance.SendCommandReply(caller, "error_item_removed", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller, "error_item_removed", TShop.Instance.Config.General.MessageIcon, asset.itemName);
                 }),
             new SubCommand("update", "Updates an item in the shop.", "update [item name | id] [buycost] [sellcost] <permission>", 
                 new List<string> { "change" }, new List<string> { "tshop.itemshop.update", "tshop.commands.itemshop.update"  },
@@ -149,7 +149,7 @@ namespace Tavstal.TShop.Commands
 
                     if (asset == null)
                     {
-                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", args[0]);
+                        TShop.Instance.SendCommandReply(caller,  "error_item_not_found", TShop.Instance.Config.General.MessageIcon, args[0]);
                         return;
                     }
                     id = asset.id;
@@ -157,7 +157,7 @@ namespace Tavstal.TShop.Commands
                     Product? item = await TShop.DatabaseManager.FindItemAsync(id);
                     if (item == null)
                     {
-                        TShop.Instance.SendCommandReply(caller, "error_item_not_added", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller, "error_item_not_added", TShop.Instance.Config.General.MessageIcon, asset.itemName);
                         return;
                     }
 
@@ -184,9 +184,9 @@ namespace Tavstal.TShop.Commands
                         permission = null;
 
                     if (await TShop.DatabaseManager.UpdateProductAsync(id, false, buycost, sellcost, permission != null, permission))
-                        TShop.Instance.SendCommandReply(caller,  "success_item_updated", asset.itemName, asset.id);
+                        TShop.Instance.SendCommandReply(caller,  "success_item_updated", TShop.Instance.Config.General.MessageIcon, asset.itemName, asset.id);
                     else
-                        TShop.Instance.SendCommandReply(caller, "error_item_updated", asset.itemName);
+                        TShop.Instance.SendCommandReply(caller, "error_item_updated", TShop.Instance.Config.General.MessageIcon, asset.itemName);
                 })
         };
 
