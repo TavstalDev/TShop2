@@ -30,7 +30,6 @@ namespace Tavstal.TShop
         public static TShop Instance { get; private set; } = null!;
         public static DatabaseManager DatabaseManager { get; private set; } = null!;
         public static IEconomyProvider EconomyProvider { get; private set; } = null!;
-        public static bool IsConnectionAuthFailed { get; set; }
         public static bool IsCleanupInProgress { get; set; }
         private bool _isLateInited;
 
@@ -81,7 +80,7 @@ namespace Tavstal.TShop
                 else
                     Event_OnPluginsLoaded(0);
 
-                if (IsConnectionAuthFailed)
+                if (DatabaseManager.IsAuthenticationFailed)
                     return;
 
                 Logger.Info($"# {GetPluginName()} has been loaded.");
@@ -118,7 +117,7 @@ namespace Tavstal.TShop
         /// </summary>
         private void Event_OnPluginsLoaded(int i)
         {
-            if (IsConnectionAuthFailed)
+            if (DatabaseManager.IsAuthenticationFailed)
             {
                 Logger.Warning($"# Unloading {GetPluginName()} due to database authentication error.");
                 this.UnloadPlugin();
@@ -168,7 +167,7 @@ namespace Tavstal.TShop
         {
             try
             {
-                if (IsConnectionAuthFailed || !_isLateInited)
+                if (DatabaseManager.IsAuthenticationFailed || !_isLateInited)
                     return;
                 
                 BackgroundThreadDispatcher.Run(async () =>

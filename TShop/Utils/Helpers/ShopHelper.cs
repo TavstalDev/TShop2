@@ -21,7 +21,7 @@ namespace Tavstal.TShop.Utils.Helpers
                 List<InventorySearch> search = seller.Inventory.Search(product.UnturnedId, true);
                 if (search.Count < amount)
                 {
-                    TShop.Instance.SendCommandReply(seller.SteamPlayer(), "error_item_not_enough");
+                    TShop.Instance.SendCommandReply(seller.SteamPlayer(), "error_item_not_enough", TShop.Instance.Config.General.MessageIcon);
                     return null;
                 }
                 

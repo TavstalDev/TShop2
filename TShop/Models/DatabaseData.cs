@@ -1,11 +1,11 @@
 ﻿using System;
-using Tavstal.TLibrary.Models.Database;
+using Tavstal.TLibrary.Models.Config;
 using YamlDotNet.Serialization;
 
 namespace Tavstal.TShop.Models
 {
     [Serializable]
-    public class DatabaseData : DatabaseSettingsBase
+    public class DatabaseData : DatabaseConfigBase
     {
         [YamlMember(Order = 7, Description = "Database table prefix, default is 'tshop_'.")]
         public string TablePrefix { get; set; }
