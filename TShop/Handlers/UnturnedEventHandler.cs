@@ -151,7 +151,6 @@ namespace Tavstal.TShop.Handlers
         /// </summary>
         /// <param name="player">The player who clicked the button.</param>
         /// <param name="button">The button identifier.</param>
-        [SuppressMessage("ReSharper", "RedundantJumpStatement")]
         private static void OnButtonClick(Player player, string button)
         {
             try
@@ -163,21 +162,10 @@ namespace Tavstal.TShop.Handlers
                 if (comp.LastButtonClick > DateTime.Now)
                     return;
 
-                if (NavigationButtonHandler.Handle(uPlayer, transportConnection, comp, button))
-                {
+                if (NavigationButtonHandler.Handle(uPlayer, transportConnection, comp, button) || 
+                    ProductsButtonHandler.Handle(uPlayer, transportConnection, comp, button) || 
+                    BasketButtonHandler.Handle(uPlayer, transportConnection, comp, button))
                     comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UiButtonDelay);
-                    return;
-                }
-                if (ProductsButtonHandler.Handle(uPlayer, transportConnection, comp, button))
-                {
-                    comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UiButtonDelay);
-                    return;
-                }
-                if (BasketButtonHandler.Handle(uPlayer, transportConnection, comp, button))
-                {
-                    comp.LastButtonClick = DateTime.Now.AddSeconds(TShop.Instance.Config.UiButtonDelay);
-                    return;
-                }
             }
             catch (Exception ex)
             {
