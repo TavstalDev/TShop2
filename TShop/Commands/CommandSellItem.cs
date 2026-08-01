@@ -11,6 +11,8 @@ using Tavstal.TLibrary.Threading;
 using Tavstal.TShop.Components;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Utils.Helpers;
+using Tavstal.TShop.Utils.Managers;
+
 // ReSharper disable UnusedType.Global
 
 namespace Tavstal.TShop.Commands
@@ -31,7 +33,7 @@ namespace Tavstal.TShop.Commands
         protected override async Task<bool> HandleExecuteAsync(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-            ShopComponent comp = callerPlayer.GetComponent<ShopComponent>();
+            ShopComponent comp = ComponentManager.Get(callerPlayer);
             if (args.Length < 1 || args.Length > 2)
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_sellitem_args", TShop.Instance.Config.General.MessageIcon);

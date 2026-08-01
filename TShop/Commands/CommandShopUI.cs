@@ -19,7 +19,7 @@ namespace Tavstal.TShop.Commands
         public void Execute(IRocketPlayer caller, string[] command)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-            ShopComponent comp = callerPlayer.GetComponent<ShopComponent>();
+            ShopComponent comp = ComponentManager.Get(callerPlayer);
             if (comp.IsUIOpened)
             {
                 UIManager.Hide(callerPlayer);

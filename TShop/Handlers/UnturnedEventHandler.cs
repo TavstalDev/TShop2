@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Rocket.Unturned;
 using Rocket.Unturned.Player;
@@ -69,8 +68,8 @@ namespace Tavstal.TShop.Handlers
         /// <param name="player">The player who left the server.</param>
         private static void OnPlayerLeft(UnturnedPlayer player)
         {
-            // Unsubscribe from the equipment request event for the player.
             player.Player.equipment.onEquipRequested -= OnPlayerEquipRequested;
+            ComponentManager.Invalidate(player.Id);
         }
 
         /// <summary>
@@ -87,7 +86,7 @@ namespace Tavstal.TShop.Handlers
             UnturnedPlayer player = UnturnedPlayer.FromPlayer(equipment.player);
 
             // Retrieve the ShopComponent associated with the player.
-            ShopComponent comp = player.GetComponent<ShopComponent>();
+            ShopComponent comp = ComponentManager.Get(player);
     
             // Prevent equipping if a transaction is currently in progress.
             if (comp.IsUIOpened)
@@ -104,7 +103,7 @@ namespace Tavstal.TShop.Handlers
         private static void OnInputFieldEdit(Player player, string button, string text)
         {
             UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
-            ShopComponent comp = player.GetComponent<ShopComponent>();
+            ShopComponent comp = ComponentManager.Get(uPlayer);
 
             if (button.StartsWith("inputf_tshop_basket#product#"))
             {
@@ -138,7 +137,7 @@ namespace Tavstal.TShop.Handlers
 
             if (button.EqualsIgnoreCase("inputf_product_search"))
             {
-                if (comp.ProductSearch!.EqualsIgnoreCase(text)) 
+                if (comp.ProductSearch.EqualsIgnoreCase(text)) 
                     return;
                 comp.ProductSearch = text;
                 UIManager.UpdateProductPage(uPlayer);
@@ -156,7 +155,7 @@ namespace Tavstal.TShop.Handlers
             try
             {
                 UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
-                ShopComponent comp = player.GetComponent<ShopComponent>();
+                ShopComponent comp = ComponentManager.Get(uPlayer);
                 var transportConnection = uPlayer.SteamPlayer().transportConnection;
                 
                 if (comp.LastButtonClick > DateTime.Now)
