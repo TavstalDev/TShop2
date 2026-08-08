@@ -105,8 +105,11 @@ namespace Tavstal.TShop.Utils.Managers
         
         public static void Show(UnturnedPlayer player, bool handleCursor = true)
         {
-            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", true);
             var comp = ComponentManager.Get(player);
+            if (comp == null)
+                return;
+            
+            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", true);
             comp.IsUIOpened = true;
             if (handleCursor)
                 player.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, true);
@@ -114,8 +117,11 @@ namespace Tavstal.TShop.Utils.Managers
         
         public static void Hide(UnturnedPlayer player, bool handleCursor = true)
         {
-            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", false);
             var comp = ComponentManager.Get(player);
+            if (comp == null)
+                return;
+            
+            EffectManager.sendUIEffectVisibility((short)Config.EffectID, player.SteamPlayer().transportConnection, true, "Panel_TShop", false);
             comp.IsUIOpened = false;
             if (handleCursor)
                 player.Player.setPluginWidgetFlag(EPluginWidgetFlags.Modal, false);
@@ -126,7 +132,10 @@ namespace Tavstal.TShop.Utils.Managers
         {
             try
             {
-                ShopComponent comp = ComponentManager.Get(player);
+                ShopComponent? comp = ComponentManager.Get(player);
+                if (comp == null)
+                    return;
+                
                 int myGeneration = ++comp.ProductsGenerationCount;
 
                 int page;
@@ -351,7 +360,9 @@ namespace Tavstal.TShop.Utils.Managers
         /// <param name="player">The Unturned player for which to update the basket page.</param>
         public static void UpdateBasketPage(UnturnedPlayer player)
         {
-            ShopComponent comp = ComponentManager.Get(player);
+            ShopComponent? comp = ComponentManager.Get(player);
+            if (comp == null)
+                return;
 
             try
             {
@@ -462,7 +473,10 @@ namespace Tavstal.TShop.Utils.Managers
         /// <param name="player">The Unturned player for which to update the basket payment information.</param>
         public static void UpdateBasketPayment(UnturnedPlayer player)
         {
-            ShopComponent comp = ComponentManager.Get(player);
+            ShopComponent? comp = ComponentManager.Get(player);
+            if (comp == null)
+                return;
+            
             ITransportConnection playerTc = player.SteamPlayer().transportConnection;
             decimal subtotalBuyPrice = 0;
             decimal discountBuyPrice = 0;

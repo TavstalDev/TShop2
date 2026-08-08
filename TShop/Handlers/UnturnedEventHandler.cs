@@ -86,8 +86,10 @@ namespace Tavstal.TShop.Handlers
             UnturnedPlayer player = UnturnedPlayer.FromPlayer(equipment.player);
 
             // Retrieve the ShopComponent associated with the player.
-            ShopComponent comp = ComponentManager.Get(player);
-    
+            ShopComponent? comp = ComponentManager.Get(player);
+            if (comp == null)
+                return;
+            
             // Prevent equipping if a transaction is currently in progress.
             if (comp.IsUIOpened)
                 shouldAllow = false;
@@ -103,7 +105,9 @@ namespace Tavstal.TShop.Handlers
         private static void OnInputFieldEdit(Player player, string button, string text)
         {
             UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
-            ShopComponent comp = ComponentManager.Get(uPlayer);
+            ShopComponent? comp = ComponentManager.Get(uPlayer);
+            if (comp == null)
+                return;
 
             if (button.StartsWith("inputf_tshop_basket#product#"))
             {
@@ -155,7 +159,10 @@ namespace Tavstal.TShop.Handlers
             try
             {
                 UnturnedPlayer uPlayer = UnturnedPlayer.FromPlayer(player);
-                ShopComponent comp = ComponentManager.Get(uPlayer);
+                ShopComponent? comp = ComponentManager.Get(uPlayer);
+                if (comp == null)
+                    return;
+                
                 var transportConnection = uPlayer.SteamPlayer().transportConnection;
                 
                 if (comp.LastButtonClick > DateTime.Now)

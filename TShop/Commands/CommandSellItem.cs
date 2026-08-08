@@ -33,7 +33,10 @@ namespace Tavstal.TShop.Commands
         protected override async Task<bool> HandleExecuteAsync(IRocketPlayer caller, string[] args)
         {
             UnturnedPlayer callerPlayer = (UnturnedPlayer)caller;
-            ShopComponent comp = ComponentManager.Get(callerPlayer);
+            ShopComponent? comp = ComponentManager.Get(callerPlayer);
+            if (comp == null)
+                return true;
+            
             if (args.Length < 1 || args.Length > 2)
             {
                 TShop.Instance.SendCommandReply(callerPlayer.SteamPlayer(), "error_command_sellitem_args", TShop.Instance.Config.General.MessageIcon);
