@@ -3,7 +3,9 @@ using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
+using Tavstal.RocketFlow.Attributes;
+using Tavstal.RocketFlow.Core;
+using Tavstal.RocketFlow.Events.Level;
 using Tavstal.TLibrary.Extensions;
 using Tavstal.TLibrary.Models.Plugin;
 using Tavstal.TLibrary.Models.Hooks;
@@ -12,7 +14,6 @@ using Tavstal.TLibrary.Helpers.General;
 using Tavstal.TLibrary.Managers;
 using Tavstal.TLibrary.Models.Logging;
 using Tavstal.TLibrary.Threading;
-using Tavstal.TShop.Handlers;
 using Tavstal.TShop.Models;
 using Tavstal.TShop.Models.Hooks;
 using Tavstal.TShop.Utils.Managers;
@@ -25,7 +26,7 @@ namespace Tavstal.TShop
     /// </summary>
     /// <typeparam>The type of configuration used by TShop.</typeparam>
     // ReSharper disable once InconsistentNaming
-    public class TShop : PluginBase<ShopConfiguration>
+    public class TShop : PluginBase<ShopConfiguration>, EventListener
     {
         public static TShop Instance { get; private set; } = null!;
         public static DatabaseManager DatabaseManager { get; private set; } = null!;
@@ -73,13 +74,12 @@ namespace Tavstal.TShop
             try
             {
                 DatabaseManager = new DatabaseManager();
-                UnturnedEventHandler.Attach();
-               
-                if (!Level.isLoaded || Level.isLoading)
-                    Level.onPostLevelLoaded += Event_OnPluginsLoaded;
-                else
-                    Event_OnPluginsLoaded(0);
+                RocketFlow.RocketFlow.Initialize();
+                RocketFlow.RocketFlow.RegisterAll(this);
 
+                if (Level.isLoaded)
+                    OnPostLevelLoaded(new LevelPostLoadEvent(-1));
+                
                 if (DatabaseManager.IsAuthenticationFailed)
                     return;
 
@@ -97,9 +97,8 @@ namespace Tavstal.TShop
         /// </summary>
         public override void OnUnLoad()
         {
-            UnturnedEventHandler.Detach();
-            Level.onPostLevelLoaded -= Event_OnPluginsLoaded;
             _isLateInited = false;
+            RocketFlow.RocketFlow.UnregisterAll(this);
             foreach (SteamPlayer steamPlayer in Provider.clients)
             {
                 UIManager.Hide(UnturnedPlayer.FromSteamPlayer(steamPlayer));
@@ -111,12 +110,13 @@ namespace Tavstal.TShop
 
             Logger.Info($"# {GetPluginName()} has been successfully unloaded.");
         }
-
-        /// <summary>
-        /// Event handler for when all plugins are loaded.
-        /// </summary>
-        private void Event_OnPluginsLoaded(int i)
+        
+        [EventHandler]
+        public void OnPostLevelLoaded(LevelPostLoadEvent e)
         {
+            if (_isLateInited)
+                return;
+            
             if (DatabaseManager.IsAuthenticationFailed)
             {
                 Logger.Warning($"# Unloading {GetPluginName()} due to database authentication error.");
@@ -126,38 +126,47 @@ namespace Tavstal.TShop
 
             Logger.Info($"[▶] INITIATING: {GetPluginName()}...");
             Logger.Info("# Searching for economy plugin...");
-            HookManager = new HookManager(this);
-            HookManager.LoadAll(Assembly, true);
+            try
+            {
+                HookManager = new HookManager(this);
+                HookManager.LoadAll(Assembly, true);
 
-            if (Config.ExpMode)
-            {
-                if (!HookManager.IsHookLoadable<ExpEconomyHook>())
+                if (Config.ExpMode)
                 {
-                    Logger.Error("# Failed to load economy hook. Unloading TShop...");
-                    this.UnloadPlugin();
-                    return;
-                }
-                EconomyProvider = HookManager.GetHook<ExpEconomyHook>()!;
-            }
-            else
-            {
-                if (HookManager.IsHookLoadable<TEconomyHook>())
-                    EconomyProvider = HookManager.GetHook<TEconomyHook>()!;
-                else
-                {
-                    if (!HookManager.IsHookLoadable<UconomyHook>())
+                    if (!HookManager.IsHookLoadable<ExpEconomyHook>())
                     {
                         Logger.Error("# Failed to load economy hook. Unloading TShop...");
                         this.UnloadPlugin();
                         return;
                     }
-                    EconomyProvider = HookManager.GetHook<UconomyHook>()!;
-                }
-            }
 
-            if (Config.EnableDiscounts)
-                InvokeRepeating(nameof(CheckDiscount), 1f, Config.DiscountInterval);
-            _isLateInited = true;
+                    EconomyProvider = HookManager.GetHook<ExpEconomyHook>()!;
+                }
+                else
+                {
+                    if (HookManager.IsHookLoadable<TEconomyHook>())
+                        EconomyProvider = HookManager.GetHook<TEconomyHook>()!;
+                    else
+                    {
+                        if (!HookManager.IsHookLoadable<UconomyHook>())
+                        {
+                            Logger.Error("# Failed to load economy hook. Unloading TShop...");
+                            this.UnloadPlugin();
+                            return;
+                        }
+
+                        EconomyProvider = HookManager.GetHook<UconomyHook>()!;
+                    }
+                }
+
+                if (Config.EnableDiscounts)
+                    InvokeRepeating(nameof(CheckDiscount), 1f, Config.DiscountInterval);
+                _isLateInited = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Unexpected error occured.", ex);
+            }
         }
 
         /// <summary>

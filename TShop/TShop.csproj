@@ -66,6 +66,10 @@
       <HintPath>..\assets\libraries\Rocket.Unturned.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="RocketFlow">
+      <HintPath>..\assets\libraries\RocketFlow.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="SDG.NetTransport">
       <HintPath>..\assets\libraries\SDG.NetTransport.dll</HintPath>
       <Private>False</Private>
