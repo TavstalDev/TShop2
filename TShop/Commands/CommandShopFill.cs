@@ -29,34 +29,27 @@ namespace Tavstal.TShop.Commands
                 TShop.Instance.SendPlainCommandReply(caller,"&cYou must enable debugMode to use 'shopfill'.");
                 return true;
             }
-
-            int count = 0;
+            
+            int totalCount = 0;
             foreach (var asset in UAssetHelper.GetItemAssets().OrderBy(x => x.id))
             {
-                if (count == 100)
-                    break;
-
                 if (asset.id == 0)
                     continue;
 
-                await TShop.DatabaseManager.AddProductAsync(asset.id, false, null, 1, 1, false, "");
-                count++;
+                if (await TShop.DatabaseManager.AddProductAsync(asset.id, false, null, 1, 1, false, ""))
+                    totalCount++;
             }
-
             
             foreach (var asset in UAssetHelper.GetVehicleAssets().OrderBy(x => x.id))
             {
-                if (count == 100)
-                    break;
-
                 if (asset.id == 0)
                     continue;
 
-                await TShop.DatabaseManager.AddProductAsync(asset.id, true,  null,1, 1, false, "");
-                count++;
+                if (await TShop.DatabaseManager.AddProductAsync(asset.id, true,  null,1, 1, false, ""))
+                    totalCount++;
             }
             
-            Plugin.SendPlainCommandReply(caller, $"<color=green>Shop filled with {count} items and vehicles.</color>", TShop.Instance.Config.General.MessageIcon);
+            Plugin.SendPlainCommandReply(caller, $"<color=green>Shop filled with {totalCount} items and vehicles.</color>", TShop.Instance.Config.General.MessageIcon);
             return true;
         }
     }
