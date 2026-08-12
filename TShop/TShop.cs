@@ -32,6 +32,7 @@ namespace Tavstal.TShop
         public static DatabaseManager DatabaseManager { get; private set; } = null!;
         public static IEconomyProvider EconomyProvider { get; private set; } = null!;
         public static bool IsCleanupInProgress { get; set; }
+        internal static bool IsShuttingDown { get; set; }
         private bool _isLateInited;
 
         public override void OnPreLoad()
@@ -99,10 +100,14 @@ namespace Tavstal.TShop
         {
             _isLateInited = false;
             RocketFlow.RocketFlow.UnregisterAll(this);
-            foreach (SteamPlayer steamPlayer in Provider.clients)
+
+            if (!IsShuttingDown)
             {
-                UIManager.Hide(UnturnedPlayer.FromSteamPlayer(steamPlayer));
-                EffectManager.askEffectClearByID(Config.EffectID, steamPlayer.transportConnection);
+                foreach (SteamPlayer steamPlayer in Provider.clients)
+                {
+                    UIManager.Hide(UnturnedPlayer.FromSteamPlayer(steamPlayer));
+                    EffectManager.askEffectClearByID(Config.EffectID, steamPlayer.transportConnection);
+                }
             }
 
             if (Config.EnableDiscounts)
